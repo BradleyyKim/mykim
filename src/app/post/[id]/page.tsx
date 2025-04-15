@@ -5,12 +5,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Heart, Share, Calendar, Clock, Tag, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-interface PostPageProps {
-  params: {
-    id: string;
-  };
-}
-
 interface Category {
   attributes?: {
     name?: string;
@@ -27,7 +21,7 @@ interface Tag {
   };
 }
 
-export default async function PostPage({ params }: PostPageProps) {
+export default async function PostPage({ params }: { params: { id: string } }) {
   const id = parseInt(params.id);
 
   if (isNaN(id)) {

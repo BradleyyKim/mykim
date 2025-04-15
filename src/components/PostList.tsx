@@ -69,6 +69,53 @@ export default function PostList({ initialPosts }: PostListProps) {
     console.log("🔍 PostList - 초기 포스트:", initialPosts);
   }, [initialPosts]);
 
+  // 모든 필터 적용 - useCallback으로 메모이제이션
+  const applyFilters = useCallback(
+    (query: string, category: string, tag: string, sort: string, postsToFilter: Post[] = initialPosts) => {
+      console.log("🔍 필터 적용 시작:", { query, category, tag, sort });
+      console.time("applyFilters");
+
+      // 1. 검색어 필터링
+      let result = postsToFilter;
+
+      if (query.trim() !== "") {
+        result = result.filter(post => post.title.toLowerCase().includes(query.toLowerCase()) || post.content.toLowerCase().includes(query.toLowerCase()));
+        console.log(`검색어 '${query}'로 필터링 후 결과:`, result.length);
+      }
+
+      // 2. 카테고리 필터링
+      if (category !== "all") {
+        result = result.filter(post => {
+          if (!post.categories || post.categories.length === 0) return false;
+          return post.categories.some((cat: Category) => cat.attributes?.slug === category || cat.attributes?.name?.toLowerCase() === category.toLowerCase());
+        });
+        console.log(`카테고리 '${category}'로 필터링 후 결과:`, result.length);
+      }
+
+      // 3. 태그 필터링
+      if (tag) {
+        result = result.filter(post => {
+          if (!post.tags || post.tags.length === 0) return false;
+          return post.tags.some((t: Tag) => t.attributes?.slug === tag || t.attributes?.name?.toLowerCase() === tag.toLowerCase());
+        });
+        console.log(`태그 '${tag}'로 필터링 후 결과:`, result.length);
+      }
+
+      // 4. 정렬 적용
+      if (sort === "latest") {
+        result.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+      } else if (sort === "oldest") {
+        result.sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime());
+      }
+      console.log(`'${sort}' 정렬 적용 후 결과:`, result.length);
+
+      console.timeEnd("applyFilters");
+      console.log("🔍 필터링 완료. 최종 포스트 수:", result.length);
+      setFilteredPosts(result);
+    },
+    [initialPosts]
+  );
+
   // URL에서 초기 필터 상태 가져오기
   useEffect(() => {
     const category = searchParams.get("category");
@@ -96,7 +143,7 @@ export default function PostList({ initialPosts }: PostListProps) {
 
     // 필터 적용
     applyFilters(search || "", category || "all", tag || "", sortOrder);
-  }, [searchParams]);
+  }, [searchParams, applyFilters, sortOrder]);
 
   // 수동으로 데이터 새로고침
   const refreshData = async () => {
@@ -219,50 +266,6 @@ export default function PostList({ initialPosts }: PostListProps) {
     }
 
     applyFilters(type === "search" ? "" : searchQuery, type === "category" ? "all" : activeCategory, type === "tag" ? "" : activeTag, sortOrder);
-  };
-
-  // 모든 필터 적용
-  const applyFilters = (query: string, category: string, tag: string, sort: string, postsToFilter: Post[] = initialPosts) => {
-    console.log("🔍 필터 적용 시작:", { query, category, tag, sort });
-    console.time("applyFilters");
-
-    // 1. 검색어 필터링
-    let result = postsToFilter;
-
-    if (query.trim() !== "") {
-      result = result.filter(post => post.title.toLowerCase().includes(query.toLowerCase()) || post.content.toLowerCase().includes(query.toLowerCase()));
-      console.log(`검색어 '${query}'로 필터링 후 결과:`, result.length);
-    }
-
-    // 2. 카테고리 필터링
-    if (category !== "all") {
-      result = result.filter(post => {
-        if (!post.categories || post.categories.length === 0) return false;
-        return post.categories.some((cat: Category) => cat.attributes?.slug === category || cat.attributes?.name?.toLowerCase() === category.toLowerCase());
-      });
-      console.log(`카테고리 '${category}'로 필터링 후 결과:`, result.length);
-    }
-
-    // 3. 태그 필터링
-    if (tag) {
-      result = result.filter(post => {
-        if (!post.tags || post.tags.length === 0) return false;
-        return post.tags.some((t: Tag) => t.attributes?.slug === tag || t.attributes?.name?.toLowerCase() === tag.toLowerCase());
-      });
-      console.log(`태그 '${tag}'로 필터링 후 결과:`, result.length);
-    }
-
-    // 4. 정렬 적용
-    if (sort === "latest") {
-      result.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
-    } else if (sort === "oldest") {
-      result.sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime());
-    }
-    console.log(`'${sort}' 정렬 적용 후 결과:`, result.length);
-
-    console.timeEnd("applyFilters");
-    console.log("🔍 필터링 완료. 최종 포스트 수:", result.length);
-    setFilteredPosts(result);
   };
 
   // 포스트 없는 경우 표시할 컴포넌트
