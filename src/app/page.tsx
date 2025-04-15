@@ -8,7 +8,7 @@ import { PlusCircle } from "lucide-react";
 export default async function Home() {
   // 서버 컴포넌트에서 데이터 가져오기
   const posts = await fetchPosts();
-
+  console.log("posts", posts);
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">

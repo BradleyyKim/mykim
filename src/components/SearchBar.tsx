@@ -1,15 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export interface SearchBarProps {
+  initialValue?: string;
   onSearch?: (query: string) => void;
 }
 
-export default function SearchBar({ onSearch }: SearchBarProps) {
-  const [searchQuery, setSearchQuery] = useState("");
+export default function SearchBar({ initialValue = "", onSearch }: SearchBarProps) {
+  const [searchQuery, setSearchQuery] = useState(initialValue);
+
+  // initialValue가 변경되면 검색어 상태 업데이트
+  useEffect(() => {
+    setSearchQuery(initialValue);
+  }, [initialValue]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

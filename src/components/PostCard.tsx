@@ -5,13 +5,14 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Post } from "@/lib/api";
-import { Heart, MessageCircle, Share, Clock } from "lucide-react";
+import { Heart, MessageCircle, Share, Clock, ChevronRight, Bookmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 // 태그 및 카테고리 타입
 interface TagAttribute {
   name?: string;
-  [key: string]: any;
+  slug?: string;
+  [key: string]: unknown;
 }
 
 interface Tag {
@@ -21,7 +22,8 @@ interface Tag {
 
 interface CategoryAttribute {
   name?: string;
-  [key: string]: any;
+  slug?: string;
+  [key: string]: unknown;
 }
 
 interface Category {
@@ -29,12 +31,30 @@ interface Category {
   attributes?: CategoryAttribute;
 }
 
-export default function PostCard({ post }: { post: Post }) {
+interface PostCardProps {
+  post: Post;
+  onTagClick?: (tag: string) => void;
+}
+
+export default function PostCard({ post, onTagClick }: PostCardProps) {
   const [likes, setLikes] = useState(0);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const handleLike = () => {
     setLikes(likes + 1);
+  };
+
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+  };
+
+  const handleTagClick = (tag: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onTagClick) {
+      console.log("태그 클릭 이벤트:", tag);
+      onTagClick(tag);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -55,12 +75,35 @@ export default function PostCard({ post }: { post: Post }) {
   };
 
   // 태그 추출
-  const tags = post.tags ? (post.tags as Tag[]).map(tag => tag.attributes?.name || "").filter(Boolean) : [];
+  const tags = post.tags
+    ? (post.tags as Tag[])
+        .map(tag => ({
+          name: tag.attributes?.name || "",
+          slug: tag.attributes?.slug || ""
+        }))
+        .filter(tag => tag.name)
+    : [];
 
   // 카테고리 추출
-  const category = post.categories && post.categories.length > 0 ? (post.categories as Category[])[0]?.attributes?.name : "일반";
+  const categories =
+    post.categories && post.categories.length > 0
+      ? (post.categories as Category[]).map(cat => ({
+          name: cat.attributes?.name || "",
+          slug: cat.attributes?.slug || ""
+        }))
+      : [{ name: "일반", slug: "general" }];
 
+  const category = categories[0];
   const readTime = calculateReadTime(post.content);
+
+  // 내용 미리보기 생성
+  const createContentPreview = (content: string) => {
+    const preview = post.description || content.substring(0, 200);
+    if (preview.length < content.length) {
+      return preview + "...";
+    }
+    return preview;
+  };
 
   return (
     <Card
@@ -69,15 +112,20 @@ export default function PostCard({ post }: { post: Post }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <CardHeader className="pb-2">
-        {category && (
-          <div className="mb-2">
-            <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 hover:bg-amber-100">
-              {category}
+        <div className="flex justify-between items-start mb-2">
+          <Link href={`/?category=${category.slug}`} className="inline-block">
+            <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 cursor-pointer">
+              {category.name}
             </Badge>
-          </div>
-        )}
-        <Link href={`/post/${post.id}`}>
-          <CardTitle className={`text-xl font-bold line-clamp-2 transition-colors duration-300 ${isHovered ? "text-amber-700" : "text-amber-900"}`}>{post.title}</CardTitle>
+          </Link>
+          <Button variant="ghost" size="icon" className={`h-8 w-8 ${isBookmarked ? "text-amber-500" : "text-gray-400"}`} onClick={handleBookmark}>
+            <Bookmark size={16} className={isBookmarked ? "fill-current" : ""} />
+          </Button>
+        </div>
+        <Link href={`/post/${post.id}`} className="group">
+          <CardTitle className={`text-xl font-bold transition-colors duration-300 ${isHovered ? "text-amber-700" : "text-amber-900"}`}>
+            {post.title.length > 60 ? post.title.substring(0, 60) + "..." : post.title}
+          </CardTitle>
         </Link>
         <CardDescription className="text-sm flex items-center justify-between mt-2">
           <span>{formatDate(post.publishedDate || post.publishedAt)}</span>
@@ -88,13 +136,19 @@ export default function PostCard({ post }: { post: Post }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
-        <p className="text-sm line-clamp-3 text-gray-600">{post.description || post.content.substring(0, 150)}</p>
+        <div className="space-y-2">
+          <p className="text-sm text-gray-600 mb-2 line-clamp-3">{createContentPreview(post.content)}</p>
+          <Link href={`/post/${post.id}`} className="inline-flex items-center text-xs text-amber-600 hover:text-amber-700 transition-colors group">
+            <span>더 읽기</span>
+            <ChevronRight size={14} className="ml-1 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </div>
 
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-3">
-            {tags.slice(0, 3).map((tag: string, index: number) => (
-              <Badge key={index} variant="secondary" className="text-xs bg-amber-50 text-amber-600 hover:bg-amber-100">
-                #{tag}
+            {tags.slice(0, 3).map((tag, index) => (
+              <Badge key={index} variant="secondary" className="text-xs bg-amber-50 text-amber-600 hover:bg-amber-100 cursor-pointer" onClick={e => handleTagClick(tag.slug, e)}>
+                #{tag.name}
               </Badge>
             ))}
             {tags.length > 3 && (

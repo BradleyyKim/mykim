@@ -16,10 +16,10 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         data: {
-          Title: body.title,
-          Content: body.content,
-          Slug: body.title.toLowerCase().replace(/\s+/g, "-"),
-          Description: body.content.substring(0, 200) // 첫 200자를 설명으로 사용
+          title: body.title,
+          content: body.content,
+          slug: body.title.toLowerCase().replace(/\s+/g, "-"),
+          description: body.content.substring(0, 200) // 첫 200자를 설명으로 사용
         }
       })
     });

@@ -5,18 +5,27 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/a
 console.log("API_BASE_URL:", API_BASE_URL);
 
 // 타입 정의
+export interface FeaturedImage {
+  url: string;
+  width?: number;
+  height?: number;
+  alternativeText?: string;
+  caption?: string;
+}
+
 export interface Post {
   id: number;
+  documentId: string;
   title: string;
   slug: string;
   content: string;
-  description: string;
-  featuredImage?: Record<string, unknown>;
-  publishedDate: string;
+  description: string | null;
+  featuredImage: FeaturedImage | null;
+  publishedDate: string | null;
   author?: Record<string, unknown>;
-  categories?: Record<string, unknown>[];
-  tags?: Record<string, unknown>[];
-  postStatus?: string;
+  categories: Array<Record<string, unknown>>;
+  tags: Array<Record<string, unknown>>;
+  postStatus: string | null;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -42,41 +51,12 @@ interface StrapiResponse<T> {
   };
 }
 
-interface StrapiPost {
-  id: number;
-  attributes: {
-    Title?: string;
-    Slug?: string;
-    Content?: string;
-    Description?: string;
-    FeaturedImage?: Record<string, unknown>;
-    PublishedDate?: string;
-    Author?: Record<string, unknown>;
-    Categories?: {
-      data?: Array<{ id: number; attributes: Record<string, unknown> }>;
-    };
-    Tags?: {
-      data?: Array<{ id: number; attributes: Record<string, unknown> }>;
-    };
-    PostStatus?: string;
-    createdAt?: string;
-    updatedAt?: string;
-    publishedAt?: string;
-  };
-}
-
-interface StrapiCategory {
-  id: number;
-  attributes: {
-    name?: string;
-    slug?: string;
-    description?: string;
-  };
-}
-
 // 서버 컴포넌트에서 사용할 함수
 export async function fetchPosts(): Promise<Post[]> {
   try {
+    console.log("🔍 fetchPosts - 요청 시작:", `${API_BASE_URL}/posts`);
+    console.time("fetchPosts");
+
     const response = await fetch(`${API_BASE_URL}/posts`, {
       // 캐시 전략: 항상 최신 데이터 우선, 캐시된 데이터는 백그라운드에서 업데이트
       cache: "no-store",
@@ -85,11 +65,25 @@ export async function fetchPosts(): Promise<Post[]> {
       }
     });
 
+    console.log("🔍 fetchPosts - 응답 상태:", response.status, response.statusText);
+    console.timeLog("fetchPosts", "- 응답 수신");
+
     if (!response.ok) {
       throw new Error(`Failed to fetch posts: ${response.status}`);
     }
 
-    const data = (await response.json()) as StrapiResponse<StrapiPost[]>;
+    const data = (await response.json()) as StrapiResponse<Post[]>;
+
+    // 원시 데이터 확인
+    console.log("🔍 API 원시 응답 데이터:", JSON.stringify(data, null, 2));
+
+    console.log("🔍 fetchPosts - 데이터 구조:", {
+      hasData: !!data.data,
+      isArray: Array.isArray(data.data),
+      count: data.data ? data.data.length : 0,
+      pagination: data.meta?.pagination
+    });
+    console.timeLog("fetchPosts", "- 데이터 파싱");
 
     // 데이터 구조 확인 및 안전한 매핑
     if (!data.data || !Array.isArray(data.data)) {
@@ -97,33 +91,15 @@ export async function fetchPosts(): Promise<Post[]> {
       return [];
     }
 
-    return data.data.map(post => {
-      // attributes가 없는 경우를 처리
-      const attributes = post.attributes || {};
+    // 이제 데이터는 이미 올바른 형식이므로 추가 변환이 필요 없음
+    const posts = data.data;
 
-      // Categories와 Tags 데이터 추출
-      const categoriesData = attributes.Categories?.data || [];
-      const tagsData = attributes.Tags?.data || [];
-
-      return {
-        id: post.id,
-        title: attributes.Title || "",
-        slug: attributes.Slug || "",
-        content: attributes.Content || "",
-        description: attributes.Description || "",
-        featuredImage: attributes.FeaturedImage,
-        publishedDate: attributes.PublishedDate || "",
-        author: attributes.Author,
-        categories: categoriesData,
-        tags: tagsData,
-        postStatus: attributes.PostStatus || "",
-        createdAt: attributes.createdAt || "",
-        updatedAt: attributes.updatedAt || "",
-        publishedAt: attributes.publishedAt || ""
-      };
-    });
+    console.log("🔍 fetchPosts - 포스트 목록:", posts);
+    console.timeEnd("fetchPosts");
+    return posts;
   } catch (error) {
-    console.error("Error fetching posts:", error);
+    console.error("❌ Error fetching posts:", error);
+    console.timeEnd("fetchPosts");
     return [];
   }
 }
@@ -131,16 +107,25 @@ export async function fetchPosts(): Promise<Post[]> {
 // 클라이언트 컴포넌트에서 사용할 함수
 export async function fetchPostsClient(): Promise<Post[]> {
   try {
+    console.log("🔍 fetchPostsClient - 요청 시작:", `${API_BASE_URL}/posts`);
+
     const response = await fetch(`${API_BASE_URL}/posts`, {
       // 클라이언트에서는 캐시 사용 안 함
       cache: "no-store"
     });
 
+    console.log("🔍 fetchPostsClient - 응답 상태:", response.status, response.statusText);
+
     if (!response.ok) {
       throw new Error(`Failed to fetch posts: ${response.status}`);
     }
 
-    const data = (await response.json()) as StrapiResponse<StrapiPost[]>;
+    const data = (await response.json()) as StrapiResponse<Post[]>;
+    console.log("🔍 fetchPostsClient - 데이터 구조:", {
+      hasData: !!data.data,
+      isArray: Array.isArray(data.data),
+      count: data.data ? data.data.length : 0
+    });
 
     // 데이터 구조 확인 및 안전한 매핑
     if (!data.data || !Array.isArray(data.data)) {
@@ -148,33 +133,13 @@ export async function fetchPostsClient(): Promise<Post[]> {
       return [];
     }
 
-    return data.data.map(post => {
-      // attributes가 없는 경우를 처리
-      const attributes = post.attributes || {};
+    // 이제 데이터는 이미 올바른 형식이므로 추가 변환이 필요 없음
+    const posts = data.data;
 
-      // Categories와 Tags 데이터 추출
-      const categoriesData = attributes.Categories?.data || [];
-      const tagsData = attributes.Tags?.data || [];
-
-      return {
-        id: post.id,
-        title: attributes.Title || "",
-        slug: attributes.Slug || "",
-        content: attributes.Content || "",
-        description: attributes.Description || "",
-        featuredImage: attributes.FeaturedImage,
-        publishedDate: attributes.PublishedDate || "",
-        author: attributes.Author,
-        categories: categoriesData,
-        tags: tagsData,
-        postStatus: attributes.PostStatus || "",
-        createdAt: attributes.createdAt || "",
-        updatedAt: attributes.updatedAt || "",
-        publishedAt: attributes.publishedAt || ""
-      };
-    });
+    console.log("🔍 fetchPostsClient - 포스트 목록:", posts);
+    return posts;
   } catch (error) {
-    console.error("Error fetching posts:", error);
+    console.error("❌ Error fetching posts in client:", error);
     return [];
   }
 }
@@ -193,7 +158,7 @@ export async function fetchPostById(id: string): Promise<Post | null> {
       throw new Error(`Failed to fetch post: ${response.status}`);
     }
 
-    const data = (await response.json()) as StrapiResponse<StrapiPost>;
+    const data = (await response.json()) as StrapiResponse<Post>;
 
     // 데이터 구조 확인
     if (!data.data) {
@@ -201,29 +166,8 @@ export async function fetchPostById(id: string): Promise<Post | null> {
       return null;
     }
 
-    const post = data.data;
-    const attributes = post.attributes || {};
-
-    // Categories와 Tags 데이터 추출
-    const categoriesData = attributes.Categories?.data || [];
-    const tagsData = attributes.Tags?.data || [];
-
-    return {
-      id: post.id,
-      title: attributes.Title || "",
-      slug: attributes.Slug || "",
-      content: attributes.Content || "",
-      description: attributes.Description || "",
-      featuredImage: attributes.FeaturedImage,
-      publishedDate: attributes.PublishedDate || "",
-      author: attributes.Author,
-      categories: categoriesData,
-      tags: tagsData,
-      postStatus: attributes.PostStatus || "",
-      createdAt: attributes.createdAt || "",
-      updatedAt: attributes.updatedAt || "",
-      publishedAt: attributes.publishedAt || ""
-    };
+    // 이제 데이터는 이미 올바른 형식이므로 추가 변환이 필요 없음
+    return data.data;
   } catch (error) {
     console.error("Error fetching post:", error);
     return null;
@@ -241,7 +185,7 @@ export async function fetchPostByIdClient(id: string): Promise<Post | null> {
       throw new Error(`Failed to fetch post: ${response.status}`);
     }
 
-    const data = (await response.json()) as StrapiResponse<StrapiPost>;
+    const data = (await response.json()) as StrapiResponse<Post>;
 
     // 데이터 구조 확인
     if (!data.data) {
@@ -249,29 +193,8 @@ export async function fetchPostByIdClient(id: string): Promise<Post | null> {
       return null;
     }
 
-    const post = data.data;
-    const attributes = post.attributes || {};
-
-    // Categories와 Tags 데이터 추출
-    const categoriesData = attributes.Categories?.data || [];
-    const tagsData = attributes.Tags?.data || [];
-
-    return {
-      id: post.id,
-      title: attributes.Title || "",
-      slug: attributes.Slug || "",
-      content: attributes.Content || "",
-      description: attributes.Description || "",
-      featuredImage: attributes.FeaturedImage,
-      publishedDate: attributes.PublishedDate || "",
-      author: attributes.Author,
-      categories: categoriesData,
-      tags: tagsData,
-      postStatus: attributes.PostStatus || "",
-      createdAt: attributes.createdAt || "",
-      updatedAt: attributes.updatedAt || "",
-      publishedAt: attributes.publishedAt || ""
-    };
+    // 이제 데이터는 이미 올바른 형식이므로 추가 변환이 필요 없음
+    return data.data;
   } catch (error) {
     console.error("Error fetching post:", error);
     return null;
@@ -292,22 +215,15 @@ export async function fetchCategories(): Promise<Category[]> {
       throw new Error(`Failed to fetch categories: ${response.status}`);
     }
 
-    const data = (await response.json()) as StrapiResponse<StrapiCategory[]>;
+    const data = (await response.json()) as StrapiResponse<Category[]>;
 
     if (!data.data || !Array.isArray(data.data)) {
       console.error("Unexpected API response structure:", data);
       return [];
     }
 
-    return data.data.map(category => {
-      const attributes = category.attributes || {};
-      return {
-        id: category.id,
-        name: attributes.name || "",
-        slug: attributes.slug || "",
-        description: attributes.description
-      };
-    });
+    // 이제 데이터는 이미 올바른 형식이므로 추가 변환이 필요 없음
+    return data.data;
   } catch (error) {
     console.error("Error fetching categories:", error);
     return [];

@@ -2,7 +2,7 @@ import { fetchPostById, fetchPosts } from "@/lib/api";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Heart, Share, Calendar, Clock, Tag } from "lucide-react";
+import { ArrowLeft, Heart, Share, Calendar, Clock, Tag, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface PostPageProps {
@@ -62,6 +62,15 @@ export default async function PostPage({ params }: PostPageProps) {
       month: "long",
       day: "numeric"
     });
+  };
+
+  // 내용 미리보기 생성
+  const createContentPreview = (content: string) => {
+    const preview = content.substring(0, 150);
+    if (preview.length < content.length) {
+      return preview + "...";
+    }
+    return preview;
   };
 
   // 카테고리, 태그 추출
@@ -148,10 +157,24 @@ export default async function PostPage({ params }: PostPageProps) {
             <h2 className="text-xl font-bold mb-6 text-amber-800">관련 포스트</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {relatedPosts.map(relatedPost => (
-                <Link href={`/post/${relatedPost.id}`} key={relatedPost.id} className="block bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
-                  <h3 className="font-bold text-lg mb-2 text-amber-900 line-clamp-2">{relatedPost.title}</h3>
-                  <p className="text-sm text-gray-600 line-clamp-3">{relatedPost.description || relatedPost.content.substring(0, 120)}</p>
-                </Link>
+                <div key={relatedPost.id} className="bg-white rounded-lg shadow-sm p-5 hover:shadow-md transition-all duration-300 hover:translate-y-[-3px] flex flex-col h-full">
+                  <h3 className="font-bold text-lg mb-2 text-amber-900 line-clamp-2 hover:text-amber-700 transition-colors">
+                    <Link href={`/post/${relatedPost.id}`} className="block">
+                      {relatedPost.title.length > 60 ? relatedPost.title.substring(0, 60) + "..." : relatedPost.title}
+                    </Link>
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-3 mb-4">{relatedPost.description || createContentPreview(relatedPost.content)}</p>
+                  <div className="flex items-center gap-1 text-xs text-amber-600 mt-auto">
+                    <Clock size={12} />
+                    <span>읽기 {calculateReadTime(relatedPost.content)}분 소요</span>
+                  </div>
+                  <div className="mt-3 pt-3 border-t">
+                    <Link href={`/post/${relatedPost.id}`} className="inline-flex items-center text-xs text-amber-600 hover:text-amber-700 transition-colors group">
+                      <span>더 읽기</span>
+                      <ChevronRight size={14} className="ml-1 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
