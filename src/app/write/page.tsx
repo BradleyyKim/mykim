@@ -47,8 +47,7 @@ export default function WritePage() {
       const response = await fetch("/api/posts", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           ...formData,
