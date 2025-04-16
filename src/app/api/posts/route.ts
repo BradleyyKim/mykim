@@ -5,14 +5,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log("Request body:", body);
 
-    // Strapi API URL
+    // Strapi API URL 및 토큰
     const STRAPI_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+    const STRAPI_API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
+
+    console.log("Using API URL:", STRAPI_API_URL);
+    console.log("API Token exists:", !!STRAPI_API_TOKEN);
 
     // API 요청
     const response = await fetch(`${STRAPI_API_URL}/posts`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        // API 토큰 추가
+        Authorization: `Bearer ${STRAPI_API_TOKEN}`
       },
       body: JSON.stringify({
         data: {
