@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import { useCreatePost } from "@/lib/tanstack-query";
 
 const categories = [
   { id: "tech-ideas", name: "아이디어를 빌드합니다", icon: "🎯", description: "기술 아이디어" },
@@ -19,6 +20,7 @@ const categories = [
 
 export default function WritePage() {
   const router = useRouter();
+  const { createPost } = useCreatePost();
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -38,30 +40,10 @@ export default function WritePage() {
 
     setIsSubmitting(true);
     setError(null);
-    console.log("API Token:", process.env.STRAPI_API_TOKEN?.substring(0, 5) + "...");
-    console.log("Request Headers:", {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`
-    });
-    try {
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ...formData,
-          tags: formData.tags
-            .split(",")
-            .map(tag => tag.trim())
-            .filter(Boolean)
-        })
-      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create post");
-      }
+    try {
+      // TanStack Query 훅 사용
+      await createPost(formData);
 
       // 캐시된 데이터 갱신
       router.refresh();

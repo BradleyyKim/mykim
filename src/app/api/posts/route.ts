@@ -11,29 +11,43 @@ export async function POST(request: NextRequest) {
 
     console.log("Using API URL:", STRAPI_API_URL);
     console.log("API Token exists:", !!STRAPI_API_TOKEN);
+    console.log("API Token length:", STRAPI_API_TOKEN?.length);
+    console.log("API Token first 10 chars:", STRAPI_API_TOKEN?.substring(0, 10));
+
+    // 요청 헤더 구성
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${STRAPI_API_TOKEN}`
+    };
+
+    console.log("Request Headers:", {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${STRAPI_API_TOKEN?.substring(0, 10)}...`
+    });
+
+    // 요청 바디 구성
+    const requestBody = {
+      data: {
+        title: body.title,
+        content: body.content,
+        slug: body.title.toLowerCase().replace(/\s+/g, "-"),
+        description: body.content.substring(0, 200) // 첫 200자를 설명으로 사용
+      }
+    };
+
+    console.log("Request Body:", requestBody);
 
     // API 요청
     const response = await fetch(`${STRAPI_API_URL}/posts`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // API 토큰 추가
-        Authorization: `Bearer ${STRAPI_API_TOKEN}`
-      },
-      body: JSON.stringify({
-        data: {
-          title: body.title,
-          content: body.content,
-          slug: body.title.toLowerCase().replace(/\s+/g, "-"),
-          description: body.content.substring(0, 200) // 첫 200자를 설명으로 사용
-        }
-      })
+      headers,
+      body: JSON.stringify(requestBody)
     });
-    console.log("API Token:", STRAPI_API_TOKEN?.substring(0, 5) + "...");
-    console.log("Request Headers:", {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${STRAPI_API_TOKEN}`
-    });
+
+    // 응답 상태 및 헤더 로깅
+    console.log("Response status:", response.status);
+    console.log("Response status text:", response.statusText);
+    console.log("Response headers:", Object.fromEntries([...response.headers.entries()]));
 
     if (!response.ok) {
       const contentType = response.headers.get("content-type");
@@ -65,6 +79,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error creating post:", error);
-    return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Failed to create post",
+        details: error instanceof Error ? error.message : String(error)
+      },
+      { status: 500 }
+    );
   }
 }
