@@ -38,12 +38,17 @@ export default function WritePage() {
 
     setIsSubmitting(true);
     setError(null);
-
+    console.log("API Token:", process.env.STRAPI_API_TOKEN?.substring(0, 5) + "...");
+    console.log("Request Headers:", {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`
+    });
     try {
       const response = await fetch("/api/posts", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`
         },
         body: JSON.stringify({
           ...formData,

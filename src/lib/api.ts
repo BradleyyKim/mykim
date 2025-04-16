@@ -2,7 +2,6 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
 
 // 디버깅: API URL 출력
-console.log("API_BASE_URL:", API_BASE_URL);
 
 // 타입 정의
 export interface FeaturedImage {
@@ -75,15 +74,15 @@ export async function fetchPosts(): Promise<Post[]> {
     const data = (await response.json()) as StrapiResponse<Post[]>;
 
     // 원시 데이터 확인
-    console.log("🔍 API 원시 응답 데이터:", JSON.stringify(data, null, 2));
+    // console.log("🔍 API 원시 응답 데이터:", JSON.stringify(data, null, 2));
 
-    console.log("🔍 fetchPosts - 데이터 구조:", {
-      hasData: !!data.data,
-      isArray: Array.isArray(data.data),
-      count: data.data ? data.data.length : 0,
-      pagination: data.meta?.pagination
-    });
-    console.timeLog("fetchPosts", "- 데이터 파싱");
+    // console.log("🔍 fetchPosts - 데이터 구조:", {
+    //   hasData: !!data.data,
+    //   isArray: Array.isArray(data.data),
+    //   count: data.data ? data.data.length : 0,
+    //   pagination: data.meta?.pagination
+    // });
+    // console.timeLog("fetchPosts", "- 데이터 파싱");
 
     // 데이터 구조 확인 및 안전한 매핑
     if (!data.data || !Array.isArray(data.data)) {
@@ -94,7 +93,7 @@ export async function fetchPosts(): Promise<Post[]> {
     // 이제 데이터는 이미 올바른 형식이므로 추가 변환이 필요 없음
     const posts = data.data;
 
-    console.log("🔍 fetchPosts - 포스트 목록:", posts);
+    // console.log("🔍 fetchPosts - 포스트 목록:", posts);
     console.timeEnd("fetchPosts");
     return posts;
   } catch (error) {

@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
 
     // Strapi API URL 및 토큰
     const STRAPI_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
-    const STRAPI_API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
+    const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 
     console.log("Using API URL:", STRAPI_API_URL);
     console.log("API Token exists:", !!STRAPI_API_TOKEN);
@@ -28,6 +28,11 @@ export async function POST(request: NextRequest) {
           description: body.content.substring(0, 200) // 첫 200자를 설명으로 사용
         }
       })
+    });
+    console.log("API Token:", STRAPI_API_TOKEN?.substring(0, 5) + "...");
+    console.log("Request Headers:", {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${STRAPI_API_TOKEN}`
     });
 
     if (!response.ok) {
