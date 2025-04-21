@@ -20,17 +20,6 @@ interface Tag {
   attributes?: TagAttribute;
 }
 
-interface CategoryAttribute {
-  name?: string;
-  slug?: string;
-  [key: string]: unknown;
-}
-
-interface Category {
-  id?: number;
-  attributes?: CategoryAttribute;
-}
-
 interface PostCardProps {
   post: Post;
   onTagClick?: (tag: string) => void;
@@ -84,16 +73,6 @@ export default function PostCard({ post, onTagClick }: PostCardProps) {
         .filter(tag => tag.name)
     : [];
 
-  // 카테고리 추출
-  const categories =
-    post.categories && post.categories.length > 0
-      ? (post.categories as Category[]).map(cat => ({
-          name: cat.attributes?.name || "",
-          slug: cat.attributes?.slug || ""
-        }))
-      : [{ name: "일반", slug: "general" }];
-
-  const category = categories[0];
   const readTime = calculateReadTime(post.content);
 
   // 내용 미리보기 생성
@@ -113,9 +92,9 @@ export default function PostCard({ post, onTagClick }: PostCardProps) {
     >
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start mb-2">
-          <Link href={`/?category=${category.slug}`} className="inline-block">
+          <Link href={`/?category=${post.category}`} className="inline-block">
             <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 cursor-pointer">
-              {category.name}
+              {post.category}
             </Badge>
           </Link>
           <Button variant="ghost" size="icon" className={`h-8 w-8 ${isBookmarked ? "text-amber-500" : "text-gray-400"}`} onClick={handleBookmark}>

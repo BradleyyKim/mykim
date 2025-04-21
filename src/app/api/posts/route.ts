@@ -5,25 +5,47 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log("Request body:", body);
 
-    // Strapi API URL 및 토큰
+    // Strapi API URL
     const STRAPI_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
-    const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 
-    console.log("Using API URL:", STRAPI_API_URL);
-    console.log("API Token exists:", !!STRAPI_API_TOKEN);
-    console.log("API Token length:", STRAPI_API_TOKEN?.length);
-    console.log("API Token first 10 chars:", STRAPI_API_TOKEN?.substring(0, 10));
+    // JWT 토큰 쿠키 읽기
+    const authToken = request.cookies.get("adminToken");
 
-    // 요청 헤더 구성
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${STRAPI_API_TOKEN}`
+    // 헤더 구성
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json"
     };
 
+    // JWT 토큰이 있으면 Authorization 헤더에 추가
+    if (authToken) {
+      headers["Authorization"] = `Bearer ${authToken.value}`;
+      console.log("Using client JWT token for authorization");
+    } else {
+      // 없으면 서버 측 API 토큰 사용 (기존 방식 유지)
+      const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
+      if (STRAPI_API_TOKEN) {
+        headers["Authorization"] = `Bearer ${STRAPI_API_TOKEN}`;
+        console.log("Using server API token for authorization");
+      } else {
+        console.log("No authorization provided");
+      }
+    }
+
     console.log("Request Headers:", {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${STRAPI_API_TOKEN?.substring(0, 10)}...`
+      ...headers,
+      Authorization: headers.Authorization ? `${headers.Authorization.substring(0, 20)}...` : "None"
     });
+
+    // 요청 바디 타입 설정
+    interface PostData {
+      title: string;
+      content: string;
+      slug: string;
+      description: string;
+      publishedDate?: string | null;
+      postStatus?: string | null;
+      category?: string;
+    }
 
     // 요청 바디 구성
     const requestBody = {
@@ -32,8 +54,14 @@ export async function POST(request: NextRequest) {
         content: body.content,
         slug: body.title.toLowerCase().replace(/\s+/g, "-"),
         description: body.content.substring(0, 200) // 첫 200자를 설명으로 사용
-      }
+      } as PostData
     };
+
+    // 카테고리가 있으면 추가
+    if (body.category) {
+      // 카테고리 ID를 그대로 문자열로 유지
+      requestBody.data.category = body.category;
+    }
 
     console.log("Request Body:", requestBody);
 
@@ -47,7 +75,6 @@ export async function POST(request: NextRequest) {
     // 응답 상태 및 헤더 로깅
     console.log("Response status:", response.status);
     console.log("Response status text:", response.statusText);
-    console.log("Response headers:", Object.fromEntries([...response.headers.entries()]));
 
     if (!response.ok) {
       const contentType = response.headers.get("content-type");
@@ -72,7 +99,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      return NextResponse.json({ error: errorMessage }, { status: 500 });
+      return NextResponse.json({ error: errorMessage }, { status: response.status });
     }
 
     const data = await response.json();
@@ -86,5 +113,31 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
+  }
+}
+
+// GET 요청 핸들러
+export async function GET() {
+  try {
+    // Strapi API URL
+    const STRAPI_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+
+    // 공개적으로 접근 가능한 데이터이므로 인증 토큰 필요 없음
+    const response = await fetch(`${STRAPI_API_URL}/posts?populate=*`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      return NextResponse.json({ error: `Failed to fetch posts: ${response.status}` }, { status: response.status });
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });
   }
 }

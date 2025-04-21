@@ -10,17 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Filter, X, RefreshCw } from "lucide-react";
 
 // 카테고리 타입 정의
-interface CategoryAttribute {
-  name?: string;
-  slug?: string;
-  [key: string]: unknown;
-}
-
-interface Category {
-  id?: number;
-  attributes?: CategoryAttribute;
-}
-
 interface TagAttribute {
   name?: string;
   slug?: string;
@@ -86,8 +75,8 @@ export default function PostList({ initialPosts }: PostListProps) {
       // 2. 카테고리 필터링
       if (category !== "all") {
         result = result.filter(post => {
-          if (!post.categories || post.categories.length === 0) return false;
-          return post.categories.some((cat: Category) => cat.attributes?.slug === category || cat.attributes?.name?.toLowerCase() === category.toLowerCase());
+          if (!post.category) return false;
+          return post.category.toLowerCase() === category.toLowerCase();
         });
         console.log(`카테고리 '${category}'로 필터링 후 결과:`, result.length);
       }

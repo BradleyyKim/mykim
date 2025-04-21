@@ -12,6 +12,19 @@ export interface FeaturedImage {
   caption?: string;
 }
 
+export interface Tag {
+  id: number;
+  name?: string;
+  slug?: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+}
+
 export interface Post {
   id: number;
   documentId: string;
@@ -21,20 +34,12 @@ export interface Post {
   description: string | null;
   featuredImage: FeaturedImage | null;
   publishedDate: string | null;
-  author?: Record<string, unknown>;
-  categories: Array<Record<string, unknown>>;
-  tags: Array<Record<string, unknown>>;
   postStatus: string | null;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
-}
-
-export interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
+  tags: Tag[]; // 태그 타입으로 명시
+  category: string | null; // 단일 카테고리 문자열
 }
 
 // Strapi API 응답 타입 정의

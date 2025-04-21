@@ -5,14 +5,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Heart, Share, Calendar, Clock, Tag, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-interface Category {
-  attributes?: {
-    name?: string;
-    slug?: string;
-    [key: string]: unknown;
-  };
-}
-
 interface Tag {
   attributes?: {
     name?: string;
@@ -68,12 +60,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
   };
 
   // 카테고리, 태그 추출
-  const categories = post.categories
-    ? (post.categories as Category[]).map(cat => ({
-        name: cat.attributes?.name || "",
-        slug: cat.attributes?.slug || ""
-      }))
-    : [];
+  const categoryName = post.category || "";
 
   const tags = post.tags
     ? (post.tags as Tag[]).map(tag => ({
@@ -106,13 +93,11 @@ export default async function PostPage({ params }: { params: { id: string } }) {
 
         <article className="bg-white rounded-lg shadow-md p-8 mb-12">
           <header className="mb-8 border-b pb-6">
-            {categories.length > 0 && (
+            {categoryName && (
               <div className="mb-4">
-                {categories.map((category, index) => (
-                  <Badge key={index} variant="outline" className="text-sm mr-2 bg-amber-50 text-amber-700 hover:bg-amber-100">
-                    {category.name}
-                  </Badge>
-                ))}
+                <Badge variant="outline" className="text-sm mr-2 bg-amber-50 text-amber-700 hover:bg-amber-100">
+                  {categoryName}
+                </Badge>
               </div>
             )}
             <h1 className="text-4xl font-bold text-amber-900 mb-4">{post.title}</h1>
