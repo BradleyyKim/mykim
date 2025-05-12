@@ -49,7 +49,7 @@ function WritePageContent() {
               data.data.map((item: { id: number; attributes?: { name?: string; slug?: string; description?: string } }) => ({
                 id: item.id,
                 name: item.attributes?.name || "카테고리",
-                slug: item.attributes?.slug || "",
+                slug: item.attributes?.slug || `category-${item.id}`,
                 description: item.attributes?.description || ""
               }))
             );
@@ -129,13 +129,15 @@ function WritePageContent() {
                 <SelectValue placeholder="카테고리를 선택하세요" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map(category => (
-                  <SelectItem key={category.slug} value={category.slug}>
-                    <span className="flex items-center gap-2">
-                      <span>{category.name}</span>
-                    </span>
-                  </SelectItem>
-                ))}
+                {categories.map(category =>
+                  category.slug ? (
+                    <SelectItem key={`${category.id}-${category.slug}`} value={category.slug}>
+                      <span className="flex items-center gap-2">
+                        <span>{category.name}</span>
+                      </span>
+                    </SelectItem>
+                  ) : null
+                )}
               </SelectContent>
             </Select>
           )}

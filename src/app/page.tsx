@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
@@ -12,7 +12,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 // 페이지당 표시할 포스트 수
 const POSTS_PER_PAGE = 6;
 
-export default function HomePage() {
+// 클라이언트 컴포넌트를 분리하여 Suspense 처리
+function HomePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pageParam = searchParams.get("page");
@@ -136,3 +137,28 @@ export default function HomePage() {
     </div>
   );
 }
+
+// 메인 페이지 컴포넌트 - HomePageContent를 Suspense로 감싸서 제공
+export default function HomePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold">My Kim Blog</h1>
+          </div>
+          <div className="text-center py-12">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <HomePageContent />
+    </Suspense>
+  );
+}
+
+// Next.js에게 이 페이지를 빌드 시 정적으로 생성하지 말고 런타임에 생성하도록 알림
+export const dynamic = "force-dynamic";
