@@ -11,14 +11,15 @@ import { useCreatePost } from "@/lib/tanstack-query";
 import { ProtectedRoute } from "@/lib/auth";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Category } from "@/lib/api";
+import { API_ENDPOINTS } from "@/lib/constants";
 
 // 예시 카테고리 - API에서 로드하기 전 사용
 const defaultCategories = [
-  { id: 1, name: "아이디어를 빌드합니다", icon: "🎯", description: "기술 아이디어", slug: "tech-ideas" },
-  { id: 2, name: "루틴을 디버그합니다", icon: "🏋", description: "운동", slug: "fitness" },
-  { id: 3, name: "레시피를 커밋합니다", icon: "🍳", description: "요리 & 음식", slug: "food" },
-  { id: 4, name: "삶을 디플로이합니다", icon: "🎨", description: "취미 & 일상", slug: "hobby" },
-  { id: 5, name: "마음을 로깅합니다", icon: "📖", description: "블로그 글/시", slug: "blog" }
+  { id: 1, name: "🌱 루틴을 디버그합니다", icon: "🎯", description: "운동", slug: "tech-ideas" },
+  { id: 2, name: "📖 마음을 로깅합니다", icon: "🏋", description: "블로그 글/시", slug: "fitness" },
+  { id: 3, name: "🎨 삶을 디플로이합니다", icon: "🍳", description: "취미 & 일상", slug: "food" },
+  { id: 4, name: "🍳 레시피를 커밋합니다", icon: "🎨", description: "요리 & 음식", slug: "hobby" },
+  { id: 5, name: "🧠 지식을 디벨롭합니다", icon: "📖", description: "기술 아이디어", slug: "blog" }
 ];
 
 // 컴포넌트 2개로 분리
@@ -29,6 +30,11 @@ function WritePageContent() {
     title: "",
     content: "",
     category: ""
+  });
+  const [formErrors, setFormErrors] = useState({
+    title: false,
+    content: false,
+    category: false
   });
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
@@ -41,7 +47,26 @@ function WritePageContent() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("/api/categories");
+        setIsLoadingCategories(true);
+
+        // 복수형 API 경로 시도 (categories)
+        // let response = await fetch(`${API_ENDPOINTS.CATEGORIES}?populate=*`, {
+        let response = await fetch(`${API_ENDPOINTS.CATEGORIES}`, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        // 복수형 API가 실패하면 단수형 API 경로 시도 (category)
+        if (!response.ok) {
+          console.log(`복수형 API 경로 실패(${response.status}), 단수형 시도 중...`);
+          response = await fetch(`${API_ENDPOINTS.CATEGORIES}?populate=*`, {
+            headers: {
+              "Content-Type": "application/json"
+            }
+          });
+        }
+
         if (response.ok) {
           const data = await response.json();
           if (data.data && Array.isArray(data.data)) {
@@ -53,10 +78,19 @@ function WritePageContent() {
                 description: item.attributes?.description || ""
               }))
             );
+            console.log("카테고리 로드 성공:", data.data.length);
+          } else {
+            console.warn("카테고리 데이터 구조가 예상과 다릅니다");
+            setCategories(defaultCategories);
           }
+        } else {
+          console.error("카테고리 로드 실패:", response.status);
+          console.error("응답 텍스트:", await response.text());
+          setCategories(defaultCategories);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("카테고리 로드 중 오류 발생:", error);
+        setCategories(defaultCategories);
       } finally {
         setIsLoadingCategories(false);
       }
@@ -77,11 +111,28 @@ function WritePageContent() {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
+  // 폼 유효성 검사
+  const validateForm = () => {
+    const errors = {
+      title: !formData.title.trim(),
+      content: !formData.content.trim(),
+      category: !formData.category.trim()
+    };
+
+    setFormErrors(errors);
+
+    if (errors.title || errors.content || errors.category) {
+      setError("제목, 카테고리, 내용을 모두 입력해주세요.");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title.trim() || !formData.content.trim()) {
-      setError("제목과 내용을 모두 입력해주세요.");
+    if (!validateForm()) {
       return;
     }
 
@@ -89,14 +140,21 @@ function WritePageContent() {
     setError(null);
 
     try {
-      // 카테고리 문자열 값을 그대로 사용
-      console.log("Submitting with category:", formData.category);
+      // 선택된 카테고리 ID 찾기
+      const selectedCategory = categories.find(cat => cat.slug === formData.category);
 
-      // TanStack Query 훅 사용
+      if (!selectedCategory) {
+        setError("유효한 카테고리를 선택해주세요.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Strapi API에 맞게 카테고리 ID를 전달
+      // category는 relation 타입이므로 ID값을 전달해야 합니다
       await createPost({
         title: formData.title,
         content: formData.content,
-        category: formData.category
+        category: selectedCategory.id.toString()
       });
 
       // 메인 페이지로 이동 (강제 새로고침)
@@ -109,6 +167,15 @@ function WritePageContent() {
     }
   };
 
+  // 입력값 변경 처리
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // 값이 입력되면 해당 필드의 오류 상태 해제
+    if (value.trim()) {
+      setFormErrors(prev => ({ ...prev, [field]: false }));
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <h1 className="text-3xl font-bold mb-8 text-center">새 글 작성</h1>
@@ -117,15 +184,18 @@ function WritePageContent() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="category">카테고리</Label>
+          <Label htmlFor="category" className="flex items-center">
+            카테고리
+            <span className="text-red-500 ml-1">*</span>
+          </Label>
           {isLoadingCategories ? (
             <div className="flex items-center space-x-2">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span className="text-sm text-gray-500">카테고리 로딩 중...</span>
             </div>
           ) : (
-            <Select value={formData.category} onValueChange={value => setFormData({ ...formData, category: value })}>
-              <SelectTrigger>
+            <Select value={formData.category} onValueChange={value => handleInputChange("category", value)} required>
+              <SelectTrigger className={formErrors.category ? "border-red-500" : ""}>
                 <SelectValue placeholder="카테고리를 선택하세요" />
               </SelectTrigger>
               <SelectContent>
@@ -141,16 +211,34 @@ function WritePageContent() {
               </SelectContent>
             </Select>
           )}
+          {formErrors.category && <p className="text-xs text-red-500 mt-1">카테고리는 필수 항목입니다.</p>}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="title">제목</Label>
-          <Input id="title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} placeholder="제목을 입력하세요" className="text-lg" required />
+          <Label htmlFor="title" className="flex items-center">
+            제목
+            <span className="text-red-500 ml-1">*</span>
+          </Label>
+          <Input
+            id="title"
+            value={formData.title}
+            onChange={e => handleInputChange("title", e.target.value)}
+            placeholder="제목을 입력하세요"
+            className={`text-lg ${formErrors.title ? "border-red-500" : ""}`}
+            required
+          />
+          {formErrors.title && <p className="text-xs text-red-500 mt-1">제목은 필수 항목입니다.</p>}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="content">내용</Label>
-          <RichTextEditor content={formData.content} onChange={html => setFormData({ ...formData, content: html })} placeholder="내용을 입력하세요..." />
+          <Label htmlFor="content" className="flex items-center">
+            내용
+            <span className="text-red-500 ml-1">*</span>
+          </Label>
+          <div className={`${formErrors.content ? "border border-red-500 rounded-md" : ""}`}>
+            <RichTextEditor content={formData.content} onChange={html => handleInputChange("content", html)} placeholder="내용을 입력하세요..." />
+          </div>
+          {formErrors.content && <p className="text-xs text-red-500 mt-1">내용은 필수 항목입니다.</p>}
         </div>
 
         <div className="space-y-2">
@@ -166,7 +254,7 @@ function WritePageContent() {
             ))}
           </div>
           <Input id="tags" value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={handleAddTag} placeholder="태그를 입력하고 엔터를 누르세요" />
-          <p className="text-xs text-gray-500">엔터 키를 눌러 태그를 추가하세요.</p>
+          <p className="text-xs text-gray-500">엔터 키를 눌러 태그를 추가하세요. (선택사항)</p>
         </div>
 
         <div className="flex justify-end gap-4 pt-4">

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { TanstackProvider } from "@/lib/tanstack-query";
 import { AuthProvider } from "@/lib/auth";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,11 +18,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
       <body className={inter.className}>
-        <TanstackProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </TanstackProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <TanstackProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </TanstackProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

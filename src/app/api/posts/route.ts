@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       description: string;
       publishedDate?: string | null;
       postStatus?: string | null;
-      category?: string;
+      category?: string | number | { id: number | string };
     }
 
     // 요청 바디 구성
@@ -59,8 +59,23 @@ export async function POST(request: NextRequest) {
 
     // 카테고리가 있으면 추가
     if (body.category) {
-      // 카테고리 ID를 그대로 문자열로 유지
-      requestBody.data.category = body.category;
+      // Strapi v4에서는 관계 필드를 ID로 설정
+      // 카테고리 ID가 숫자로 들어오면 그대로 사용, 문자열이면 숫자로 변환 시도
+      if (typeof body.category === "string" && /^\d+$/.test(body.category)) {
+        // 카테고리가 숫자 형태의 문자열인 경우
+        requestBody.data.category = parseInt(body.category);
+      } else if (typeof body.category === "number") {
+        // 카테고리가 숫자인 경우
+        requestBody.data.category = body.category;
+      } else if (typeof body.category === "object" && body.category !== null && "id" in body.category) {
+        // 카테고리가 객체인 경우
+        requestBody.data.category = body.category.id;
+      } else {
+        // 기타 카테고리 값(문자열 등)은 그대로 전달
+        requestBody.data.category = body.category;
+      }
+
+      console.log("카테고리 값:", requestBody.data.category);
     }
 
     console.log("Request Body:", requestBody);
