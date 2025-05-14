@@ -195,7 +195,7 @@ export async function fetchCategories(): Promise<Category[]> {
       throw new Error(`Failed to fetch categories: ${response.status}`);
     }
 
-    const data = (await response.json()) as StrapiResponse<Category[]>;
+    const data = await response.json();
 
     if (!data.data || !Array.isArray(data.data)) {
       console.error("Unexpected API response structure:", data);

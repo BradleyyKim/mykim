@@ -10,8 +10,7 @@ import { Loader2, X } from "lucide-react";
 import { useCreatePost } from "@/lib/tanstack-query";
 import { ProtectedRoute } from "@/lib/auth";
 import RichTextEditor from "@/components/RichTextEditor";
-import { Category } from "@/lib/api";
-import { API_ENDPOINTS } from "@/lib/constants";
+import { Category, fetchCategories } from "@/lib/api";
 
 // 예시 카테고리 - API에서 로드하기 전 사용
 const defaultCategories = [
@@ -45,47 +44,16 @@ function WritePageContent() {
 
   // 카테고리 데이터 로드
   useEffect(() => {
-    const fetchCategories = async () => {
+    const loadCategories = async () => {
       try {
         setIsLoadingCategories(true);
+        const categoryData = await fetchCategories();
 
-        // 복수형 API 경로 시도 (categories)
-        // let response = await fetch(`${API_ENDPOINTS.CATEGORIES}?populate=*`, {
-        let response = await fetch(`${API_ENDPOINTS.CATEGORIES}`, {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-
-        // 복수형 API가 실패하면 단수형 API 경로 시도 (category)
-        if (!response.ok) {
-          console.log(`복수형 API 경로 실패(${response.status}), 단수형 시도 중...`);
-          response = await fetch(`${API_ENDPOINTS.CATEGORIES}?populate=*`, {
-            headers: {
-              "Content-Type": "application/json"
-            }
-          });
-        }
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.data && Array.isArray(data.data)) {
-            setCategories(
-              data.data.map((item: { id: number; attributes?: { name?: string; slug?: string; description?: string } }) => ({
-                id: item.id,
-                name: item.attributes?.name || "카테고리",
-                slug: item.attributes?.slug || `category-${item.id}`,
-                description: item.attributes?.description || ""
-              }))
-            );
-            console.log("카테고리 로드 성공:", data.data.length);
-          } else {
-            console.warn("카테고리 데이터 구조가 예상과 다릅니다");
-            setCategories(defaultCategories);
-          }
+        if (categoryData.length > 0) {
+          setCategories(categoryData);
+          console.log("카테고리 로드 성공:", categoryData.length);
         } else {
-          console.error("카테고리 로드 실패:", response.status);
-          console.error("응답 텍스트:", await response.text());
+          console.warn("카테고리 데이터가 비어있습니다");
           setCategories(defaultCategories);
         }
       } catch (error) {
@@ -96,7 +64,7 @@ function WritePageContent() {
       }
     };
 
-    fetchCategories();
+    loadCategories();
   }, []);
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
