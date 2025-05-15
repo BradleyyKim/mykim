@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { CalendarIcon, ArrowLeft } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -16,9 +17,69 @@ type Props = {
   };
 };
 
+// Strapi 관계 데이터를 처리하기 위한 타입
+type StrapiAttribute = {
+  name?: string;
+  slug?: string;
+  [key: string]: unknown;
+};
+
+type StrapiData = {
+  id?: number | string;
+  attributes?: StrapiAttribute;
+  name?: string;
+  slug?: string;
+  [key: string]: unknown;
+};
+
+type StrapiRelation = {
+  data?: StrapiData | null;
+  [key: string]: unknown;
+};
+
+// 카테고리 이름 가져오는 함수 (서버 컴포넌트 버전)
+function getCategoryNameServer(category: unknown): string | null {
+  if (!category) return null;
+
+  // Strapi의 관계 데이터 형식에 맞춰 처리
+  // 1. category가 직접 객체로 제공되는 경우 (populate로 가져온 경우)
+  if (typeof category === "object" && category !== null) {
+    // Strapi v4 형식: category.data.attributes
+    if ("data" in category) {
+      const relation = category as StrapiRelation;
+      if (relation.data && typeof relation.data === "object") {
+        const data = relation.data;
+        if (data.attributes) {
+          return data.attributes.name || data.attributes.slug || null;
+        }
+        return data.name || data.slug || null;
+      }
+      return null;
+    }
+
+    // 일반 객체 형식: category.name 또는 category.attributes.name
+    const categoryObj = category as Record<string, unknown>;
+    if (categoryObj.attributes && typeof categoryObj.attributes === "object") {
+      const attributes = categoryObj.attributes as StrapiAttribute;
+      return attributes.name || attributes.slug || null;
+    }
+    if (typeof categoryObj.name === "string") {
+      return categoryObj.name;
+    }
+    if (typeof categoryObj.slug === "string") {
+      return categoryObj.slug;
+    }
+    return null;
+  }
+
+  // 문자열로 제공되는 경우 (id나 slug)
+  return typeof category === "string" ? category : null;
+}
+
 // 동적 메타데이터 생성
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await getPostBySlug(params.slug);
+  const { slug } = params;
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     return {
@@ -69,7 +130,10 @@ export default async function PostPage({ params }: Props) {
   if (!post) {
     notFound();
   }
-  console.log("asdlkjqwmdqw");
+
+  // 카테고리 이름 가져오기 (서버 컴포넌트 버전 사용)
+  const categoryName = getCategoryNameServer(post.category);
+
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl">
       <div className="mb-8">
@@ -89,12 +153,25 @@ export default async function PostPage({ params }: Props) {
           <time dateTime={post.createdAt}>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: ko })}</time>
         </div>
 
-        {post.category && (
+        {categoryName && (
           <div className="mb-4">
-            <Badge variant="outline">{post.category}</Badge>
+            <Badge variant="outline">{categoryName}</Badge>
           </div>
         )}
       </header>
+
+      {post.featuredImage && post.featuredImage.url && (
+        <div className="mb-8 relative aspect-video w-full overflow-hidden rounded-lg shadow-md">
+          <Image
+            src={post.featuredImage.url}
+            alt={post.featuredImage.alternativeText || post.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover"
+            priority
+          />
+        </div>
+      )}
 
       <div className="prose prose-lg max-w-none">
         <Markdown remarkPlugins={[remarkGfm]}>{post.content}</Markdown>

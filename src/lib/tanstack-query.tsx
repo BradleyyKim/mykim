@@ -77,13 +77,23 @@ export function useLoginMutation() {
 
 // POST 관련 React Query 훅
 export function useCreatePost() {
-  const createPost = async (data: { title: string; content: string; description?: string; category?: string }) => {
+  const createPost = async (data: {
+    title: string;
+    content: string;
+    description?: string;
+    category?: string;
+    featuredImage?: {
+      url: string;
+      alternativeText?: string;
+    } | null;
+  }) => {
     // 제목, 내용, 설명, 카테고리 처리
     return apiClient.createPost({
       title: data.title,
       content: data.content,
       description: data.description,
-      category: data.category
+      category: data.category,
+      featuredImage: data.featuredImage
     });
   };
 

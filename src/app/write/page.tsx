@@ -101,6 +101,28 @@ function WritePageContent() {
       return;
     }
 
+    // 내용에서 첫 번째 이미지를 찾아서 featuredImage로 설정
+    const imgRegex = /<img[^>]+src="([^">]+)"/;
+    const imgMatch = formData.content.match(imgRegex);
+
+    let featuredImage = null;
+
+    if (imgMatch && imgMatch[1]) {
+      // 이미지 데이터 추출 (base64 등)
+      featuredImage = {
+        url: imgMatch[1],
+        alternativeText: formData.title
+      };
+    }
+
+    // description 자동 생성 (content에서 HTML 태그 제거 후 앞부분 추출)
+    const stripHtml = (html: string) => {
+      return html.replace(/<\/?[^>]+(>|$)/g, "");
+    };
+
+    const plainText = stripHtml(formData.content);
+    const description = plainText.substring(0, 160);
+
     setIsSubmitting(true);
     setError(null);
 
@@ -114,17 +136,17 @@ function WritePageContent() {
         return;
       }
 
-      // Strapi API에 맞게 카테고리 ID를 전달
-      // category는 relation 타입이므로 ID값을 전달해야 합니다
+      // Strapi API에 맞게 데이터 전달
       await createPostMutation.mutateAsync({
         title: formData.title,
         content: formData.content,
-        description: formData.description,
-        category: selectedCategory.id.toString()
+        description,
+        category: selectedCategory.id.toString(),
+        featuredImage
       });
 
-      // 메인 페이지로 이동 (강제 새로고침)
-      window.location.href = "/";
+      // 메인 페이지로 이동
+      router.push("/");
     } catch (error) {
       console.error("Error creating post:", error);
       setError(error instanceof Error ? error.message : "포스트 작성 중 오류가 발생했습니다.");

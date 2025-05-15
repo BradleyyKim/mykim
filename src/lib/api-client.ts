@@ -76,7 +76,16 @@ export const apiClient = {
   /**
    * 새 포스트 생성 (인증 필요)
    */
-  async createPost(data: { title: string; content: string; description?: string; category?: string }) {
+  async createPost(data: {
+    title: string;
+    content: string;
+    description?: string;
+    category?: string;
+    featuredImage?: {
+      url: string;
+      alternativeText?: string;
+    } | null;
+  }) {
     const response = await fetch(
       "/api/posts",
       createFetchOptions("POST", data, true) // 인증 필요

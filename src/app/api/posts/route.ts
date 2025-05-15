@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
       publishedDate?: string | null;
       postStatus?: string | null;
       category?: string | number | { id: number | string };
+      featuredImage?: { url: string; alternativeText?: string };
     }
 
     // 요청 바디 구성
@@ -52,8 +53,9 @@ export async function POST(request: NextRequest) {
       data: {
         title: body.title,
         content: body.content,
-        slug: body.title.toLowerCase().replace(/\s+/g, "-"),
-        description: body.content.substring(0, 200) // 첫 200자를 설명으로 사용
+        slug: createSlug(body.title),
+        description: body.description || body.content.substring(0, 200),
+        featuredImage: body.featuredImage
       } as PostData
     };
 
@@ -132,27 +134,48 @@ export async function POST(request: NextRequest) {
 }
 
 // GET 요청 핸들러
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // Strapi API URL
-    const STRAPI_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+    const url = new URL(request.url);
+    const searchParams = new URLSearchParams(url.search);
+    const category = searchParams.get("category");
 
-    // 공개적으로 접근 가능한 데이터이므로 인증 토큰 필요 없음
-    const response = await fetch(`${STRAPI_API_URL}/posts?populate=*`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
+    const STRAPI_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+    const POPULATE = "populate=*";
 
-    if (!response.ok) {
-      return NextResponse.json({ error: `Failed to fetch posts: ${response.status}` }, { status: response.status });
+    // 카테고리 필터링이 있는 경우 쿼리 추가
+    let queryString = `${POPULATE}`;
+    if (category) {
+      queryString += `&filters[category][slug][$eq]=${category}`;
     }
 
-    const data = await response.json();
-    return NextResponse.json(data);
+    const res = await fetch(`${STRAPI_URL}/posts?${queryString}`, {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      next: { revalidate: 60 } // 60초마다 재검증
+    });
+
+    if (!res.ok) {
+      return Response.json({ error: "Failed to fetch posts" }, { status: res.status });
+    }
+
+    const data = await res.json();
+    return Response.json(data.data);
   } catch (error) {
     console.error("Error fetching posts:", error);
-    return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });
+    return Response.json({ error: "Something went wrong" }, { status: 500 });
   }
+}
+
+// 슬러그 생성 유틸리티 함수
+function createSlug(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-") // 공백을 대시로 바꾸기
+    .replace(/[^\w-]+/g, "") // 영문자, 숫자, 대시, 밑줄만 남기기
+    .replace(/--+/g, "-") // 연속된 대시 제거
+    .replace(/^-+|-+$/g, ""); // 시작과 끝의 대시 제거
 }
