@@ -77,16 +77,20 @@ export function useLoginMutation() {
 
 // POST 관련 React Query 훅
 export function useCreatePost() {
-  const createPost = async (data: { title: string; content: string; category?: string }) => {
-    // 카테고리와 콘텐츠만 처리 (태그 제외)
+  const createPost = async (data: { title: string; content: string; description?: string; category?: string }) => {
+    // 제목, 내용, 설명, 카테고리 처리
     return apiClient.createPost({
       title: data.title,
       content: data.content,
+      description: data.description,
       category: data.category
     });
   };
 
-  return { createPost };
+  // useMutation 반환
+  return useMutation({
+    mutationFn: createPost
+  });
 }
 
 // 포스트 목록 가져오기 훅

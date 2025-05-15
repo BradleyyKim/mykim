@@ -76,7 +76,7 @@ export const apiClient = {
   /**
    * 새 포스트 생성 (인증 필요)
    */
-  async createPost(data: { title: string; content: string; category?: string }) {
+  async createPost(data: { title: string; content: string; description?: string; category?: string }) {
     const response = await fetch(
       "/api/posts",
       createFetchOptions("POST", data, true) // 인증 필요
@@ -123,7 +123,7 @@ export const apiClient = {
   /**
    * 포스트 수정 (인증 필요)
    */
-  async updatePost(id: number, data: { title?: string; content?: string; category?: number; tags?: string[] }) {
+  async updatePost(id: number, data: { title?: string; content?: string; description?: string; category?: number; tags?: string[] }) {
     const response = await fetch(
       `/api/posts/${id}`,
       createFetchOptions("PUT", data, true) // 인증 필요

@@ -1,29 +1,28 @@
 "use client";
 
 import { Suspense } from "react";
-
-import { MAIN } from "@/lib/constants";
 import HomePageContent from "@/components/HomePageContent";
+import Header from "@/components/Header";
 
-// 메인 페이지 컴포넌트 - HomePageContent를 Suspense로 감싸서 제공
+// 메인 페이지 컴포넌트 - Header는 바로 보여주고, HomePageContent만 Suspense로 감싸서 제공
 export default function HomePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">{MAIN.title}</h1>
-          </div>
-          <div className="text-center py-12">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent" role="status">
-              <span className="sr-only">Loading...</span>
+    <>
+      <Header />
+      <Suspense
+        fallback={
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center py-12">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
             </div>
           </div>
-        </div>
-      }
-    >
-      <HomePageContent />
-    </Suspense>
+        }
+      >
+        <HomePageContent />
+      </Suspense>
+    </>
   );
 }
 
