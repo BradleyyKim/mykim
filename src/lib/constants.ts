@@ -12,7 +12,7 @@ export const API_ENDPOINTS = {
 };
 
 // 기타 상수
-export const POSTS_PER_PAGE = 6;
+export const POSTS_PER_PAGE = 10;
 
 export const MAIN = {
   title: "MY Kim Blog",

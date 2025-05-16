@@ -1,8 +1,12 @@
-import { fetchPosts } from "@/lib/api";
+import { fetchPaginatedPosts } from "@/lib/api";
 import { Metadata } from "next";
 import { Suspense } from "react";
+import Link from "next/link";
 import PostCard from "@/components/blog/PostCard";
+import PostSkeleton from "@/components/blog/PostSkeleton";
+import PaginationWrapper from "@/components/blog/PaginationWrapper";
 import Header from "@/components/Header";
+import { POSTS_PER_PAGE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "My Kim Blog - 홈",
@@ -10,49 +14,67 @@ export const metadata: Metadata = {
 };
 
 // 메인 페이지 컴포넌트 - Header는 바로 보여주고, HomePageContent만 Suspense로 감싸서 제공
-export default async function HomePage() {
-  const posts = await fetchPosts();
-
+export default async function HomePage({ searchParams }: { searchParams: { page?: string } }) {
+  // 비동기 컨텍스트에서 Home Page Content 렌더
   return (
     <>
       <Header />
       <Suspense
         fallback={
-          <div className="flex justify-center items-center min-h-screen">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-4xl font-bold mb-8 text-center">Posts</h1>
+            <div className="flex flex-col space-y-6">
+              {Array.from({ length: POSTS_PER_PAGE }).map((_, index) => (
+                <PostSkeleton key={index} />
+              ))}
+            </div>
           </div>
         }
       >
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-4xl font-bold mb-8 text-center">최근 게시물</h1>
-
-          {posts.length === 0 ? (
-            <div className="text-center p-12 border rounded-lg bg-gray-50">
-              <p className="text-gray-600">아직 게시물이 없습니다.</p>
-            </div>
-          ) : (
-            <div className="flex flex-col space-y-6">
-              {posts.map(post => {
-                const categorySlug = getCategorySlug(post.category);
-                return (
-                  <div key={post.id}>
-                    {categorySlug ? (
-                      <a href={`/${categorySlug}/${post.slug}`} className="block">
-                        <PostCard post={post} />
-                      </a>
-                    ) : (
-                      <a href={`/posts/${post.slug}`} className="block">
-                        <PostCard post={post} />
-                      </a>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <HomePageContent searchParams={searchParams} />
       </Suspense>
     </>
+  );
+}
+
+// 콘텐츠를 별도 컴포넌트로 분리하여 비동기 작업 처리
+async function HomePageContent({ searchParams }: { searchParams: { page?: string } }) {
+  const currentPage = Number(searchParams.page) || 1;
+  const postsData = await fetchPaginatedPosts(currentPage);
+  const { data: posts, pagination } = postsData;
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold mb-8 italic text-center">Posts</h1>
+      {posts.length === 0 ? (
+        <div className="text-center p-12 border rounded-lg bg-gray-50">
+          <p className="text-gray-600">아직 게시물이 없습니다.</p>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-col space-y-6">
+            {posts.map(post => {
+              const categorySlug = getCategorySlug(post.category);
+              return (
+                <div key={post.id}>
+                  {categorySlug ? (
+                    <Link href={`/${categorySlug}/${post.slug}`} className="block group">
+                      <PostCard post={post} />
+                    </Link>
+                  ) : (
+                    <Link href={`/posts/${post.slug}`} className="block group">
+                      <PostCard post={post} />
+                    </Link>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <PaginationWrapper currentPage={pagination.page} totalPages={pagination.pageCount} />
+        </>
+      )}
+    </div>
   );
 }
 

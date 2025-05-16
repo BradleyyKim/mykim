@@ -1,5 +1,5 @@
 // API 관련 모듈 임포트
-import { API_ENDPOINTS } from "./constants";
+import { API_ENDPOINTS, POSTS_PER_PAGE } from "./constants";
 
 // 타입 정의
 export interface FeaturedImage {
@@ -62,6 +62,17 @@ export interface Post {
     | null;
 }
 
+// Pagination interface
+export interface PaginationResult<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    pageCount: number;
+    total: number;
+  };
+}
+
 // Strapi API 응답 타입 정의
 interface StrapiResponse<T> {
   data: T;
@@ -100,6 +111,39 @@ export async function fetchPosts(): Promise<Post[]> {
   } catch (error) {
     console.error("Error fetching posts:", error);
     return [];
+  }
+}
+
+// 페이지네이션 및 최신순 정렬이 있는 게시물 가져오기
+export async function fetchPaginatedPosts(page = 1): Promise<PaginationResult<Post>> {
+  try {
+    const url = `${API_ENDPOINTS.POSTS}?pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort=publishedAt:desc`;
+
+    const response = await fetch(url, {
+      next: {
+        tags: ["posts"],
+        revalidate: 3600
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch posts: ${response.status}`);
+    }
+
+    const data = (await response.json()) as StrapiResponse<Post[]>;
+
+    if (!data.data || !Array.isArray(data.data)) {
+      console.error("Unexpected API response structure:", data);
+      return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
+    }
+
+    return {
+      data: data.data,
+      pagination: data.meta?.pagination || { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 }
+    };
+  } catch (error) {
+    console.error("Error fetching paginated posts:", error);
+    return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
   }
 }
 

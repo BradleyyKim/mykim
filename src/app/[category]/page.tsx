@@ -117,7 +117,7 @@ export default async function CategoryPage({ params }: Props) {
         <div className="flex flex-col space-y-6">
           {posts.map(post => (
             <div key={post.id}>
-              <Link href={`/${category}/${post.slug}`} className="block">
+              <Link href={`/${category}/${post.slug}`} className="block group">
                 <PostCard post={post} />
               </Link>
             </div>
