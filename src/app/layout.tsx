@@ -4,6 +4,7 @@ import "./globals.css";
 import { TanstackProvider } from "@/lib/tanstack-query";
 import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import Header from "@/components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,10 +20,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <TanstackProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+              <Header />
+              <main>{children}</main>
+            </AuthProvider>
           </TanstackProvider>
         </ThemeProvider>
       </body>

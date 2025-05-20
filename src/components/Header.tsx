@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { GlobeIcon, MenuIcon, LayoutIcon } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { MenuIcon, LayoutIcon, HomeIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuGroup, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
@@ -19,6 +19,8 @@ import { Category, fetchCategories } from "@/lib/api";
  */
 export default function Header() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentCategory = searchParams.get("category");
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
@@ -45,6 +47,17 @@ export default function Header() {
     loadCategories();
   }, []);
 
+  // 카테고리 선택 핸들러
+  const handleCategorySelect = (slug: string) => {
+    // 카테고리 페이지로 이동
+    router.push(`/category/${slug}`);
+  };
+
+  // 모든 포스트 보기
+  const handleViewAllPosts = () => {
+    router.push("/");
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center px-4">
@@ -60,9 +73,20 @@ export default function Header() {
           {/* Series 드롭다운 */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost">Series</Button>
+              <Button variant="ghost" className={`${currentCategory ? "text-blue-500" : ""}`}>
+                Series
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+              {currentCategory && (
+                <>
+                  <DropdownMenuItem onSelect={handleViewAllPosts}>
+                    <HomeIcon className="mr-2 h-4 w-4" />
+                    <span>모든 포스트 보기</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               {isLoadingCategories ? (
                 <DropdownMenuItem disabled>
                   <span className="flex items-center">
@@ -74,8 +98,9 @@ export default function Header() {
                 <DropdownMenuItem disabled>카테고리가 없습니다</DropdownMenuItem>
               ) : (
                 categories.map(category => (
-                  <DropdownMenuItem key={category.id} onSelect={() => router.push(`/category/${category.slug}`)}>
+                  <DropdownMenuItem key={category.id} onSelect={() => handleCategorySelect(category.slug as string)} className={currentCategory === category.slug ? "bg-blue-50 text-blue-700" : ""}>
                     {category.name}
+                    {currentCategory === category.slug && <span className="ml-auto text-blue-500">✓</span>}
                   </DropdownMenuItem>
                 ))
               )}
@@ -94,7 +119,7 @@ export default function Header() {
           <ThemeMode />
 
           {/* 언어 설정 버튼 (모든 화면 크기에서 표시) */}
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" title="언어 설정">
                 <GlobeIcon className="h-5 w-5" />
@@ -105,7 +130,7 @@ export default function Header() {
               <DropdownMenuItem onSelect={() => null}>한국어</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => null}>English</DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
 
           {/* 모바일 메뉴 (모바일에서만 표시) */}
           <div className="md:hidden">
@@ -133,6 +158,13 @@ export default function Header() {
                 <DropdownMenuLabel>Series</DropdownMenuLabel>
                 <DropdownMenuSeparator />
 
+                {currentCategory && (
+                  <DropdownMenuItem onSelect={handleViewAllPosts}>
+                    <HomeIcon className="mr-2 h-4 w-4" />
+                    <span>모든 포스트 보기</span>
+                  </DropdownMenuItem>
+                )}
+
                 {isLoadingCategories ? (
                   <DropdownMenuItem disabled>
                     <span className="flex items-center">
@@ -144,8 +176,9 @@ export default function Header() {
                   <DropdownMenuItem disabled>카테고리가 없습니다</DropdownMenuItem>
                 ) : (
                   categories.map(category => (
-                    <DropdownMenuItem key={category.id} onSelect={() => router.push(`/category/${category.slug}`)}>
+                    <DropdownMenuItem key={category.id} onSelect={() => handleCategorySelect(category.slug as string)} className={currentCategory === category.slug ? "bg-blue-50 text-blue-700" : ""}>
                       {category.name}
+                      {currentCategory === category.slug && <span className="ml-auto text-blue-500">✓</span>}
                     </DropdownMenuItem>
                   ))
                 )}

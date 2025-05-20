@@ -252,3 +252,67 @@ export async function fetchCategories(): Promise<Category[]> {
     return [];
   }
 }
+
+// 카테고리별 게시물 가져오기
+export async function fetchPostsByCategory(categorySlug: string, page = 1): Promise<PaginationResult<Post>> {
+  try {
+    const url = `${API_ENDPOINTS.POSTS}?filters[category][slug][$eq]=${categorySlug}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort=publishedAt:desc`;
+
+    const response = await fetch(url, {
+      next: {
+        tags: ["posts", `category-${categorySlug}`],
+        revalidate: 3600
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch posts for category ${categorySlug}: ${response.status}`);
+    }
+
+    const data = (await response.json()) as StrapiResponse<Post[]>;
+
+    if (!data.data || !Array.isArray(data.data)) {
+      console.error("Unexpected API response structure:", data);
+      return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
+    }
+
+    return {
+      data: data.data,
+      pagination: data.meta?.pagination || { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 }
+    };
+  } catch (error) {
+    console.error(`Error fetching posts for category ${categorySlug}:`, error);
+    return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
+  }
+}
+
+// slug로 특정 카테고리 정보 가져오기
+export async function fetchCategoryBySlug(slug: string): Promise<Category | null> {
+  try {
+    const url = `${API_ENDPOINTS.CATEGORIES}?filters[slug][$eq]=${slug}`;
+
+    const response = await fetch(url, {
+      next: {
+        tags: ["categories", `category-${slug}`],
+        revalidate: 3600
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch category with slug ${slug}: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.data || !Array.isArray(data.data) || data.data.length === 0) {
+      console.error("Category not found or unexpected API response structure:", data);
+      return null;
+    }
+
+    // 첫 번째 결과 반환 (slug는 고유해야 함)
+    return data.data[0];
+  } catch (error) {
+    console.error(`Error fetching category with slug ${slug}:`, error);
+    return null;
+  }
+}
