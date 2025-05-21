@@ -89,7 +89,7 @@ interface StrapiResponse<T> {
 // 서버 컴포넌트에서 사용할 함수
 export async function fetchPosts(): Promise<Post[]> {
   try {
-    const response = await fetch(API_ENDPOINTS.POSTS, {
+    const response = await fetch(`${API_ENDPOINTS.POSTS}?populate=category`, {
       cache: "no-store",
       next: {
         tags: ["posts"]
@@ -115,9 +115,9 @@ export async function fetchPosts(): Promise<Post[]> {
 }
 
 // 페이지네이션 및 최신순 정렬이 있는 게시물 가져오기
-export async function fetchPaginatedPosts(page = 1): Promise<PaginationResult<Post>> {
+export async function fetchPaginatedPosts(page = 1, pageSize = POSTS_PER_PAGE): Promise<PaginationResult<Post>> {
   try {
-    const url = `${API_ENDPOINTS.POSTS}?pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort=publishedAt:desc`;
+    const url = `${API_ENDPOINTS.POSTS}?pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=publishedAt:desc&populate=category`;
 
     const response = await fetch(url, {
       next: {
@@ -150,7 +150,7 @@ export async function fetchPaginatedPosts(page = 1): Promise<PaginationResult<Po
 // 클라이언트 컴포넌트에서 사용할 함수
 export async function fetchPostsClient(): Promise<Post[]> {
   try {
-    const response = await fetch(API_ENDPOINTS.POSTS, {
+    const response = await fetch(`${API_ENDPOINTS.POSTS}?populate=category`, {
       cache: "no-store"
     });
 
@@ -256,11 +256,11 @@ export async function fetchCategories(): Promise<Category[]> {
 // 카테고리별 게시물 가져오기
 export async function fetchPostsByCategory(categorySlug: string, page = 1): Promise<PaginationResult<Post>> {
   try {
-    const url = `${API_ENDPOINTS.POSTS}?filters[category][slug][$eq]=${categorySlug}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort=publishedAt:desc`;
+    const url = `${API_ENDPOINTS.POSTS}?filters[category][slug][$eq]=${categorySlug}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort=publishedAt:desc&populate=category`;
 
     const response = await fetch(url, {
       next: {
-        tags: ["posts", `category-${categorySlug}`],
+        tags: ["posts", `category${categorySlug}`],
         revalidate: 3600
       }
     });
@@ -293,7 +293,7 @@ export async function fetchCategoryBySlug(slug: string): Promise<Category | null
 
     const response = await fetch(url, {
       next: {
-        tags: ["categories", `category-${slug}`],
+        tags: ["categories", `category${slug}`],
         revalidate: 3600
       }
     });

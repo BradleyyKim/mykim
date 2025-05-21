@@ -9,7 +9,7 @@ import Header from "@/components/Header";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "My Blog",
+  title: "My Kim",
   description: "내 블로그에 오신 것을 환영합니다!"
 };
 

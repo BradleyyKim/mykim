@@ -47,18 +47,18 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
+      <div className="flex justify-end mb-4">
         <Link href="/" passHref>
-          <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent">
+          <Button variant="ghost" className="pl-0">
             <ArrowLeft className="mr-2 h-4 w-4" />
             홈으로 돌아가기
           </Button>
         </Link>
-
+      </div>
+      <div className="mb-8">
         <h1 className="text-3xl font-bold mb-4">{category.name}</h1>
         {category.description && <p className="text-gray-600 mb-8">{category.description}</p>}
       </div>
-
       {posts.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-600 mb-4">이 카테고리에는 아직 글이 없습니다.</p>

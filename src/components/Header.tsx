@@ -64,7 +64,7 @@ export default function Header() {
         {/* 좌측: 블로그 타이틀 */}
         <div className="mr-4 flex items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold">{MAIN.title}</span>
+            <span className="text-xl font-bold italic">{MAIN.title}</span>
           </Link>
         </div>
 

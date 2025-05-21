@@ -15,7 +15,7 @@ export const API_ENDPOINTS = {
 export const POSTS_PER_PAGE = 10;
 
 export const MAIN = {
-  title: "MY Kim Blog",
+  title: "MY Kim",
   description: "My Kim Blog is a blog about my life and my thoughts.",
   keywords: "my kim blog, my kim, kim blog",
   author: "My Kim",

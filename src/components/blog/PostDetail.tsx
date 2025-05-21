@@ -23,22 +23,20 @@ export default function PostDetail({ post, categoryName: propCategoryName, categ
 
   // 돌아갈 링크 결정 (카테고리가 있으면 카테고리 페이지로, 없으면 홈으로)
   const backLink = categorySlug ? `/category/${categorySlug}` : "/";
-  const backLinkText = categorySlug ? `${categoryName} 목록으로 돌아가기` : "홈으로 돌아가기";
-
+  const backLinkText = categorySlug ? `${categoryName}` : "홈으로 돌아가기";
+  console.log("propCategorySlug::::", propCategorySlug);
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl">
-      <div className="mb-8">
-        <Link href={backLink} passHref>
-          <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            {backLinkText}
-          </Button>
-        </Link>
-      </div>
-
       <header className="mb-8">
+        <div className="flex justify-end mb-4">
+          <Link href={backLink} passHref>
+            <Button variant="ghost" className="pl-0">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              {backLinkText}
+            </Button>
+          </Link>
+        </div>
         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-
         <div className="flex items-center text-gray-500 mb-4 flex-wrap gap-4">
           <div className="flex items-center">
             <CalendarIcon className="h-4 w-4 mr-2" />
