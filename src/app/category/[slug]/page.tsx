@@ -4,7 +4,6 @@ import Link from "next/link";
 import { CategoryNotFound } from "@/components/NotFound";
 import { Button } from "@/components/ui/button";
 import PaginationWrapper from "@/components/blog/PaginationWrapper";
-import { REVALIDATE_TIME } from "@/lib/constants";
 import { formatDate } from "date-fns";
 
 type Props = {
@@ -14,7 +13,7 @@ type Props = {
 };
 
 // ISR 설정
-export const revalidate = REVALIDATE_TIME;
+export const revalidate = 300; // 5분
 
 // 카테고리 메타데이터 생성
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

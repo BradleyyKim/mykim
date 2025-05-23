@@ -2,10 +2,9 @@ import { Metadata } from "next";
 import PostDetail from "@/components/blog/PostDetail";
 import { PostNotFound } from "@/components/NotFound";
 import { getPostBySlug } from "@/lib/services/post-service";
-import { REVALIDATE_TIME } from "@/lib/constants";
 
 // ISR 설정
-export const revalidate = REVALIDATE_TIME;
+export const revalidate = 300; // 5분
 
 type Props = {
   params: {

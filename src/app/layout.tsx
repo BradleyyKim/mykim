@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { TanstackProvider } from "@/lib/tanstack-query";
 import { AuthProvider } from "@/lib/auth";
@@ -24,7 +25,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <TanstackProvider>
             <AuthProvider>
-              <Header />
+              <Suspense fallback={<div className="h-14 border-b bg-background/95"></div>}>
+                <Header />
+              </Suspense>
               <main>{children}</main>
             </AuthProvider>
           </TanstackProvider>

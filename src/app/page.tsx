@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { getCategorySlug, getCategoryName, getFirstEmojiOrString } from "@/lib/utils";
 import { fetchPaginatedPosts } from "@/lib/api";
-import { REVALIDATE_TIME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "My Kim Blog",
@@ -178,4 +177,4 @@ async function HomePageContent({ yearFilter }: { yearFilter?: string }) {
 }
 
 // Next.js에게 정적 생성 페이지로 설정하고 주기적으로 재검증하도록 설정
-export const revalidate = REVALIDATE_TIME;
+export const revalidate = 300; // 5분
