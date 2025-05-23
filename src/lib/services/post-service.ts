@@ -1,4 +1,5 @@
 import { fetchPaginatedPosts, fetchPostsByCategory, fetchCategoryBySlug, Post, PaginationResult } from "@/lib/api";
+import { REVALIDATE_TIME } from "@/lib/constants";
 
 /**
  * 홈페이지 데이터 서비스
@@ -56,7 +57,10 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       headers: {
         "Content-Type": "application/json"
       },
-      next: { revalidate: 60 } // 60초마다 재검증
+      next: {
+        revalidate: REVALIDATE_TIME,
+        tags: [`post-${slug}`]
+      }
     });
 
     if (!res.ok) {

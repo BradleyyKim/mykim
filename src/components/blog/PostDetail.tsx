@@ -1,9 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarIcon, ArrowLeft, Tag as TagIcon } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -20,32 +18,19 @@ export default function PostDetail({ post, categoryName: propCategoryName, categ
   // 상위 컴포넌트에서 카테고리 정보를 받지 않은 경우 직접 추출
   const categoryName = propCategoryName || getCategoryName(post.category) || "카테고리";
   const categorySlug = propCategorySlug || getCategorySlug(post.category);
+  const formattedDate = format(new Date(post.createdAt), "yyyy.MM.dd HH:mm", { locale: ko });
 
-  // 돌아갈 링크 결정 (카테고리가 있으면 카테고리 페이지로, 없으면 홈으로)
-  const backLink = categorySlug ? `/category/${categorySlug}` : "/";
-  const backLinkText = categorySlug ? `${categoryName}` : "홈으로 돌아가기";
-  console.log("propCategorySlug::::", propCategorySlug);
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl">
       <header className="mb-8">
-        <div className="flex justify-end mb-4">
-          <Link href={backLink} passHref>
-            <Button variant="ghost" className="pl-0">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {backLinkText}
-            </Button>
-          </Link>
-        </div>
         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-        <div className="flex items-center text-gray-500 mb-4 flex-wrap gap-4">
+        <div className="flex items-center justify-between text-gray-500 mb-4 flex-wrap gap-4">
           <div className="flex items-center">
-            <CalendarIcon className="h-4 w-4 mr-2" />
-            <time dateTime={post.createdAt}>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: ko })}</time>
+            <time dateTime={post.createdAt}>{formattedDate}</time>
           </div>
 
           {categoryName && categorySlug && (
             <div className="flex items-center">
-              <TagIcon className="h-4 w-4 mr-2" />
               <Link href={`/category/${categorySlug}`}>
                 <Badge variant="outline" className="hover:bg-gray-100 cursor-pointer">
                   {categoryName}

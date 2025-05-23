@@ -19,7 +19,6 @@ export default function SearchBar({ initialValue = "", onSearch }: SearchBarProp
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("검색어:", searchQuery);
 
     if (onSearch) {
       onSearch(searchQuery);

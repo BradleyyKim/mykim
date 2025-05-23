@@ -1,17 +1,20 @@
 import { Metadata } from "next";
 import { getCategoryData } from "@/lib/services/post-service";
-import PostCard from "@/components/blog/PostCard";
 import Link from "next/link";
 import { CategoryNotFound } from "@/components/NotFound";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import PaginationWrapper from "@/components/blog/PaginationWrapper";
+import { REVALIDATE_TIME } from "@/lib/constants";
+import { formatDate } from "date-fns";
 
 type Props = {
   params: {
     slug: string;
   };
 };
+
+// ISR 설정
+export const revalidate = REVALIDATE_TIME;
 
 // 카테고리 메타데이터 생성
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -46,38 +49,39 @@ export default async function CategoryPage({ params }: Props) {
   const { category, posts, pagination } = categoryData;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-end mb-4">
-        <Link href="/" passHref>
-          <Button variant="ghost" className="pl-0">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            홈으로 돌아가기
-          </Button>
-        </Link>
+    <div className="container mx-auto px-4 py-12">
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold mt-4 text-gray-800 dark:text-gray-100">{category.name}</h1>
+        {category.description && <p className="text-gray-600 dark:text-gray-400 mt-2">{category.description}</p>}
       </div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">{category.name}</h1>
-        {category.description && <p className="text-gray-600 mb-8">{category.description}</p>}
-      </div>
+
       {posts.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-600 mb-4">이 카테고리에는 아직 글이 없습니다.</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">이 카테고리에는 아직 글이 없습니다.</p>
           <Link href="/" passHref>
             <Button variant="outline">다른 글 보러가기</Button>
           </Link>
         </div>
       ) : (
         <>
-          <div className="flex flex-col space-y-6">
-            {posts.map(post => (
-              <div key={post.id}>
-                <Link href={`/category/${slug}/${post.slug}`} className="block group">
-                  <PostCard post={post} />
-                </Link>
-              </div>
-            ))}
+          <div className="space-y-6">
+            {posts.map(post => {
+              const formattedDate = formatDate(new Date(post.createdAt), "yyyy.MM.dd HH:mm");
+              return (
+                <article key={post.id} className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 last:border-0 transition-all hover:translate-x-1">
+                  <Link href={`/category/${slug}/${post.slug}`} className="block group">
+                    <div className="flex justify-between items-start">
+                      <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300">{post.title}</h2>
+                      <p className="text-gray-500 dark:text-gray-400">{formattedDate}</p>
+                    </div>
+                  </Link>
+                </article>
+              );
+            })}
           </div>
-          <PaginationWrapper currentPage={pagination.page} totalPages={pagination.pageCount} categorySlug={slug} />
+          <div className="mt-12">
+            <PaginationWrapper currentPage={pagination.page} totalPages={pagination.pageCount} categorySlug={slug} />
+          </div>
         </>
       )}
     </div>

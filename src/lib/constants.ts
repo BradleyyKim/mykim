@@ -14,12 +14,16 @@ export const API_ENDPOINTS = {
 // 기타 상수
 export const POSTS_PER_PAGE = 10;
 
+// 재검증 시간 설정 (초 단위)
+// 개발 환경에서는 10초, 프로덕션에서는 5분(300초)
+export const REVALIDATE_TIME = process.env.NODE_ENV === "development" ? 10 : 300;
+
 export const MAIN = {
-  title: "MY Kim",
-  description: "My Kim Blog is a blog about my life and my thoughts.",
-  keywords: "my kim blog, my kim, kim blog",
-  author: "My Kim",
-  url: "https://mykim.blog",
+  title: "Bradley",
+  description: "Bradley's Blog is a blog about my life and my thoughts.",
+  keywords: "bradley's blog, bradley, blog",
+  author: "Bradley",
+  url: "https://bradley.blog",
   image: "https://mykim.blog/images/logo.png",
   twitter: "@mykim",
   facebook: "https://www.facebook.com/mykim"

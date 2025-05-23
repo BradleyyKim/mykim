@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { MenuIcon, LayoutIcon, HomeIcon } from "lucide-react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { MenuIcon, LayoutIcon, HomeIcon, Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuGroup, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
@@ -20,9 +21,16 @@ import { Category, fetchCategories } from "@/lib/api";
 export default function Header() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
   const currentCategory = searchParams.get("category");
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+
+  // 현재 홈페이지인지 확인
+  const isHomePage = pathname === "/";
+  // year 파라미터 확인
+  const yearFilter = searchParams.get("year");
 
   // 카테고리 데이터 로드
   useEffect(() => {
@@ -33,7 +41,6 @@ export default function Header() {
 
         if (categoryData.length > 0) {
           setCategories(categoryData);
-          console.log("카테고리 로드 성공:", categoryData.length);
         } else {
           console.warn("카테고리 데이터가 비어있습니다");
         }
@@ -64,7 +71,7 @@ export default function Header() {
         {/* 좌측: 블로그 타이틀 */}
         <div className="mr-4 flex items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold italic">{MAIN.title}</span>
+            <span className="text-xl font-bold italic">{isHomePage && !yearFilter ? MAIN.title : "Home"}</span>
           </Link>
         </div>
 
@@ -115,8 +122,10 @@ export default function Header() {
 
         {/* 우측: 기능 버튼들 */}
         <div className="ml-auto flex items-center space-x-2">
-          {/* 다크모드 토글 (모든 화면 크기에서 표시) */}
-          <ThemeMode />
+          {/* 다크모드 토글 (태블릿/데스크탑에서만 표시) */}
+          <div className="hidden md:block">
+            <ThemeMode />
+          </div>
 
           {/* 언어 설정 버튼 (모든 화면 크기에서 표시) */}
           {/* <DropdownMenu>
@@ -136,35 +145,21 @@ export default function Header() {
           <div className="md:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" title="메뉴">
+                <Button variant="ghost" size="icon" title="Menu">
                   <MenuIcon className="h-5 w-5" />
-                  <span className="sr-only">메뉴</span>
+                  <span className="sr-only">Menu</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>메뉴</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-
-                <DropdownMenuGroup>
-                  {/* About 버튼 */}
-                  <DropdownMenuItem onSelect={() => router.push("/about")}>
-                    <LayoutIcon className="mr-2 h-4 w-4" />
-                    <span>About</span>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-
-                <DropdownMenuSeparator />
-
                 <DropdownMenuLabel>Series</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-
                 {currentCategory && (
                   <DropdownMenuItem onSelect={handleViewAllPosts}>
                     <HomeIcon className="mr-2 h-4 w-4" />
                     <span>모든 포스트 보기</span>
                   </DropdownMenuItem>
                 )}
-
                 {isLoadingCategories ? (
                   <DropdownMenuItem disabled>
                     <span className="flex items-center">
@@ -182,6 +177,23 @@ export default function Header() {
                     </DropdownMenuItem>
                   ))
                 )}
+                <DropdownMenuLabel>Menu</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  {/* About 버튼 */}
+                  <DropdownMenuItem onSelect={() => router.push("/about")}>
+                    <LayoutIcon className="mr-2 h-4 w-4" />
+                    <span>About</span>
+                  </DropdownMenuItem>
+                  {/* ThemeMode 버튼 - 모바일에서만 표시 */}
+                  <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                    <div className="flex items-start">
+                      <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                      <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                      <span className="ml-2">Theme</span>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

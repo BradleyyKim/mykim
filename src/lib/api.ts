@@ -1,5 +1,5 @@
 // API 관련 모듈 임포트
-import { API_ENDPOINTS, POSTS_PER_PAGE } from "./constants";
+import { API_ENDPOINTS, POSTS_PER_PAGE, REVALIDATE_TIME } from "./constants";
 
 // 타입 정의
 export interface FeaturedImage {
@@ -122,7 +122,7 @@ export async function fetchPaginatedPosts(page = 1, pageSize = POSTS_PER_PAGE): 
     const response = await fetch(url, {
       next: {
         tags: ["posts"],
-        revalidate: 3600
+        revalidate: REVALIDATE_TIME
       }
     });
 
@@ -261,7 +261,7 @@ export async function fetchPostsByCategory(categorySlug: string, page = 1): Prom
     const response = await fetch(url, {
       next: {
         tags: ["posts", `category${categorySlug}`],
-        revalidate: 3600
+        revalidate: REVALIDATE_TIME
       }
     });
 
@@ -294,7 +294,7 @@ export async function fetchCategoryBySlug(slug: string): Promise<Category | null
     const response = await fetch(url, {
       next: {
         tags: ["categories", `category${slug}`],
-        revalidate: 3600
+        revalidate: REVALIDATE_TIME
       }
     });
 

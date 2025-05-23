@@ -282,7 +282,6 @@ function WritePageContent() {
 
         if (categoryData.length > 0) {
           setCategories(categoryData);
-          console.log("카테고리 로드 성공:", categoryData.length);
         } else {
           console.warn("카테고리 데이터가 비어있습니다");
           setCategories([]);

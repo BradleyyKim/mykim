@@ -5,6 +5,7 @@ import { PostNotFound } from "@/components/NotFound";
 import { getPostBySlug } from "@/lib/services/post-service";
 import { fetchCategoryBySlug } from "@/lib/api";
 import { getCategorySlug } from "@/lib/utils";
+import { REVALIDATE_TIME } from "@/lib/constants";
 
 type Props = {
   params: {
@@ -12,6 +13,9 @@ type Props = {
     postSlug: string;
   };
 };
+
+// ISR 설정
+export const revalidate = REVALIDATE_TIME;
 
 // 동적 메타데이터 생성
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
