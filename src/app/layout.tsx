@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Inter } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
@@ -32,6 +33,7 @@ export default function RootLayout({
             </AuthProvider>
           </TanstackProvider>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
