@@ -191,3 +191,100 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Tiptap 렌더링된 콘텐츠 스타일링 */
+.prose {
+  /* 기본 텍스트 스타일 */
+  line-height: 1.7;
+  color: var(--foreground);
+}
+
+.prose h1 {
+  @apply text-3xl font-bold mt-8 mb-4 text-foreground;
+}
+
+.prose h2 {
+  @apply text-2xl font-semibold mt-6 mb-3 text-foreground;
+}
+
+.prose h3 {
+  @apply text-xl font-semibold mt-5 mb-2 text-foreground;
+}
+
+.prose h4 {
+  @apply text-lg font-medium mt-4 mb-2 text-foreground;
+}
+
+.prose p {
+  @apply mb-4 text-foreground leading-relaxed;
+}
+
+.prose ul {
+  @apply list-disc list-inside mb-4 space-y-2;
+}
+
+.prose ol {
+  @apply list-decimal list-inside mb-4 space-y-2;
+}
+
+.prose li {
+  @apply text-foreground;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-primary pl-4 italic my-4 text-muted-foreground;
+}
+
+.prose code {
+  @apply bg-muted px-2 py-1 rounded text-sm font-mono;
+}
+
+.prose pre {
+  @apply bg-muted p-4 rounded-lg overflow-x-auto my-4;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0;
+}
+
+.prose a {
+  @apply text-primary hover:text-primary/80 underline transition-colors;
+}
+
+.prose img {
+  @apply rounded-lg shadow-md max-w-full h-auto my-4;
+}
+
+.prose table {
+  @apply w-full border-collapse border border-border my-4;
+}
+
+.prose th,
+.prose td {
+  @apply border border-border px-4 py-2 text-left;
+}
+
+.prose th {
+  @apply bg-muted font-semibold;
+}
+
+.prose hr {
+  @apply border-t border-border my-8;
+}
+
+/* 다크 모드 대응 */
+.dark .prose {
+  color: var(--foreground);
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4 {
+  color: var(--foreground);
+}
+
+.dark .prose p,
+.dark .prose li {
+  color: var(--foreground);
+}

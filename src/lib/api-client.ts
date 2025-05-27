@@ -102,6 +102,7 @@ export const apiClient = {
       url: string;
       alternativeText?: string;
     } | null;
+    publishedDate?: string;
   }) {
     console.log("[apiClient] 새 포스트 생성 시도");
     const response = await fetch(

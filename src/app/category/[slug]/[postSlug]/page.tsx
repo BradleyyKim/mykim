@@ -5,6 +5,7 @@ import { PostNotFound } from "@/components/NotFound";
 import { getPostBySlug } from "@/lib/services/post-service";
 import { fetchCategoryBySlug } from "@/lib/api";
 import { getCategorySlug } from "@/lib/utils";
+import { extractPlainText } from "@/lib/tiptap-renderer";
 
 type Props = {
   params: {
@@ -15,6 +16,11 @@ type Props = {
 
 // ISR 설정
 export const revalidate = 300; // 5분
+
+// 정적 경로 생성 (ISR 최적화) - 빌드 시에는 빈 배열 반환
+export async function generateStaticParams() {
+  return [];
+}
 
 // 동적 메타데이터 생성
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -29,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: post.title,
-    description: post.description || post.content.substring(0, 160)
+    description: post.description || extractPlainText(post.content, 160)
   };
 }
 

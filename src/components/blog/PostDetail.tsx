@@ -3,10 +3,9 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Post } from "@/lib/api";
 import { getCategorySlug, getCategoryName } from "@/lib/utils";
+import { renderTiptapContent } from "@/lib/tiptap-renderer";
 
 interface PostDetailProps {
   post: Post;
@@ -18,7 +17,13 @@ export default function PostDetail({ post, categoryName: propCategoryName, categ
   // 상위 컴포넌트에서 카테고리 정보를 받지 않은 경우 직접 추출
   const categoryName = propCategoryName || getCategoryName(post.category) || "카테고리";
   const categorySlug = propCategorySlug || getCategorySlug(post.category);
-  const formattedDate = format(new Date(post.createdAt), "yyyy.MM.dd HH:mm", { locale: ko });
+
+  // publishedDate가 있으면 우선 사용하고, 없으면 createdAt을 fallback으로 사용
+  const displayDate = post.publishedDate || post.createdAt;
+  const formattedDate = format(new Date(displayDate), "yyyy.MM.dd HH:mm", { locale: ko });
+
+  // Tiptap JSON 콘텐츠를 HTML로 렌더링
+  const renderedContent = renderTiptapContent(post.content);
 
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl">
@@ -26,7 +31,7 @@ export default function PostDetail({ post, categoryName: propCategoryName, categ
         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
         <div className="flex items-center justify-between text-gray-500 mb-4 flex-wrap gap-4">
           <div className="flex items-center">
-            <time dateTime={post.createdAt}>{formattedDate}</time>
+            <time dateTime={displayDate}>{formattedDate}</time>
           </div>
 
           {categoryName && categorySlug && (
@@ -54,9 +59,7 @@ export default function PostDetail({ post, categoryName: propCategoryName, categ
         </div>
       )}
 
-      <div className="prose prose-lg max-w-none">
-        <Markdown remarkPlugins={[remarkGfm]}>{post.content}</Markdown>
-      </div>
+      <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: renderedContent }} />
     </article>
   );
 }

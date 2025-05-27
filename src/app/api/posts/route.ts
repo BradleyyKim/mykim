@@ -55,7 +55,8 @@ export async function POST(request: NextRequest) {
         content: body.content,
         slug: createSlug(body.title),
         description: body.description || body.content.substring(0, 200),
-        featuredImage: body.featuredImage
+        featuredImage: body.featuredImage,
+        publishedDate: body.publishedDate
       } as PostData
     };
 

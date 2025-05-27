@@ -4,7 +4,8 @@ import { CalendarIcon, TagIcon, EyeIcon, Clock3Icon } from "lucide-react";
 import { formatDistanceToNow, format, differenceInDays } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Post as PostType } from "@/lib/api";
-import { getCategoryName, stripHtml, calculateReadingTime } from "@/lib/utils";
+import { getCategoryName, calculateReadingTime } from "@/lib/utils";
+import { extractPlainText } from "@/lib/tiptap-renderer";
 
 interface PostCardProps {
   post: PostType;
@@ -12,7 +13,10 @@ interface PostCardProps {
 
 export default function PostCard({ post }: PostCardProps) {
   const categoryName = getCategoryName(post.category);
-  const postDate = new Date(post.createdAt);
+
+  // publishedDate가 있으면 우선 사용하고, 없으면 createdAt을 fallback으로 사용
+  const displayDate = post.publishedDate || post.createdAt;
+  const postDate = new Date(displayDate);
   const daysAgo = differenceInDays(new Date(), postDate);
   const isRecent = daysAgo <= 3; // 3일 이내의 게시물인지 확인
 
@@ -23,10 +27,10 @@ export default function PostCard({ post }: PostCardProps) {
   // 날짜 표시 형식 결정
   const dateDisplay = isRecent ? formatDistanceToNow(postDate, { addSuffix: true, locale: ko }) : format(postDate, "yyyy년 MM월 dd일", { locale: ko });
 
-  // 내용 요약 안전하게 생성 (HTML 태그 제거)
-  const plainContent = stripHtml(content);
-  const description = post.description ? stripHtml(post.description) : "";
-  const contentSummary = description || (plainContent.length > 0 ? plainContent.substring(0, 240) : "내용 없음");
+  // 내용 요약 안전하게 생성 (Tiptap JSON에서 플레인 텍스트 추출)
+  const plainContent = extractPlainText(content, 240);
+  const description = post.description ? extractPlainText(post.description, 240) : "";
+  const contentSummary = description || (plainContent.length > 0 ? plainContent : "내용 없음");
 
   return (
     <article
@@ -46,7 +50,7 @@ export default function PostCard({ post }: PostCardProps) {
         <div className="flex items-center text-gray-500 text-sm mb-4 flex-wrap">
           <div className={`flex items-center mr-4 ${isRecent ? "text-blue-500" : ""}`}>
             <CalendarIcon className="h-4 w-4 mr-1" />
-            <time dateTime={post.createdAt} className={isRecent ? "font-medium" : ""}>
+            <time dateTime={displayDate} className={isRecent ? "font-medium" : ""}>
               {dateDisplay}
             </time>
           </div>

@@ -86,14 +86,16 @@ export function useCreatePost() {
       url: string;
       alternativeText?: string;
     } | null;
+    publishedDate?: string;
   }) => {
-    // 제목, 내용, 설명, 카테고리 처리
+    // 제목, 내용, 설명, 카테고리, 발행날짜 처리
     return apiClient.createPost({
       title: data.title,
       content: data.content,
       description: data.description,
       category: data.category,
-      featuredImage: data.featuredImage
+      featuredImage: data.featuredImage,
+      publishedDate: data.publishedDate
     });
   };
 

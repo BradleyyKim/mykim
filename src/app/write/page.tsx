@@ -20,7 +20,8 @@ const postSchema = z.object({
   title: z.string().min(1, "제목은 필수 항목입니다."),
   content: z.string().min(1, "내용은 필수 항목입니다."),
   category: z.string().min(1, "카테고리는 필수 항목입니다."),
-  description: z.string().optional()
+  description: z.string().optional(),
+  publishedDate: z.string().optional()
 });
 
 type PostFormData = z.infer<typeof postSchema>;
@@ -179,6 +180,37 @@ function ContentEditor({ control, errors, disabled, onPlainTextChange }: Content
         )}
       </div>
       <FormErrorMessage error={errors.content?.message} showError={!!errors.content} />
+    </div>
+  );
+}
+
+// 발행 날짜 선택 컴포넌트
+interface PublishedDateInputProps {
+  control: Control<PostFormData>;
+  errors: FieldErrors<PostFormData>;
+  disabled: boolean;
+}
+
+function PublishedDateInput({ control, errors, disabled }: PublishedDateInputProps) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor="publishedDate">발행 날짜</Label>
+      <Controller
+        name="publishedDate"
+        control={control}
+        render={({ field }) => (
+          <Input
+            id="publishedDate"
+            type="datetime-local"
+            value={field.value || ""}
+            onChange={e => field.onChange(e.target.value)}
+            className={errors.publishedDate ? "border-red-500" : ""}
+            disabled={disabled}
+          />
+        )}
+      />
+      <p className="text-xs text-gray-500">비워두면 현재 시간으로 설정됩니다. (선택사항)</p>
+      <FormErrorMessage error={errors.publishedDate?.message} showError={!!errors.publishedDate} />
     </div>
   );
 }
@@ -353,7 +385,8 @@ function WritePageContent() {
         content: data.content,
         description,
         category: selectedCategory.id.toString(),
-        featuredImage
+        featuredImage,
+        publishedDate: data.publishedDate
       });
 
       // 메인 페이지로 이동
@@ -374,6 +407,7 @@ function WritePageContent() {
         <CategorySelect control={control} categories={categories} isLoadingCategories={isLoadingCategories} errors={errors} disabled={isFormDisabled} />
         <TitleInput register={register} errors={errors} disabled={isFormDisabled} />
         <ContentEditor control={control} errors={errors} disabled={isFormDisabled} onPlainTextChange={handlePlainTextChange} />
+        <PublishedDateInput control={control} errors={errors} disabled={isFormDisabled} />
         <TagsInput tags={tags} tagInput={tagInput} setTagInput={setTagInput} onAddTag={handleAddTag} onRemoveTag={handleRemoveTag} disabled={isFormDisabled} />
         <SubmitButtonGroup isSubmitting={isSubmitting} disabled={isFormDisabled} onCancel={() => router.back()} />
       </form>

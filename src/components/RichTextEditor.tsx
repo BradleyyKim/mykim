@@ -13,6 +13,7 @@ import {
   Italic,
   Heading1,
   Heading2,
+  Heading3,
   List,
   ListOrdered,
   Link as LinkIcon,
@@ -187,7 +188,7 @@ export default function RichTextEditor({ content, onChange, onPlainTextChange, p
   }
 
   return (
-    <div className="relative border rounded-md overflow-hidden w-full h-full flex flex-col">
+    <div className="relative border rounded-md overflow-hidden w-full h-[600px] flex flex-col">
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 flex items-center">
           <AlertCircle className="h-4 w-4 mr-2" />
@@ -198,7 +199,8 @@ export default function RichTextEditor({ content, onChange, onPlainTextChange, p
         </div>
       )}
 
-      <div className="flex flex-wrap gap-1 p-2 bg-gray-50 dark:bg-gray-800 border-b">
+      {/* Fixed/Sticky Toolbar */}
+      <div className="sticky top-0 z-10 flex flex-wrap gap-1 p-2 bg-white dark:bg-gray-900 border-b shadow-sm">
         <Button type="button" size="sm" variant="outline" className="h-8 px-2" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
           <Undo className="h-4 w-4" />
         </Button>
@@ -237,6 +239,15 @@ export default function RichTextEditor({ content, onChange, onPlainTextChange, p
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         >
           <Heading2 className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant={editor.isActive("heading", { level: 3 }) ? "default" : "outline"}
+          className="h-8 px-2"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        >
+          <Heading3 className="h-4 w-4" />
         </Button>
         <Button type="button" size="sm" variant={editor.isActive("blockquote") ? "default" : "outline"} className="h-8 px-2" onClick={() => editor.chain().focus().toggleBlockquote().run()}>
           <Quote className="h-4 w-4" />
@@ -318,7 +329,7 @@ export default function RichTextEditor({ content, onChange, onPlainTextChange, p
       </div>
 
       {showLinkMenu && (
-        <div className="flex items-center gap-2 p-2 bg-gray-100 dark:bg-gray-700">
+        <div className="sticky top-[60px] z-10 flex items-center gap-2 p-2 bg-gray-100 dark:bg-gray-700 border-b">
           <input
             type="text"
             value={linkUrl}
@@ -341,7 +352,7 @@ export default function RichTextEditor({ content, onChange, onPlainTextChange, p
         </div>
       )}
 
-      <EditorContent editor={editor} className="flex-1 overflow-auto" />
+      <EditorContent editor={editor} className="flex-1 overflow-auto h-[500px]" />
 
       <div className="text-xs text-gray-500 dark:text-gray-400 p-2 border-t flex justify-between items-center">
         <div>{wordCount} 단어</div>
@@ -350,10 +361,12 @@ export default function RichTextEditor({ content, onChange, onPlainTextChange, p
 
       <style jsx global>{`
         .ProseMirror {
-          min-height: 300px;
           height: 100%;
+          max-height: 500px;
           padding: 1rem;
           outline: none;
+          overflow-y: auto;
+          scroll-behavior: smooth;
         }
         .ProseMirror p.is-editor-empty:first-child::before {
           content: attr(data-placeholder);
@@ -382,18 +395,39 @@ export default function RichTextEditor({ content, onChange, onPlainTextChange, p
         }
         .ProseMirror p[style*="text-align:center"],
         .ProseMirror h1[style*="text-align:center"],
-        .ProseMirror h2[style*="text-align:center"] {
+        .ProseMirror h2[style*="text-align:center"],
+        .ProseMirror h3[style*="text-align:center"] {
           text-align: center;
         }
         .ProseMirror p[style*="text-align:right"],
         .ProseMirror h1[style*="text-align:right"],
-        .ProseMirror h2[style*="text-align:right"] {
+        .ProseMirror h2[style*="text-align:right"],
+        .ProseMirror h3[style*="text-align:right"] {
           text-align: right;
         }
         .ProseMirror p[style*="text-align:justify"],
         .ProseMirror h1[style*="text-align:justify"],
-        .ProseMirror h2[style*="text-align:justify"] {
+        .ProseMirror h2[style*="text-align:justify"],
+        .ProseMirror h3[style*="text-align:justify"] {
           text-align: justify;
+        }
+        .ProseMirror h1 {
+          font-size: 2rem;
+          font-weight: bold;
+          line-height: 1.2;
+          margin: 1.5rem 0 1rem 0;
+        }
+        .ProseMirror h2 {
+          font-size: 1.5rem;
+          font-weight: bold;
+          line-height: 1.3;
+          margin: 1.25rem 0 0.75rem 0;
+        }
+        .ProseMirror h3 {
+          font-size: 1.25rem;
+          font-weight: bold;
+          line-height: 1.4;
+          margin: 1rem 0 0.5rem 0;
         }
       `}</style>
 

@@ -117,7 +117,7 @@ export async function fetchPosts(): Promise<Post[]> {
 // 페이지네이션 및 최신순 정렬이 있는 게시물 가져오기
 export async function fetchPaginatedPosts(page = 1, pageSize = POSTS_PER_PAGE): Promise<PaginationResult<Post>> {
   try {
-    const url = `${API_ENDPOINTS.POSTS}?pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=publishedAt:desc&populate=category`;
+    const url = `${API_ENDPOINTS.POSTS}?pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate=category`;
 
     const response = await fetch(url, {
       next: {
@@ -256,7 +256,7 @@ export async function fetchCategories(): Promise<Category[]> {
 // 카테고리별 게시물 가져오기
 export async function fetchPostsByCategory(categorySlug: string, page = 1): Promise<PaginationResult<Post>> {
   try {
-    const url = `${API_ENDPOINTS.POSTS}?filters[category][slug][$eq]=${categorySlug}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort=publishedAt:desc&populate=category`;
+    const url = `${API_ENDPOINTS.POSTS}?filters[category][slug][$eq]=${categorySlug}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate=category`;
 
     const response = await fetch(url, {
       next: {
