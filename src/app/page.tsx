@@ -5,7 +5,7 @@ import { getCategorySlug, getCategoryName, getFirstEmojiOrString } from "@/lib/u
 import { fetchPaginatedPosts } from "@/lib/api";
 
 export const metadata: Metadata = {
-  title: "My Kim Blog",
+  title: "MYKim",
   description: "프로그래밍, 웹 개발, 그리고 더 많은 주제에 대한 블로그"
 };
 
