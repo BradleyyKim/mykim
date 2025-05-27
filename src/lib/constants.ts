@@ -28,3 +28,15 @@ export const MAIN = {
   twitter: "@mykim",
   facebook: "https://www.facebook.com/mykim"
 };
+
+// Avatar 설정
+export const AVATAR = {
+  DEFAULT: "/images/avatars/mykim-avatar.jpg",
+  ALT: "My Kim Avatar",
+  SIZES: {
+    SM: 32,
+    MD: 40,
+    LG: 64,
+    XL: 128
+  }
+} as const;
