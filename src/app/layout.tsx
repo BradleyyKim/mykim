@@ -13,7 +13,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "My Kim",
-  description: "내 블로그에 오신 것을 환영합니다!"
+  description: "내 블로그에 오신 것을 환영합니다!",
+  other: {
+    "application/rss+xml": "/rss.xml"
+  }
 };
 
 export default function RootLayout({
@@ -23,6 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
+      <head>
+        <link rel="alternate" type="application/rss+xml" title="MYKim Blog RSS Feed" href="/rss.xml" />
+      </head>
       <body className={`${inter.className} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <TanstackProvider>
