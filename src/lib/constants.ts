@@ -19,12 +19,12 @@ export const POSTS_PER_PAGE = 10;
 export const REVALIDATE_TIME = process.env.NODE_ENV === "development" ? 10 : 300;
 
 export const MAIN = {
-  title: "Bradley",
-  description: "Bradley's Blog is a blog about my life and my thoughts.",
-  keywords: "bradley's blog, bradley, blog",
-  author: "Bradley",
-  url: "https://bradley.blog",
-  image: "https://mykim.blog/images/logo.png",
+  title: "MyKim",
+  description: "MyKim's Blog is a blog about my life and my thoughts.",
+  keywords: "mykim's blog, mykim, blog",
+  author: "MyKim",
+  url: "https://mykim.in",
+  image: "https://mykim.in/images/logo.png",
   twitter: "@mykim",
   facebook: "https://www.facebook.com/mykim"
 };
