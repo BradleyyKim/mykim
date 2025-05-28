@@ -7,6 +7,7 @@ import { TanstackProvider } from "@/lib/tanstack-query";
 import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import Header from "@/components/Header";
+import InfoCopyRight from "@/components/blog/InfoCopyRight";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +31,7 @@ export default function RootLayout({
                 <Header />
               </Suspense>
               <main>{children}</main>
+              <InfoCopyRight />
             </AuthProvider>
           </TanstackProvider>
         </ThemeProvider>

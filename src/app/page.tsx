@@ -129,7 +129,7 @@ async function HomePageContent({ yearFilter }: { yearFilter?: string }) {
   const yearsToDisplay = yearFilter ? filteredYears.filter(year => year === yearFilter) : filteredYears;
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12 min-h-screen">
       {/* 연도별 게시물 묶음 */}
       <div className="space-y-16">
         {yearsToDisplay.map(year => (

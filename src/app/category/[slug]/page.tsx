@@ -48,7 +48,7 @@ export default async function CategoryPage({ params }: Props) {
   const { category, posts, pagination } = categoryData;
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12 min-h-screen">
       <div className="mb-10">
         <h1 className="text-3xl font-bold mt-4 text-gray-800 dark:text-gray-100">{category.name}</h1>
         {category.description && <p className="text-gray-600 dark:text-gray-400 mt-2">{category.description}</p>}

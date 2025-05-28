@@ -15,7 +15,7 @@ export default function NotFound({
   linkHref = "/"
 }: NotFoundProps) {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl text-center">
+    <div className="container mx-auto px-4 py-8 max-w-3xl text-center min-h-screen">
       <h1 className="text-3xl font-bold mb-4">{title}</h1>
       <p className="mb-8">{message}</p>
       <Link href={linkHref} passHref>
