@@ -48,7 +48,8 @@ export const AVATAR = {
     "/images/avatars/mykim-avatar-2.png",
     "/images/avatars/mykim-avatar-3.png",
     "/images/avatars/mykim-avatar-4.png",
-    "/images/avatars/mykim-avatar-5.png"
+    "/images/avatars/mykim-avatar-5.png",
+    "/images/avatars/mykim-avatar-6.png"
   ],
   DEFAULT: "/images/avatars/mykim-avatar-1.png", // 기본값
   ALT: "My Kim Avatar",
