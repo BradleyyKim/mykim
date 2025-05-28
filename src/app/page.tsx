@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
-import { getCategorySlug, getCategoryName, getFirstEmojiOrString } from "@/lib/utils";
+import { getCategoryName, getFirstEmojiOrString } from "@/lib/utils";
 import { fetchPaginatedPosts } from "@/lib/api";
 
 export const metadata: Metadata = {
@@ -151,11 +151,10 @@ async function HomePageContent({ yearFilter }: { yearFilter?: string }) {
               <div className="w-full md:w-3/4">
                 <div className="space-y-6">
                   {postsByYear[year].posts.map(post => {
-                    const postCategorySlug = getCategorySlug(post.category);
                     const categoryName = getCategoryName(post.category);
                     return (
                       <article key={post.id} className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 last:border-0 transition-all hover:translate-x-1">
-                        <Link href={postCategorySlug ? `/category/${postCategorySlug}/${post.slug}` : `/posts/${post.slug}`} className="block group">
+                        <Link href={`/posts/${post.slug}`} className="block group">
                           <div className="flex justify-between items-start">
                             <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300">{post.title}</h2>
                             {categoryName && (
