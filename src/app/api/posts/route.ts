@@ -5,8 +5,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log("Request body:", body);
 
-    // Strapi API URL
-    const STRAPI_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+    // Strapi API URL - Auth와 동일한 방식으로 처리
+    const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:1337";
+    const STRAPI_API_URL = `${STRAPI_BASE_URL}/api`;
+    console.log("🔍 STRAPI_BASE_URL:", STRAPI_BASE_URL);
     console.log("🔍 STRAPI_API_URL:", STRAPI_API_URL);
     console.log("🔍 process.env.NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
 
@@ -158,7 +160,9 @@ export async function GET(request: Request) {
     const searchParams = new URLSearchParams(url.search);
     const category = searchParams.get("category");
 
-    const STRAPI_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+    // Auth와 동일한 방식으로 URL 처리
+    const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:1337";
+    const STRAPI_URL = `${STRAPI_BASE_URL}/api`;
     const POPULATE = "populate=*";
 
     // 카테고리 필터링이 있는 경우 쿼리 추가
