@@ -7,6 +7,23 @@ export async function POST(request: NextRequest) {
 
     // Strapi API URL
     const STRAPI_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+    console.log("🔍 STRAPI_API_URL:", STRAPI_API_URL);
+    console.log("🔍 process.env.NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
+
+    // 환경 변수가 올바르게 설정되지 않은 경우 에러 반환
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      console.error("❌ NEXT_PUBLIC_API_URL 환경 변수가 설정되지 않았습니다!");
+      return NextResponse.json(
+        {
+          error: "API URL 환경 변수가 설정되지 않았습니다",
+          debug: {
+            NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+            NODE_ENV: process.env.NODE_ENV
+          }
+        },
+        { status: 500 }
+      );
+    }
 
     // JWT 토큰 쿠키 읽기
     const authToken = request.cookies.get("adminToken");
