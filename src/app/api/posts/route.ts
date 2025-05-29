@@ -39,14 +39,17 @@ export async function POST(request: NextRequest) {
     if (authToken) {
       headers["Authorization"] = `Bearer ${authToken.value}`;
       console.log("Using client JWT token for authorization");
+      console.log("🔑 JWT Token length:", authToken.value.length);
+      console.log("🔑 JWT Token start:", authToken.value.substring(0, 50) + "...");
     } else {
       // 없으면 서버 측 API 토큰 사용 (기존 방식 유지)
       const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
       if (STRAPI_API_TOKEN) {
         headers["Authorization"] = `Bearer ${STRAPI_API_TOKEN}`;
         console.log("Using server API token for authorization");
+        console.log("🔑 Server Token length:", STRAPI_API_TOKEN.length);
       } else {
-        console.log("No authorization provided");
+        console.log("❌ No authorization provided");
       }
     }
 
@@ -54,6 +57,44 @@ export async function POST(request: NextRequest) {
       ...headers,
       Authorization: headers.Authorization ? `${headers.Authorization.substring(0, 20)}...` : "None"
     });
+
+    // JWT 토큰이 있는 경우 토큰 유효성 사전 검증
+    if (authToken) {
+      console.log("🔍 JWT 토큰 유효성 검증 중...");
+      try {
+        const tokenValidationResponse = await fetch(`${STRAPI_API_URL}/users/me`, {
+          headers: {
+            Authorization: `Bearer ${authToken.value}`
+          }
+        });
+
+        if (!tokenValidationResponse.ok) {
+          console.error("❌ JWT 토큰 검증 실패:", tokenValidationResponse.status, tokenValidationResponse.statusText);
+          return NextResponse.json(
+            {
+              error: "인증 토큰이 유효하지 않습니다",
+              debug: {
+                tokenValidationStatus: tokenValidationResponse.status,
+                tokenValidationStatusText: tokenValidationResponse.statusText
+              }
+            },
+            { status: 401 }
+          );
+        }
+
+        const userInfo = await tokenValidationResponse.json();
+        console.log("✅ JWT 토큰 검증 성공. 사용자:", userInfo.username || userInfo.email);
+      } catch (tokenError) {
+        console.error("❌ JWT 토큰 검증 중 오류:", tokenError);
+        return NextResponse.json(
+          {
+            error: "토큰 검증 중 오류가 발생했습니다",
+            debug: { tokenError: tokenError instanceof Error ? tokenError.message : String(tokenError) }
+          },
+          { status: 500 }
+        );
+      }
+    }
 
     // 요청 바디 타입 설정
     interface PostData {
@@ -116,11 +157,18 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const contentType = response.headers.get("content-type");
       let errorMessage = `Failed to create post: ${response.status}`;
+      let errorDetails = null;
+
+      console.error("❌ Strapi API 응답 실패:");
+      console.error("Status:", response.status);
+      console.error("Status Text:", response.statusText);
+      console.error("Content-Type:", contentType);
 
       if (contentType && contentType.includes("application/json")) {
         try {
           const errorData = await response.json();
-          console.error("Strapi API Error:", errorData);
+          console.error("Strapi API Error Response:", JSON.stringify(errorData, null, 2));
+          errorDetails = errorData;
           errorMessage = `Failed to create post: ${JSON.stringify(errorData)}`;
         } catch (jsonError) {
           console.error("Error parsing JSON error response:", jsonError);
@@ -130,13 +178,28 @@ export async function POST(request: NextRequest) {
         try {
           const errorText = await response.text();
           console.error("Strapi API Error (text):", errorText);
+          errorDetails = errorText;
           errorMessage = `Failed to create post: ${errorText}`;
         } catch (textError) {
           console.error("Error reading error response text:", textError);
         }
       }
 
-      return NextResponse.json({ error: errorMessage }, { status: response.status });
+      return NextResponse.json(
+        {
+          error: errorMessage,
+          debug: {
+            status: response.status,
+            statusText: response.statusText,
+            contentType,
+            details: errorDetails,
+            requestUrl: `${STRAPI_API_URL}/posts`,
+            hasAuthToken: !!authToken,
+            timestamp: new Date().toISOString()
+          }
+        },
+        { status: response.status }
+      );
     }
 
     const data = await response.json();

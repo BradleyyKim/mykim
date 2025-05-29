@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    // Strapi API URL
-    const STRAPI_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+    // Strapi API URL - Posts, Auth와 동일한 방식으로 처리
+    const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:1337";
+    const STRAPI_API_URL = `${STRAPI_BASE_URL}/api`;
 
     // 카테고리 데이터 요청
     const response = await fetch(`${STRAPI_API_URL}/categories?populate=*`, {
