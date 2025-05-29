@@ -176,7 +176,7 @@ function createSlug(text: string): string {
     .toLowerCase()
     .trim()
     .replace(/\s+/g, "-") // 공백을 대시로 바꾸기
-    .replace(/[^\w-]+/g, "") // 영문자, 숫자, 대시, 밑줄만 남기기
+    .replace(/[^\w가-힣-]+/g, "") // 영문자, 숫자, 대시, 밑줄, 한글만 남기기
     .replace(/--+/g, "-") // 연속된 대시 제거
     .replace(/^-+|-+$/g, ""); // 시작과 끝의 대시 제거
 }
