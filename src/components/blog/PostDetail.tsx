@@ -27,7 +27,7 @@ export default function PostDetail({ post, categoryName: propCategoryName, categ
 
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl ">
-      <header className="mb-8">
+      <header className="mb-16">
         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
         <div className="flex items-center justify-between text-gray-500 mb-4 flex-wrap gap-4">
           <div className="flex items-center">
