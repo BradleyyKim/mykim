@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Post } from "@/lib/api";
 import { getCategorySlug, getCategoryName } from "@/lib/utils";
 import { renderTiptapContent } from "@/lib/tiptap-renderer";
+import { PostDetailActions } from "./PostDetailActions";
 
 interface PostDetailProps {
   post: Post;
@@ -44,6 +45,9 @@ export default function PostDetail({ post, categoryName: propCategoryName, categ
             </div>
           )}
         </div>
+
+        {/* 관리자용 액션 버튼들 */}
+        <PostDetailActions postSlug={post.slug} />
       </header>
 
       {post.featuredImage && post.featuredImage.url && (

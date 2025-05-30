@@ -98,6 +98,7 @@ export const apiClient = {
     content: string;
     description?: string;
     category?: string;
+    slug?: string;
     featuredImage?: {
       url: string;
       alternativeText?: string;
@@ -105,9 +106,19 @@ export const apiClient = {
     publishedDate?: string;
   }) {
     console.log("[apiClient] 새 포스트 생성 시도");
+
+    // 빈 문자열인 필드들을 제거
+    const cleanData = { ...data };
+    if (cleanData.publishedDate === "") {
+      delete cleanData.publishedDate;
+    }
+    if (cleanData.description === "") {
+      delete cleanData.description;
+    }
+
     const response = await fetch(
       "/api/posts",
-      createFetchOptions("POST", data, true) // 인증 필요
+      createFetchOptions("POST", cleanData, true) // 인증 필요
     );
 
     if (!response.ok) {
@@ -215,6 +226,80 @@ export const apiClient = {
 
     const result = await response.json();
     console.log(`[apiClient] 포스트 삭제 성공: ID=${id}`);
+
+    // 삭제 후 재검증 실행
+    try {
+      await revalidatePosts();
+      await revalidatePath("/");
+      console.log("[apiClient] 포스트 삭제 후 재검증 완료");
+    } catch (error) {
+      console.error("[apiClient] 삭제 후 재검증 실패:", error);
+    }
+
+    return result;
+  },
+
+  /**
+   * 포스트 수정 (slug 기반)
+   */
+  async updatePostBySlug(
+    slug: string,
+    data: {
+      title?: string;
+      content?: string;
+      description?: string;
+      category?: number | string;
+      slug?: string;
+      featuredImage?: { url: string; alternativeText?: string } | null;
+      publishedDate?: string;
+    }
+  ) {
+    console.log(`[apiClient] 포스트 수정 시도: slug=${slug}`);
+    const response = await fetch(
+      `/api/posts/${slug}`,
+      createFetchOptions("PUT", data, true) // 인증 필요
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("[apiClient] 포스트 수정 실패:", errorData);
+      throw new Error(errorData.error || "포스트 수정에 실패했습니다");
+    }
+
+    const result = await response.json();
+    console.log(`[apiClient] 포스트 수정 성공: slug=${slug}`);
+
+    // 수정 후 재검증 실행
+    try {
+      await revalidatePosts();
+      await revalidatePath("/");
+      await revalidatePath(`/posts/${slug}`);
+      console.log("[apiClient] 포스트 수정 후 재검증 완료");
+    } catch (error) {
+      console.error("[apiClient] 수정 후 재검증 실패:", error);
+    }
+
+    return result;
+  },
+
+  /**
+   * 포스트 삭제 (slug 기반)
+   */
+  async deletePostBySlug(slug: string) {
+    console.log(`[apiClient] 포스트 삭제 시도: slug=${slug}`);
+    const response = await fetch(
+      `/api/posts/${slug}`,
+      createFetchOptions("DELETE", undefined, true) // 인증 필요
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("[apiClient] 포스트 삭제 실패:", errorData);
+      throw new Error(errorData.error || "포스트 삭제에 실패했습니다");
+    }
+
+    const result = await response.json();
+    console.log(`[apiClient] 포스트 삭제 성공: slug=${slug}`);
 
     // 삭제 후 재검증 실행
     try {

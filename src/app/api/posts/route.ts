@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       data: {
         title: body.title,
         content: body.content,
-        slug: createSlug(body.title),
+        slug: body.slug || createSlug(body.title),
         description: body.description || body.content.substring(0, 200),
         featuredImage: body.featuredImage,
         publishedDate: body.publishedDate
@@ -171,12 +171,16 @@ export async function GET(request: Request) {
 
 // 슬러그 생성 유틸리티 함수
 function createSlug(text: string): string {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-") // 공백을 대시로 바꾸기
-    .replace(/[^\w가-힣-]+/g, "") // 영문자, 숫자, 대시, 밑줄, 한글만 남기기
-    .replace(/--+/g, "-") // 연속된 대시 제거
-    .replace(/^-+|-+$/g, ""); // 시작과 끝의 대시 제거
+  return (
+    text
+      .toString()
+      .toLowerCase()
+      .replace(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g, "") // 한글 제거
+      .trim()
+      .replace(/\s+/g, "-") // 공백을 대시로 바꾸기
+      .replace(/[^\w-]+/g, "") // 영문자, 숫자, 대시만 남기기
+      .replace(/--+/g, "-") // 연속된 대시 제거
+      .replace(/^-+|-+$/g, "") || // 시작과 끝의 대시 제거
+    "untitled-post"
+  ); // 빈 문자열이면 기본값
 }

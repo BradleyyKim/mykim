@@ -82,18 +82,20 @@ export function useCreatePost() {
     content: string;
     description?: string;
     category?: string;
+    slug?: string;
     featuredImage?: {
       url: string;
       alternativeText?: string;
     } | null;
     publishedDate?: string;
   }) => {
-    // 제목, 내용, 설명, 카테고리, 발행날짜 처리
+    // 제목, 내용, 설명, 카테고리, slug, 발행날짜 처리
     return apiClient.createPost({
       title: data.title,
       content: data.content,
       description: data.description,
       category: data.category,
+      slug: data.slug,
       featuredImage: data.featuredImage,
       publishedDate: data.publishedDate
     });
@@ -124,5 +126,33 @@ export function useUpdatePost() {
 export function useDeletePost() {
   return useMutation({
     mutationFn: (id: number) => apiClient.deletePost(id)
+  });
+}
+
+// Slug 기반 포스트 수정 훅
+export function useUpdatePostBySlug() {
+  return useMutation({
+    mutationFn: ({
+      slug,
+      data
+    }: {
+      slug: string;
+      data: {
+        title?: string;
+        content?: string;
+        description?: string;
+        category?: number | string;
+        slug?: string;
+        featuredImage?: { url: string; alternativeText?: string } | null;
+        publishedDate?: string;
+      };
+    }) => apiClient.updatePostBySlug(slug, data)
+  });
+}
+
+// Slug 기반 포스트 삭제 훅
+export function useDeletePostBySlug() {
+  return useMutation({
+    mutationFn: (slug: string) => apiClient.deletePostBySlug(slug)
   });
 }

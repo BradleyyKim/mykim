@@ -4,3 +4,5 @@ export { default as Pagination } from "./Pagination";
 export { default as PaginationWrapper } from "./PaginationWrapper";
 export { default as PostDetail } from "./PostDetail";
 export { default as InfoCopyRight } from "./InfoCopyRight";
+export { default as Introduce } from "./Introduce";
+export { PostDetailActions } from "./PostDetailActions";
