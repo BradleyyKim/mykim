@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { Rss } from "lucide-react";
+import { Rss, Mail, Instagram } from "lucide-react";
 
-type SocialIconType = "linkedin" | "github" | "rss";
+type SocialIconType = "linkedin" | "github" | "rss" | "email" | "instagram";
 
 interface SocialIconProps {
   type: SocialIconType;
@@ -23,9 +23,17 @@ const SOCIAL_ICONS = {
 } as const;
 
 export default function SocialIcon({ type, size = 20, className = "" }: SocialIconProps) {
-  // RSS는 여전히 Lucide 아이콘 사용 (deprecated 되지 않음)
+  // Lucide 아이콘들 (RSS, Email, Instagram)
   if (type === "rss") {
     return <Rss className={`text-orange-500 group-hover:text-orange-600 ${className}`} style={{ width: size, height: size }} />;
+  }
+
+  if (type === "email") {
+    return <Mail className={`text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200 ${className}`} style={{ width: size, height: size }} />;
+  }
+
+  if (type === "instagram") {
+    return <Instagram className={`text-pink-500 group-hover:text-pink-600 ${className}`} style={{ width: size, height: size }} />;
   }
 
   // 커스텀 이미지 아이콘 사용

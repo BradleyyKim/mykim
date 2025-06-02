@@ -23,20 +23,26 @@ export const MAIN = {
   description: "MyKim's Blog is a blog about my life and my thoughts.",
   keywords: "mykim's blog, mykim, blog",
   author: "김민영",
+  author_en: "Minyoung Kim",
   url: "https://mykim.in",
   image: "https://mykim.in/images/logo.png",
   twitter: "@mykim",
-  facebook: "https://www.facebook.com/mykim",
+  facebook: "https://www.facebook.com/01029421924",
   // 소셜 링크
   social: {
     linkedin: "https://www.linkedin.com/in/minyoung-kim-fe/",
     github: "https://github.com/BradleyyKim",
-    rss: "/rss.xml"
+    rss: "/rss.xml",
+    email: "minyoungforcontact@gmail.com",
+    instagram: "https://www.instagram.com/minyoungdumb"
   },
   // 개인 정보
   bio: {
+    location: "Seoul, Korea",
+    duty: "Web Frontend Engineer",
     tagline: "어쩌면 오늘이 가장 행복한 날일지도 모르겠습니다.",
-    subtitle: "Software Engineer & Life Architect"
+    subtitle: "Software Engineer & Life Architect",
+    description: ["안녕하세요, 김민영입니다.", "웹 프론트엔드 개발을 주 업무로 하고 있습니다.", "매일이 새로운 배움의 기회라고 믿으며, 더 나은 내일을 위해 한 걸음씩 나아가고 있습니다."]
   }
 };
 
