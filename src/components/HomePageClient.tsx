@@ -21,7 +21,6 @@ export default function HomePageClient({ postsByYear, filteredYears }: HomePageC
         <div className="space-y-16">
           {filteredYears.map(year => {
             const postsCount = postsByYear[year].totalCount;
-            const shouldScroll = postsCount > 10;
 
             return (
               <div key={year} className="year-section">
@@ -35,17 +34,7 @@ export default function HomePageClient({ postsByYear, filteredYears }: HomePageC
                   </div>
                   {/* 해당 연도의 게시물 목록 (우측 또는 하단) */}
                   <div className="w-full md:w-3/4">
-                    <div
-                      className={`space-y-6 ${shouldScroll ? "max-h-[40rem] overflow-y-auto pr-2 border-r border-gray-100 dark:border-gray-800" : ""}`}
-                      style={
-                        shouldScroll
-                          ? {
-                              scrollbarWidth: "thin",
-                              scrollbarColor: "rgb(156 163 175) transparent"
-                            }
-                          : {}
-                      }
-                    >
+                    <div className="space-y-6">
                       {postsByYear[year].posts.map(post => {
                         const categoryName = getCategoryName(post.category);
                         return (
@@ -70,10 +59,10 @@ export default function HomePageClient({ postsByYear, filteredYears }: HomePageC
         </div>
       </div>
 
-      {/* 인증된 유저용 플로팅 Write 버튼 */}
+      {/* 인증된 유저용 플로팅 Write 버튼 - footer와 겹치지 않도록 위치 조정 */}
       {isLoggedIn && (
         <Link href="/write">
-          <button className="fixed bottom-8 right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-50" title="새 글 작성">
+          <button className="fixed bottom-24 right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-50" title="새 글 작성">
             <PenTool className="h-6 w-6" />
           </button>
         </Link>

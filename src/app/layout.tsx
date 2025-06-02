@@ -36,8 +36,10 @@ export default function RootLayout({
               <Suspense fallback={<div className="h-14 border-b bg-background/95"></div>}>
                 <Header />
               </Suspense>
-              <main className="min-h-screen">{children}</main>
-              <InfoCopyRight />
+              <main className="min-h-screen flex flex-col">
+                <div className="flex-1">{children}</div>
+                <InfoCopyRight />
+              </main>
             </AuthProvider>
           </TanstackProvider>
         </ThemeProvider>
