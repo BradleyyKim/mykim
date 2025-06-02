@@ -29,8 +29,6 @@ export default function Header() {
 
   // 현재 홈페이지인지 확인
   const isHomePage = pathname === "/";
-  // year 파라미터 확인
-  const yearFilter = searchParams.get("year");
 
   // 카테고리 데이터 로드
   useEffect(() => {
@@ -71,7 +69,7 @@ export default function Header() {
         {/* 좌측: 블로그 타이틀 */}
         <div className="mr-4 flex items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold italic">{isHomePage && !yearFilter ? MAIN.title : "Home"}</span>
+            <span className="text-xl font-bold italic">{isHomePage ? MAIN.title : "Home"}</span>
           </Link>
         </div>
 
