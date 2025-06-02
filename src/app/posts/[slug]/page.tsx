@@ -8,9 +8,9 @@ import { extractPlainText } from "@/lib/tiptap-renderer";
 export const revalidate = 300; // 5분
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 // 정적 경로 생성 (ISR 최적화) - 빌드 시에는 빈 배열 반환
@@ -20,7 +20,7 @@ export async function generateStaticParams() {
 
 // 동적 메타데이터 생성
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const post = await getPostBySlug(slug);
 
   if (!post) {
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PostPage({ params }: Props) {
-  const { slug } = params;
+  const { slug } = await params;
 
   // 1. 포스트 데이터 가져오기
   const post = await getPostBySlug(slug);

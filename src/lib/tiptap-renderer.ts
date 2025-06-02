@@ -3,10 +3,51 @@ import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import Document from "@tiptap/extension-document";
+import { createLowlight } from "lowlight";
+// 주요 언어들 import
+import javascript from "highlight.js/lib/languages/javascript";
+import typescript from "highlight.js/lib/languages/typescript";
+import python from "highlight.js/lib/languages/python";
+import java from "highlight.js/lib/languages/java";
+import css from "highlight.js/lib/languages/css";
+import html from "highlight.js/lib/languages/xml";
+import json from "highlight.js/lib/languages/json";
+import bash from "highlight.js/lib/languages/bash";
+import sql from "highlight.js/lib/languages/sql";
+import markdown from "highlight.js/lib/languages/markdown";
+
+// lowlight 인스턴스 생성 및 언어 등록
+const lowlight = createLowlight();
+lowlight.register("javascript", javascript);
+lowlight.register("typescript", typescript);
+lowlight.register("python", python);
+lowlight.register("java", java);
+lowlight.register("css", css);
+lowlight.register("html", html);
+lowlight.register("json", json);
+lowlight.register("bash", bash);
+lowlight.register("sql", sql);
+lowlight.register("markdown", markdown);
 
 // Tiptap 확장 설정
 const extensions = [
-  StarterKit,
+  Document.configure({
+    // 빈 줄 허용을 위한 설정
+  }),
+  StarterKit.configure({
+    // 기본 CodeBlock을 비활성화하고 CodeBlockLowlight로 대체
+    codeBlock: false,
+    document: false // Document 확장을 별도로 설정했으므로 비활성화
+  }),
+  CodeBlockLowlight.configure({
+    lowlight,
+    defaultLanguage: "plaintext",
+    HTMLAttributes: {
+      class: "code-block-container"
+    }
+  }),
   Image.configure({
     HTMLAttributes: {
       class: "rounded-lg shadow-md max-w-full h-auto"

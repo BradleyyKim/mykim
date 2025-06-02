@@ -7,9 +7,9 @@ import PaginationWrapper from "@/components/blog/PaginationWrapper";
 import { formatDate } from "date-fns";
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 // ISR 설정
@@ -17,7 +17,7 @@ export const revalidate = 300; // 5분
 
 // 카테고리 메타데이터 생성
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const categoryData = await getCategoryData(slug);
 
   if (!categoryData) {
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryPage({ params }: Props) {
   // 1. URL 파라미터에서 데이터 추출
-  const { slug } = params;
+  const { slug } = await params;
 
   // 2. 카테고리 데이터 가져오기
   const categoryData = await getCategoryData(slug);

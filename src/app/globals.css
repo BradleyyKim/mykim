@@ -288,3 +288,126 @@
 .dark .prose li {
   color: var(--foreground);
 }
+
+/* 코드 블록 스타일링 */
+.prose .code-block-container {
+  position: relative;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  font-family: "JetBrains Mono", "Fira Code", Consolas, "Monaco", "Courier New", monospace;
+}
+
+.dark .prose .code-block-container {
+  background: #1e1e1e;
+  border-color: #3e3e3e;
+}
+
+.prose .code-block-container::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #007acc;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  border-bottom-left-radius: 4px;
+  font-weight: 500;
+}
+
+.prose .code-block-container pre {
+  margin: 0 !important;
+  padding: 2rem 1rem 1rem 1rem !important;
+  background: transparent !important;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.prose .code-block-container code {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit !important;
+}
+
+/* Syntax highlighting - Light mode */
+.prose .hljs-keyword {
+  color: #0077aa;
+  font-weight: bold;
+}
+.prose .hljs-string {
+  color: #669900;
+}
+.prose .hljs-comment {
+  color: #999999;
+  font-style: italic;
+}
+.prose .hljs-number {
+  color: #ff6600;
+}
+.prose .hljs-function {
+  color: #0077aa;
+}
+.prose .hljs-variable {
+  color: #007700;
+}
+.prose .hljs-type {
+  color: #0077aa;
+}
+.prose .hljs-operator {
+  color: #333333;
+}
+.prose .hljs-punctuation {
+  color: #333333;
+}
+
+/* Syntax highlighting - Dark mode */
+.dark .prose .hljs-keyword {
+  color: #569cd6;
+}
+.dark .prose .hljs-string {
+  color: #ce9178;
+}
+.dark .prose .hljs-comment {
+  color: #6a9955;
+}
+.dark .prose .hljs-number {
+  color: #b5cea8;
+}
+.dark .prose .hljs-function {
+  color: #dcdcaa;
+}
+.dark .prose .hljs-variable {
+  color: #9cdcfe;
+}
+.dark .prose .hljs-type {
+  color: #4ec9b0;
+}
+.dark .prose .hljs-operator {
+  color: #d4d4d4;
+}
+.dark .prose .hljs-punctuation {
+  color: #d4d4d4;
+}
+
+/* 인라인 코드 스타일 개선 */
+.prose code:not(.code-block-container code) {
+  background-color: rgba(97, 97, 97, 0.1) !important;
+  color: #616161;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: "JetBrains Mono", "Fira Code", Consolas, "Monaco", "Courier New", monospace;
+  font-size: 0.875em;
+}
+
+.dark .prose code:not(.code-block-container code) {
+  background-color: rgba(156, 163, 175, 0.2) !important;
+  color: #d1d5db;
+}

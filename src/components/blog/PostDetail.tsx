@@ -27,7 +27,7 @@ export default function PostDetail({ post, categoryName: propCategoryName, categ
   const renderedContent = renderTiptapContent(post.content);
 
   return (
-    <article className="container mx-auto px-4 py-8 max-w-3xl ">
+    <article className="container mx-auto px-4 py-8 max-w-3xl">
       <header className="mb-16">
         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
         <div className="flex items-center justify-between text-gray-500 mb-4 flex-wrap gap-4">
@@ -63,7 +63,7 @@ export default function PostDetail({ post, categoryName: propCategoryName, categ
         </div>
       )}
 
-      <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: renderedContent }} />
+      <div className="prose prose-lg max-w-none post-content" dangerouslySetInnerHTML={{ __html: renderedContent }} />
     </article>
   );
 }
