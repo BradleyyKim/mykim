@@ -80,9 +80,8 @@ export default function AboutPage() {
                 {/* Detailed Resume Link */}
                 <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                   <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                    <Link href="https://www.notion.so/Portfolio-1c555ac7ad08807b9f05c10e96cb59ee?source=copy_link" target="_blank" rel="noopener noreferrer">
-                      <FileUser className="mr-2 h-5 w-5" />
-                      Detailed Resume (Notion)
+                    <Link href="/career" rel="noopener noreferrer">
+                      Career Detail
                       <ExternalLink className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
