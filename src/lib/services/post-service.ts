@@ -34,8 +34,8 @@ export async function getHomePageData(
   const pageTitle = categoryName
     ? categoryName
     : categorySlug
-    ? `${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)} Posts` // 이름이 없을 때 fallback
-    : "Posts";
+      ? `${categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)} Posts` // 이름이 없을 때 fallback
+      : "Posts";
 
   return {
     posts: postsData.data,
