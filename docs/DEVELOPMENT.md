@@ -12,6 +12,26 @@ node --version  # v20.15.1
 npm --version   # 10.7.0
 ```
 
+### 환경변수 설정
+
+프로젝트 루트에 다음 환경변수 파일들을 생성하세요:
+
+#### .env.local (개발용)
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:1337/api
+```
+
+#### .env.production (프로덕션 빌드용)
+
+```bash
+# 실제 백엔드 API URL로 변경
+NEXT_PUBLIC_API_URL=https://your-backend-api.com/api
+
+# 또는 빌드 시점에서 API 호출을 완전히 비활성화하려면
+# NEXT_PUBLIC_API_URL=disabled
+```
+
 ### VSCode 확장 프로그램
 
 이 프로젝트에서는 다음 VSCode 확장 프로그램을 권장합니다:
@@ -43,18 +63,28 @@ cd mykim-blog-front
 npm install
 ```
 
-### 2. VSCode 설정
+### 2. 환경변수 설정
+
+```bash
+# .env.local 파일 생성
+echo "NEXT_PUBLIC_API_URL=http://localhost:1337/api" > .env.local
+
+# .env.production 파일 생성
+echo "NEXT_PUBLIC_API_URL=https://your-backend-api.com/api" > .env.production
+```
+
+### 3. VSCode 설정
 
 프로젝트를 VSCode로 열면 자동으로 권장 확장 프로그램 설치를 제안합니다.
 설치 후 VSCode를 재시작하세요.
 
-### 3. 개발 서버 실행
+### 4. 개발 서버 실행
 
 ```bash
 npm run dev
 ```
 
-### 4. 코드 포맷팅 확인
+### 5. 코드 포맷팅 확인
 
 ```bash
 # 포맷팅 체크
@@ -62,6 +92,24 @@ npm run format:check
 
 # 자동 포맷팅 적용
 npm run format
+```
+
+## 빌드 관련 설정
+
+### 빌드 에러 해결
+
+`npm run build` 시 fetch 에러가 발생하는 경우:
+
+1. **환경변수 확인**: `.env.production` 파일이 있는지 확인
+2. **API URL 설정**: 유효한 백엔드 API URL을 설정하거나 `disabled`로 설정
+3. **백엔드 서버**: 빌드 시점에 백엔드 서버가 실행 중인지 확인
+
+### 안전한 빌드를 위한 환경변수
+
+```bash
+# API가 없는 상태에서 빌드하려면
+echo "NEXT_PUBLIC_API_URL=disabled" > .env.production
+npm run build
 ```
 
 ## 다른 기기로 이전할 때
@@ -77,15 +125,33 @@ git push
 # 다른 기기에서
 git pull
 npm install
+
+# 환경변수 파일 생성
+echo "NEXT_PUBLIC_API_URL=http://localhost:1337/api" > .env.local
 ```
 
 ### 방법 2: 프로젝트 폴더 복사
 
 1. 전체 프로젝트 폴더를 복사
 2. 다른 기기에서 `npm install` 실행
-3. VSCode로 열어서 확장 프로그램 설치
+3. 환경변수 파일들 생성
+4. VSCode로 열어서 확장 프로그램 설치
 
 ## 트러블슈팅
+
+### 빌드 시 fetch 에러
+
+```bash
+[TypeError: fetch failed] {
+  [cause]: [AggregateError: ] { code: 'ECONNREFUSED' }
+}
+```
+
+**해결 방법**:
+
+1. `.env.production` 파일에 올바른 API URL 설정
+2. 또는 임시로 `NEXT_PUBLIC_API_URL=disabled` 설정
+3. 백엔드 서버가 실행 중인지 확인
 
 ### Prettier가 작동하지 않는 경우
 

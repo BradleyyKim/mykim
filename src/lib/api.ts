@@ -1,6 +1,19 @@
 // API 관련 모듈 임포트
 import { API_ENDPOINTS, POSTS_PER_PAGE, REVALIDATE_TIME } from "./constants";
 
+// 빌드 시점에서 API 호출이 안전한지 확인하는 함수
+function isSafeToCallAPI(): boolean {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  // 빌드 시점에서 localhost API 호출 방지
+  if (process.env.NODE_ENV === "production" && (!apiUrl || apiUrl.includes("localhost") || apiUrl === "disabled")) {
+    console.warn("Skipping API call during build: API URL not configured or set to localhost");
+    return false;
+  }
+
+  return true;
+}
+
 // 타입 정의
 export interface FeaturedImage {
   url: string;
@@ -88,6 +101,10 @@ interface StrapiResponse<T> {
 
 // 서버 컴포넌트에서 사용할 함수
 export async function fetchPosts(): Promise<Post[]> {
+  if (!isSafeToCallAPI()) {
+    return [];
+  }
+
   try {
     const response = await fetch(`${API_ENDPOINTS.POSTS}?populate=category`, {
       cache: "no-store",
@@ -116,6 +133,11 @@ export async function fetchPosts(): Promise<Post[]> {
 
 // 페이지네이션 및 최신순 정렬이 있는 게시물 가져오기
 export async function fetchPaginatedPosts(page = 1, pageSize = POSTS_PER_PAGE): Promise<PaginationResult<Post>> {
+  // 빌드 시점에서 API 호출이 안전하지 않으면 빈 데이터 반환
+  if (!isSafeToCallAPI()) {
+    return { data: [], pagination: { page, pageSize, pageCount: 0, total: 0 } };
+  }
+
   try {
     const url = `${API_ENDPOINTS.POSTS}?pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate=category`;
 
@@ -255,6 +277,10 @@ export async function fetchCategories(): Promise<Category[]> {
 
 // 카테고리별 게시물 가져오기
 export async function fetchPostsByCategory(categorySlug: string, page = 1): Promise<PaginationResult<Post>> {
+  if (!isSafeToCallAPI()) {
+    return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
+  }
+
   try {
     const url = `${API_ENDPOINTS.POSTS}?filters[category][slug][$eq]=${categorySlug}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate=category`;
 
@@ -281,38 +307,38 @@ export async function fetchPostsByCategory(categorySlug: string, page = 1): Prom
       pagination: data.meta?.pagination || { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 }
     };
   } catch (error) {
-    console.error(`Error fetching posts for category ${categorySlug}:`, error);
+    console.error("Error fetching posts by category:", error);
     return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
   }
 }
 
 // slug로 특정 카테고리 정보 가져오기
 export async function fetchCategoryBySlug(slug: string): Promise<Category | null> {
-  try {
-    const url = `${API_ENDPOINTS.CATEGORIES}?filters[slug][$eq]=${slug}`;
+  if (!isSafeToCallAPI()) {
+    return null;
+  }
 
-    const response = await fetch(url, {
+  try {
+    const response = await fetch(`${API_ENDPOINTS.CATEGORIES}?filters[slug][$eq]=${slug}`, {
       next: {
-        tags: ["categories", `category${slug}`],
+        tags: [`category-${slug}`],
         revalidate: REVALIDATE_TIME
       }
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch category with slug ${slug}: ${response.status}`);
+      throw new Error(`Failed to fetch category: ${response.status}`);
     }
 
     const data = await response.json();
 
-    if (!data.data || !Array.isArray(data.data) || data.data.length === 0) {
-      console.error("Category not found or unexpected API response structure:", data);
+    if (!data.data || data.data.length === 0) {
       return null;
     }
 
-    // 첫 번째 결과 반환 (slug는 고유해야 함)
     return data.data[0];
   } catch (error) {
-    console.error(`Error fetching category with slug ${slug}:`, error);
+    console.error("Error fetching category:", error);
     return null;
   }
 }

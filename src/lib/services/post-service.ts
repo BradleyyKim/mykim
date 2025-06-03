@@ -51,6 +51,12 @@ export async function getHomePageData(
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   const STRAPI_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
 
+  // 빌드 시점에서 localhost API 호출 시 조기 반환
+  if (process.env.NODE_ENV === "production" && STRAPI_URL.includes("localhost")) {
+    console.warn(`Skipping API call during build for slug: ${slug}`);
+    return null;
+  }
+
   try {
     const res = await fetch(`${STRAPI_URL}/posts?filters[slug][$eq]=${slug}&populate=*`, {
       method: "GET",
@@ -64,7 +70,9 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     });
 
     if (!res.ok) {
-      console.error("Failed to fetch post:", res.status);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Failed to fetch post:", res.status);
+      }
       return null;
     }
 
@@ -76,7 +84,12 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 
     return data.data[0];
   } catch (error) {
-    console.error("Error fetching post:", error);
+    // 빌드 시점에서는 경고만 표시
+    if (process.env.NODE_ENV === "production") {
+      console.warn(`API call failed for slug: ${slug} (build time)`);
+    } else {
+      console.error("Error fetching post:", error);
+    }
     return null;
   }
 }

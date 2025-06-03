@@ -75,47 +75,57 @@ export default function HomePage() {
 
 // 서버 컴포넌트에서 데이터 로드
 async function HomePageContentWrapper() {
-  // 페이지네이션 없이 모든 게시물 가져오기 (최대 100개)
-  const { data: allPosts } = await fetchPaginatedPosts(1, 100);
+  try {
+    // 페이지네이션 없이 모든 게시물 가져오기 (최대 100개)
+    const { data: allPosts } = await fetchPaginatedPosts(1, 100);
 
-  // 연도별로 게시물 그룹화
-  const postsByYear: PostsByYear = allPosts.reduce((acc, post) => {
-    // publishedDate를 우선 사용하고, 없으면 publishedAt이나 createdAt 사용
-    const postDate = new Date(post.publishedDate || post.publishedAt || post.createdAt);
-    const year = postDate.getFullYear().toString();
+    // 연도별로 게시물 그룹화
+    const postsByYear: PostsByYear = allPosts.reduce((acc, post) => {
+      // publishedDate를 우선 사용하고, 없으면 publishedAt이나 createdAt 사용
+      const postDate = new Date(post.publishedDate || post.publishedAt || post.createdAt);
+      const year = postDate.getFullYear().toString();
 
-    if (!acc[year]) {
-      acc[year] = { posts: [], totalCount: 0 };
-    }
+      if (!acc[year]) {
+        acc[year] = { posts: [], totalCount: 0 };
+      }
 
-    acc[year].posts.push({
-      id: post.id,
-      title: post.title,
-      slug: post.slug,
-      publishedDate: post.publishedDate || post.publishedAt || post.createdAt,
-      createdAt: post.createdAt,
-      category: post.category
+      acc[year].posts.push({
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        publishedDate: post.publishedDate || post.publishedAt || post.createdAt,
+        createdAt: post.createdAt,
+        category: post.category
+      });
+
+      return acc;
+    }, {} as PostsByYear);
+
+    // 연도별로 내림차순 정렬 (최신 연도가 먼저 오도록)
+    const sortedYears = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a));
+
+    // 각 연도에 포스트가 있는지 확인하고 포스트가 있는 연도만 필터링
+    const filteredYears = sortedYears.filter(year => postsByYear[year].posts.length > 0);
+
+    // 각 연도별 포스트 정렬 (제한 제거)
+    filteredYears.forEach(year => {
+      // 날짜별로 내림차순 정렬
+      postsByYear[year].posts.sort((a, b) => new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime());
+      // 총 포스트 수 저장
+      postsByYear[year].totalCount = postsByYear[year].posts.length;
+      // 제한 제거 - 모든 포스트 표시
     });
 
-    return acc;
-  }, {} as PostsByYear);
+    return <HomePageClient postsByYear={postsByYear} filteredYears={filteredYears} />;
+  } catch (error) {
+    console.warn("Failed to fetch posts for homepage:", error);
 
-  // 연도별로 내림차순 정렬 (최신 연도가 먼저 오도록)
-  const sortedYears = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a));
+    // 빌드 시점에서 API 호출 실패 시 빈 데이터 반환
+    const emptyPostsByYear: PostsByYear = {};
+    const emptyFilteredYears: string[] = [];
 
-  // 각 연도에 포스트가 있는지 확인하고 포스트가 있는 연도만 필터링
-  const filteredYears = sortedYears.filter(year => postsByYear[year].posts.length > 0);
-
-  // 각 연도별 포스트 정렬 (제한 제거)
-  filteredYears.forEach(year => {
-    // 날짜별로 내림차순 정렬
-    postsByYear[year].posts.sort((a, b) => new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime());
-    // 총 포스트 수 저장
-    postsByYear[year].totalCount = postsByYear[year].posts.length;
-    // 제한 제거 - 모든 포스트 표시
-  });
-
-  return <HomePageClient postsByYear={postsByYear} filteredYears={filteredYears} />;
+    return <HomePageClient postsByYear={emptyPostsByYear} filteredYears={emptyFilteredYears} />;
+  }
 }
 
 // Next.js에게 정적 생성 페이지로 설정하고 주기적으로 재검증하도록 설정

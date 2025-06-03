@@ -18,21 +18,39 @@ export async function generateStaticParams() {
   return [];
 }
 
-// 동적 메타데이터 생성
+// 동적 메타데이터 생성 - 빌드 시점에서 안전하게 처리
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
 
-  if (!post) {
+  // 빌드 시점에서는 기본 메타데이터 반환
+  if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_API_URL?.startsWith("http")) {
     return {
-      title: "포스트를 찾을 수 없습니다"
+      title: `Post: ${slug}`,
+      description: "Blog post content"
     };
   }
 
-  return {
-    title: post.title,
-    description: post.description || extractPlainText(post.content, 160)
-  };
+  try {
+    const post = await getPostBySlug(slug);
+
+    if (!post) {
+      return {
+        title: "포스트를 찾을 수 없습니다",
+        description: "요청하신 포스트를 찾을 수 없습니다."
+      };
+    }
+
+    return {
+      title: post.title,
+      description: post.description || extractPlainText(post.content, 160)
+    };
+  } catch (error) {
+    console.warn(`Metadata generation failed for slug: ${slug}`, error);
+    return {
+      title: `Post: ${slug}`,
+      description: "Blog post content"
+    };
+  }
 }
 
 export default async function PostPage({ params }: Props) {
