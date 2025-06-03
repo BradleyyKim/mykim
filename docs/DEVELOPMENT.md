@@ -4,12 +4,29 @@
 
 ### Node.js 및 npm
 
-- **Node.js**: v20.15.1 이상
+- **Node.js**: v20.15.1 이상 (v22.x도 호환됨)
 - **npm**: v10.7.0 이상
 
+**호환되는 Node.js 버전**:
+
+- Node.js 20.15.1 (권장)
+- Node.js 22.x (완전 호환)
+- Node.js 18.18.0+ (최소 요구사항)
+
 ```bash
-node --version  # v20.15.1
-npm --version   # 10.7.0
+node --version  # v20.15.1 또는 v22.x
+npm --version   # 10.7.0 이상
+```
+
+**nvm 사용자의 경우**:
+
+```bash
+# .nvmrc 파일 사용
+nvm use
+
+# 또는 특정 버전 설치/사용
+nvm install 20.15.1
+nvm use 20.15.1
 ```
 
 ### 환경변수 설정
