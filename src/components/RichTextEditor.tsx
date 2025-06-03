@@ -26,7 +26,13 @@ interface RichTextEditorProps {
   maxLength?: number;
 }
 
-export default function RichTextEditor({ content, onChange, placeholder = "내용을 입력하세요...", onPlainTextChange, maxLength }: RichTextEditorProps) {
+export default function RichTextEditor({
+  content,
+  onChange,
+  placeholder = "내용을 입력하세요...",
+  onPlainTextChange,
+  maxLength
+}: RichTextEditorProps) {
   // 에디터 내용이 변경될 때 처리
   const handleUpdate = React.useCallback(
     (newContent: string) => {
@@ -50,7 +56,8 @@ export default function RichTextEditor({ content, onChange, placeholder = "내�
   });
 
   // 이미지 처리 훅
-  const { isUploading, isDragOver, error, setError, fileInputRef, handleFileSelect, dragHandlers, handleImageUpload } = useImageHandler({ editor });
+  const { isUploading, isDragOver, error, setError, fileInputRef, handleFileSelect, dragHandlers, handleImageUpload } =
+    useImageHandler({ editor });
 
   // 링크 처리 훅
   const { setLink, unsetLink, isLinkActive } = useLinkHandler({ editor });

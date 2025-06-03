@@ -65,7 +65,10 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
               <div className="w-full md:w-3/4">
                 <div className="space-y-4">
                   {company.projects.map(project => (
-                    <div key={project.id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md">
+                    <div
+                      key={project.id}
+                      className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md"
+                    >
                       {/* 토글 헤더 */}
                       <button
                         onClick={() => toggleProject(project.id)}
@@ -73,7 +76,9 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">{project.name}</h3>
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">
+                              {project.name}
+                            </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">{project.period}</p>
                           </div>
                           <div className="ml-4">
@@ -91,17 +96,24 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
                         <div className="px-6 py-6 bg-white dark:bg-gray-900">
                           {/* 프로젝트 개요 */}
                           <div className="mb-6">
-                            <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-2">📋 프로젝트 개요</h4>
+                            <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                              📋 프로젝트 개요
+                            </h4>
                             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{project.overview}</p>
                           </div>
 
                           {/* 기술 스택 */}
                           {project.techStack && project.techStack.length > 0 && (
                             <div className="mb-6">
-                              <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">🛠️ 기술 스택</h4>
+                              <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
+                                🛠️ 기술 스택
+                              </h4>
                               <div className="flex flex-wrap gap-2">
                                 {project.techStack.map((tech, index) => (
-                                  <span key={index} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-sm rounded-full">
+                                  <span
+                                    key={index}
+                                    className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-sm rounded-full"
+                                  >
                                     {tech}
                                   </span>
                                 ))}
@@ -111,7 +123,9 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
 
                           {/* 주요 성과 */}
                           <div className="mb-6">
-                            <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">🎯 주요 성과</h4>
+                            <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
+                              🎯 주요 성과
+                            </h4>
                             <ul className="space-y-2">
                               {project.achievements.map((achievement, index) => (
                                 <li key={index} className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
@@ -125,7 +139,9 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
                           {/* 레퍼런스 링크 */}
                           {project.references && project.references.length > 0 && (
                             <div>
-                              <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">🔗 레퍼런스</h4>
+                              <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
+                                🔗 레퍼런스
+                              </h4>
                               <div className="space-y-2">
                                 {project.references.map((reference, index) => (
                                   <a

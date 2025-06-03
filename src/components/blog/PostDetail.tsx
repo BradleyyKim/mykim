@@ -14,7 +14,11 @@ interface PostDetailProps {
   categorySlug?: string | null;
 }
 
-export default function PostDetail({ post, categoryName: propCategoryName, categorySlug: propCategorySlug }: PostDetailProps) {
+export default function PostDetail({
+  post,
+  categoryName: propCategoryName,
+  categorySlug: propCategorySlug
+}: PostDetailProps) {
   // 상위 컴포넌트에서 카테고리 정보를 받지 않은 경우 직접 추출
   const categoryName = propCategoryName || getCategoryName(post.category) || "카테고리";
   const categorySlug = propCategorySlug || getCategorySlug(post.category);

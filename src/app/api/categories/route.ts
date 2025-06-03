@@ -16,7 +16,10 @@ export async function GET() {
     });
 
     if (!response.ok) {
-      return NextResponse.json({ error: `Failed to fetch categories: ${response.status}` }, { status: response.status });
+      return NextResponse.json(
+        { error: `Failed to fetch categories: ${response.status}` },
+        { status: response.status }
+      );
     }
 
     const data = await response.json();

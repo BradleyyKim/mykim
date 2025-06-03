@@ -29,7 +29,9 @@ export default function HomePageClient({ postsByYear, filteredYears }: HomePageC
                   <div className="w-full md:w-1/4 mb-6 md:mb-0">
                     <div className="sticky top-20">
                       <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100">{year}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{postsCount.toLocaleString()} posts</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        {postsCount.toLocaleString()} posts
+                      </p>
                     </div>
                   </div>
                   {/* 해당 연도의 게시물 목록 (우측 또는 하단) */}
@@ -38,12 +40,19 @@ export default function HomePageClient({ postsByYear, filteredYears }: HomePageC
                       {postsByYear[year].posts.map(post => {
                         const categoryName = getCategoryName(post.category);
                         return (
-                          <article key={post.id} className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 last:border-0 transition-all hover:translate-x-1">
+                          <article
+                            key={post.id}
+                            className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 last:border-0 transition-all hover:translate-x-1"
+                          >
                             <Link href={`/posts/${post.slug}`} className="block group">
                               <div className="flex justify-between items-start">
-                                <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300">{post.title}</h2>
+                                <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300">
+                                  {post.title}
+                                </h2>
                                 {categoryName && (
-                                  <div className="ml-4 flex-shrink-0 dark:bg-gray-800 rounded-full px-3 py-1 text-sm text-gray-800 dark:text-gray-200">{getFirstEmojiOrString(categoryName)}</div>
+                                  <div className="ml-4 flex-shrink-0 dark:bg-gray-800 rounded-full px-3 py-1 text-sm text-gray-800 dark:text-gray-200">
+                                    {getFirstEmojiOrString(categoryName)}
+                                  </div>
                                 )}
                               </div>
                             </Link>
@@ -62,7 +71,10 @@ export default function HomePageClient({ postsByYear, filteredYears }: HomePageC
       {/* 인증된 유저용 플로팅 Write 버튼 - footer와 겹치지 않도록 위치 조정 */}
       {isLoggedIn && (
         <Link href="/write">
-          <button className="fixed bottom-24 right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-50" title="새 글 작성">
+          <button
+            className="fixed bottom-24 right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-50"
+            title="새 글 작성"
+          >
             <PenTool className="h-6 w-6" />
           </button>
         </Link>

@@ -27,9 +27,21 @@ export default function NotFound({
 
 // 재사용 가능한 404 컴포넌트들
 export function PostNotFound() {
-  return <NotFound title="포스트를 찾을 수 없습니다" message="요청하신 포스트가 존재하지 않거나 삭제되었습니다." linkText="메인 페이지로 돌아가기" />;
+  return (
+    <NotFound
+      title="포스트를 찾을 수 없습니다"
+      message="요청하신 포스트가 존재하지 않거나 삭제되었습니다."
+      linkText="메인 페이지로 돌아가기"
+    />
+  );
 }
 
 export function CategoryNotFound() {
-  return <NotFound title="카테고리를 찾을 수 없습니다" message="요청하신 카테고리가 존재하지 않거나 삭제되었습니다." linkText="모든 게시물 보기" />;
+  return (
+    <NotFound
+      title="카테고리를 찾을 수 없습니다"
+      message="요청하신 카테고리가 존재하지 않거나 삭제되었습니다."
+      linkText="모든 게시물 보기"
+    />
+  );
 }

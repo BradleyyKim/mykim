@@ -27,7 +27,13 @@ export default function SearchBar({ initialValue = "", onSearch }: SearchBarProp
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-xl mx-auto mb-6">
-      <Input type="text" placeholder="검색어를 입력하세요..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="rounded-r-none" />
+      <Input
+        type="text"
+        placeholder="검색어를 입력하세요..."
+        value={searchQuery}
+        onChange={e => setSearchQuery(e.target.value)}
+        className="rounded-r-none"
+      />
       <Button type="submit" className="rounded-l-none">
         검색
       </Button>

@@ -13,7 +13,14 @@ interface AvatarProps {
   responsive?: boolean; // 반응형 모드 활성화
 }
 
-export default function Avatar({ src, alt = AVATAR.ALT, size = "MD", className = "", enableDailyAvatar = false, responsive = false }: AvatarProps) {
+export default function Avatar({
+  src,
+  alt = AVATAR.ALT,
+  size = "MD",
+  className = "",
+  enableDailyAvatar = false,
+  responsive = false
+}: AvatarProps) {
   // Daily 아바타 훅 사용
   const { currentAvatar } = useDailyAvatar();
 
@@ -22,11 +29,20 @@ export default function Avatar({ src, alt = AVATAR.ALT, size = "MD", className =
 
   // 반응형 모드인지 확인
   if (responsive || size === "RESPONSIVE") {
-    const responsiveSize = size === "RESPONSIVE" ? AVATAR.RESPONSIVE_SIZES.RESPONSIVE : AVATAR.RESPONSIVE_SIZES[size as keyof typeof AVATAR.RESPONSIVE_SIZES];
+    const responsiveSize =
+      size === "RESPONSIVE"
+        ? AVATAR.RESPONSIVE_SIZES.RESPONSIVE
+        : AVATAR.RESPONSIVE_SIZES[size as keyof typeof AVATAR.RESPONSIVE_SIZES];
 
     return (
       <div className={`relative overflow-hidden rounded-full ${responsiveSize} ${className}`}>
-        <Image src={avatarSrc} alt={alt} fill className="object-cover" priority={size === "LG" || size === "XL" || size === "RESPONSIVE"} />
+        <Image
+          src={avatarSrc}
+          alt={alt}
+          fill
+          className="object-cover"
+          priority={size === "LG" || size === "XL" || size === "RESPONSIVE"}
+        />
       </div>
     );
   }
@@ -36,7 +52,14 @@ export default function Avatar({ src, alt = AVATAR.ALT, size = "MD", className =
 
   return (
     <div className={`relative overflow-hidden rounded-full ${className}`}>
-      <Image src={avatarSrc} alt={alt} width={avatarSize} height={avatarSize} className="object-cover" priority={size === "LG" || size === "XL"} />
+      <Image
+        src={avatarSrc}
+        alt={alt}
+        width={avatarSize}
+        height={avatarSize}
+        className="object-cover"
+        priority={size === "LG" || size === "XL"}
+      />
     </div>
   );
 }

@@ -178,7 +178,10 @@ export const apiClient = {
   /**
    * 포스트 수정 (인증 필요)
    */
-  async updatePost(id: number, data: { title?: string; content?: string; description?: string; category?: number; tags?: string[] }) {
+  async updatePost(
+    id: number,
+    data: { title?: string; content?: string; description?: string; category?: number; tags?: string[] }
+  ) {
     console.log(`[apiClient] 포스트 수정 시도: ID=${id}`);
     const response = await fetch(
       `/api/posts/${id}`,

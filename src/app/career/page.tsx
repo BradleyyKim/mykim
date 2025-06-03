@@ -38,7 +38,11 @@ const careerData: Company[] = [
         name: "화성 스마트 대시보드 & 모니터링",
         period: "2025.01 - 2025.05",
         overview: "React와 TypeScript를 사용한 대규모 웹 애플리케이션 개발",
-        achievements: ["사용자 경험 개선으로 페이지 로딩 속도 40% 향상", "컴포넌트 재사용성 향상으로 개발 효율성 30% 증대", "반응형 디자인 적용으로 모바일 사용자 만족도 향상"],
+        achievements: [
+          "사용자 경험 개선으로 페이지 로딩 속도 40% 향상",
+          "컴포넌트 재사용성 향상으로 개발 효율성 30% 증대",
+          "반응형 디자인 적용으로 모바일 사용자 만족도 향상"
+        ],
         references: ["https://project-a.example.com", "GitHub Repository"],
         techStack: ["React", "TypeScript", "Next.js", "Tailwind CSS"]
       },
@@ -64,7 +68,11 @@ const careerData: Company[] = [
         name: "프로젝트 C",
         period: "2021.06 - 2022.05",
         overview: "Vue.js 기반 전자상거래 플랫폼 개발",
-        achievements: ["장바구니 및 결제 시스템 구현", "SEO 최적화로 검색 노출 증대", "PWA 적용으로 모바일 앱 수준의 UX 제공"],
+        achievements: [
+          "장바구니 및 결제 시스템 구현",
+          "SEO 최적화로 검색 노출 증대",
+          "PWA 적용으로 모바일 앱 수준의 UX 제공"
+        ],
         references: ["https://project-c.example.com"],
         techStack: ["Vue.js", "Nuxt.js", "Vuex", "SCSS"]
       }

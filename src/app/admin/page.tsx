@@ -93,12 +93,26 @@ export default function AdminPage() {
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-md">
         <div className="space-y-2">
           <Label htmlFor="identifier">아이디 또는 이메일</Label>
-          <Input id="identifier" type="text" value={formData.identifier} onChange={e => setFormData({ ...formData, identifier: e.target.value })} placeholder="아이디 또는 이메일 입력" required />
+          <Input
+            id="identifier"
+            type="text"
+            value={formData.identifier}
+            onChange={e => setFormData({ ...formData, identifier: e.target.value })}
+            placeholder="아이디 또는 이메일 입력"
+            required
+          />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="password">비밀번호</Label>
-          <Input id="password" type="password" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} placeholder="비밀번호 입력" required />
+          <Input
+            id="password"
+            type="password"
+            value={formData.password}
+            onChange={e => setFormData({ ...formData, password: e.target.value })}
+            placeholder="비밀번호 입력"
+            required
+          />
         </div>
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>

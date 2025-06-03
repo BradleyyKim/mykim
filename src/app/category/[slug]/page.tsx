@@ -67,10 +67,15 @@ export default async function CategoryPage({ params }: Props) {
             {posts.map(post => {
               const formattedDate = formatDate(new Date(post.createdAt), "yyyy.MM.dd HH:mm");
               return (
-                <article key={post.id} className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 last:border-0 transition-all hover:translate-x-1">
+                <article
+                  key={post.id}
+                  className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 last:border-0 transition-all hover:translate-x-1"
+                >
                   <Link href={`/posts/${post.slug}`} className="block group">
                     <div className="flex justify-between items-start">
-                      <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300">{post.title}</h2>
+                      <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300">
+                        {post.title}
+                      </h2>
                       <p className="text-gray-500 dark:text-gray-400">{formattedDate}</p>
                     </div>
                   </Link>

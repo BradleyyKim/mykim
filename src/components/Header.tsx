@@ -7,7 +7,15 @@ import { MenuIcon, LayoutIcon, HomeIcon, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuGroup, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuGroup,
+  DropdownMenuLabel
+} from "@/components/ui/dropdown-menu";
 import { ThemeMode } from "@/components/ThemeMode";
 import { MAIN } from "@/lib/constants";
 import { Category, fetchCategories } from "@/lib/api";
@@ -103,7 +111,11 @@ export default function Header() {
                 <DropdownMenuItem disabled>카테고리가 없습니다</DropdownMenuItem>
               ) : (
                 categories.map(category => (
-                  <DropdownMenuItem key={category.id} onSelect={() => handleCategorySelect(category.slug as string)} className={currentCategory === category.slug ? "bg-blue-50 text-blue-700" : ""}>
+                  <DropdownMenuItem
+                    key={category.id}
+                    onSelect={() => handleCategorySelect(category.slug as string)}
+                    className={currentCategory === category.slug ? "bg-blue-50 text-blue-700" : ""}
+                  >
                     {category.name}
                     {currentCategory === category.slug && <span className="ml-auto text-blue-500">✓</span>}
                   </DropdownMenuItem>
@@ -169,7 +181,11 @@ export default function Header() {
                   <DropdownMenuItem disabled>카테고리가 없습니다</DropdownMenuItem>
                 ) : (
                   categories.map(category => (
-                    <DropdownMenuItem key={category.id} onSelect={() => handleCategorySelect(category.slug as string)} className={currentCategory === category.slug ? "bg-blue-50 text-blue-700" : ""}>
+                    <DropdownMenuItem
+                      key={category.id}
+                      onSelect={() => handleCategorySelect(category.slug as string)}
+                      className={currentCategory === category.slug ? "bg-blue-50 text-blue-700" : ""}
+                    >
                       {category.name}
                       {currentCategory === category.slug && <span className="ml-auto text-blue-500">✓</span>}
                     </DropdownMenuItem>

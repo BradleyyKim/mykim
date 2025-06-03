@@ -42,7 +42,11 @@ export const MAIN = {
     duty: "Web Frontend Engineer",
     tagline: "어쩌면 오늘이 가장 행복한 날일지도 모르겠습니다.",
     subtitle: "Software Engineer & Life Architect",
-    description: ["안녕하세요, 김민영입니다.", "웹 프론트엔드 개발을 주 업무로 하고 있습니다.", "매일이 새로운 배움의 기회라고 믿으며, 더 나은 내일을 위해 한 걸음씩 나아가고 있습니다."]
+    description: [
+      "안녕하세요, 김민영입니다.",
+      "웹 프론트엔드 개발을 주 업무로 하고 있습니다.",
+      "매일이 새로운 배움의 기회라고 믿으며, 더 나은 내일을 위해 한 걸음씩 나아가고 있습니다."
+    ]
   }
 };
 

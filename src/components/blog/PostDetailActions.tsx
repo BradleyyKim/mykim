@@ -51,7 +51,13 @@ export function PostDetailActions({ postSlug }: PostDetailActionsProps) {
         </Button>
       </Link>
 
-      <Button variant="outline" size="sm" className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={handleDelete} disabled={isDeleting}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+        onClick={handleDelete}
+        disabled={isDeleting}
+      >
         {isDeleting ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />

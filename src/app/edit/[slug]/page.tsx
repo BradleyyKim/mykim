@@ -88,7 +88,9 @@ function EditPageContent() {
   if (error || !post) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-3xl">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">{error || "포스트를 찾을 수 없습니다"}</div>
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {error || "포스트를 찾을 수 없습니다"}
+        </div>
       </div>
     );
   }

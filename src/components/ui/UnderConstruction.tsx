@@ -10,7 +10,11 @@ interface UnderConstructionProps {
   showAnimation?: boolean;
 }
 
-export default function UnderConstruction({ title = "🚧 페이지 공사중 🚧", message = "더 나은 경험을 위해 열심히 개발하고 있어요!", showAnimation = true }: UnderConstructionProps) {
+export default function UnderConstruction({
+  title = "🚧 페이지 공사중 🚧",
+  message = "더 나은 경험을 위해 열심히 개발하고 있어요!",
+  showAnimation = true
+}: UnderConstructionProps) {
   const [currentIcon, setCurrentIcon] = useState(0);
 
   const icons = [
@@ -40,9 +44,14 @@ export default function UnderConstruction({ title = "🚧 페이지 공사중 �
         {/* 애니메이션 아이콘 */}
         <div className="mb-8 relative">
           <div className="relative inline-block">
-            <Icon size={80} className={`${color} transition-all duration-500 ${showAnimation ? "animate-bounce" : ""}`} />
+            <Icon
+              size={80}
+              className={`${color} transition-all duration-500 ${showAnimation ? "animate-bounce" : ""}`}
+            />
             {/* 반짝이는 효과 */}
-            {showAnimation && <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>}
+            {showAnimation && (
+              <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>
+            )}
           </div>
 
           {/* 주변 작은 아이콘들 */}
@@ -65,7 +74,10 @@ export default function UnderConstruction({ title = "🚧 페이지 공사중 �
 
         {/* 진행률 바 (가짜) */}
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-4 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-orange-400 to-yellow-500 rounded-full transition-all duration-1000 relative" style={{ width: "67%" }}>
+          <div
+            className="h-full bg-gradient-to-r from-orange-400 to-yellow-500 rounded-full transition-all duration-1000 relative"
+            style={{ width: "67%" }}
+          >
             {showAnimation && <div className="absolute inset-0 bg-white opacity-30 animate-pulse"></div>}
           </div>
         </div>
@@ -78,7 +90,10 @@ export default function UnderConstruction({ title = "🚧 페이지 공사중 �
 
         {/* 홈으로 돌아가기 버튼 */}
         <div className="mt-8">
-          <Link href="/" className="inline-flex items-center px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
+          <Link
+            href="/"
+            className="inline-flex items-center px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
+          >
             🏠 홈으로 돌아가기
           </Link>
         </div>

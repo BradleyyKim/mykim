@@ -94,7 +94,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  return <AuthContext.Provider value={{ user, isLoggedIn, isLoading, login, logout, checkAuth }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, isLoggedIn, isLoading, login, logout, checkAuth }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 // 인증 컨텍스트 사용 훅

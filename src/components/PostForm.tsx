@@ -55,7 +55,9 @@ function NotificationArea({ error, isLoadingCategories, hasCategoriesError }: No
         <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
         <div>
           <p className="font-medium">카테고리를 가져올 수 없습니다</p>
-          <p className="text-sm mt-1">카테고리가 없어 새 글을 작성할 수 없습니다. 나중에 다시 시도하거나 관리자에게 문의하세요.</p>
+          <p className="text-sm mt-1">
+            카테고리가 없어 새 글을 작성할 수 없습니다. 나중에 다시 시도하거나 관리자에게 문의하세요.
+          </p>
         </div>
       </div>
     );
@@ -117,7 +119,13 @@ function TitleInput({ register, errors, disabled }: TitleInputProps) {
         제목
         <span className="text-red-500 ml-1">*</span>
       </Label>
-      <Input id="title" {...register("title")} placeholder="제목을 입력하세요" className={`text-lg ${errors.title ? "border-red-500" : ""}`} disabled={disabled} />
+      <Input
+        id="title"
+        {...register("title")}
+        placeholder="제목을 입력하세요"
+        className={`text-lg ${errors.title ? "border-red-500" : ""}`}
+        disabled={disabled}
+      />
       <FormErrorMessage error={errors.title?.message} showError={!!errors.title} />
     </div>
   );
@@ -143,7 +151,13 @@ function ContentEditor({ control, errors, disabled, onPlainTextChange }: Content
           name="content"
           control={control}
           render={({ field }: { field: { value: string; onChange: (value: string) => void } }) => (
-            <RichTextEditor content={field.value} onChange={field.onChange} onPlainTextChange={onPlainTextChange} placeholder="내용을 입력하세요..." maxLength={20000} />
+            <RichTextEditor
+              content={field.value}
+              onChange={field.onChange}
+              onPlainTextChange={onPlainTextChange}
+              placeholder="내용을 입력하세요..."
+              maxLength={20000}
+            />
           )}
         />
         {disabled && (
@@ -202,13 +216,28 @@ function TagsInput({ tags, tagInput, setTagInput, onAddTag, onRemoveTag, disable
   return (
     <div className="space-y-2">
       <Label htmlFor="tags">태그</Label>
-      <Input id="tags" value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={onAddTag} placeholder="태그를 입력하고 Enter를 누르세요" disabled={disabled} />
+      <Input
+        id="tags"
+        value={tagInput}
+        onChange={e => setTagInput(e.target.value)}
+        onKeyDown={onAddTag}
+        placeholder="태그를 입력하고 Enter를 누르세요"
+        disabled={disabled}
+      />
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {tags.map((tag, index) => (
-            <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+            <span
+              key={index}
+              className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800"
+            >
               {tag}
-              <button type="button" onClick={() => onRemoveTag(tag)} className="ml-1 text-blue-600 hover:text-blue-800" disabled={disabled}>
+              <button
+                type="button"
+                onClick={() => onRemoveTag(tag)}
+                className="ml-1 text-blue-600 hover:text-blue-800"
+                disabled={disabled}
+              >
                 <X className="h-3 w-3" />
               </button>
             </span>
@@ -476,7 +505,8 @@ export default function PostForm({ initialData, onSubmit, submitText, title }: P
     const description = createDescription(data.content, data.description);
 
     // slug 처리: 사용자가 입력하지 않았으면 제목에서 생성
-    const finalSlug = data.slug && data.slug.trim().length > 0 ? generateSlugFromText(data.slug) : suggestSlugFromTitle(data.title);
+    const finalSlug =
+      data.slug && data.slug.trim().length > 0 ? generateSlugFromText(data.slug) : suggestSlugFromTitle(data.title);
 
     setIsSubmitting(true);
     setError(null);
@@ -513,15 +543,48 @@ export default function PostForm({ initialData, onSubmit, submitText, title }: P
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <h1 className="text-3xl font-bold mb-8 text-center">{title}</h1>
-      <NotificationArea error={error} isLoadingCategories={isLoadingCategories} hasCategoriesError={hasCategoriesError} />
+      <NotificationArea
+        error={error}
+        isLoadingCategories={isLoadingCategories}
+        hasCategoriesError={hasCategoriesError}
+      />
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-        <CategorySelect control={control} categories={categories} isLoadingCategories={isLoadingCategories} errors={errors} disabled={isFormDisabled} />
+        <CategorySelect
+          control={control}
+          categories={categories}
+          isLoadingCategories={isLoadingCategories}
+          errors={errors}
+          disabled={isFormDisabled}
+        />
         <TitleInput register={register} errors={errors} disabled={isFormDisabled} />
-        <ContentEditor control={control} errors={errors} disabled={isFormDisabled} onPlainTextChange={handlePlainTextChange} />
+        <ContentEditor
+          control={control}
+          errors={errors}
+          disabled={isFormDisabled}
+          onPlainTextChange={handlePlainTextChange}
+        />
         <PublishedDateInput control={control} errors={errors} disabled={isFormDisabled} />
-        <TagsInput tags={tags} tagInput={tagInput} setTagInput={setTagInput} onAddTag={handleAddTag} onRemoveTag={handleRemoveTag} disabled={isFormDisabled} />
-        <SlugInput control={control} errors={errors} disabled={isFormDisabled} onSlugChange={setGeneratedSlug} generatedSlug={generatedSlug} />
-        <SubmitButtonGroup isSubmitting={isSubmitting} disabled={isFormDisabled} onCancel={() => router.back()} submitText={submitText} />
+        <TagsInput
+          tags={tags}
+          tagInput={tagInput}
+          setTagInput={setTagInput}
+          onAddTag={handleAddTag}
+          onRemoveTag={handleRemoveTag}
+          disabled={isFormDisabled}
+        />
+        <SlugInput
+          control={control}
+          errors={errors}
+          disabled={isFormDisabled}
+          onSlugChange={setGeneratedSlug}
+          generatedSlug={generatedSlug}
+        />
+        <SubmitButtonGroup
+          isSubmitting={isSubmitting}
+          disabled={isFormDisabled}
+          onCancel={() => router.back()}
+          submitText={submitText}
+        />
       </form>
     </div>
   );
