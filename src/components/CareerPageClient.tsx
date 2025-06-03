@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronRight, ExternalLink, Calendar, MapPin, Briefcase } from "lucide-react";
-import type { Company, Project } from "@/app/career/page";
+import type { Company } from "@/app/career/page";
 import Link from "next/link";
 
 interface CareerPageClientProps {

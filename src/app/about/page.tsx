@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
-import { ExternalLink, FileUser, Mail } from "lucide-react";
+import { ExternalLink, Mail } from "lucide-react";
 import TimeBasedBackground from "@/components/ui/TimeBasedBackground";
 import { Button } from "@/components/ui/button";
 import { MAIN } from "@/lib/constants";
@@ -76,7 +76,7 @@ export default function AboutPage() {
                   {/* <p className="text-lg text-center">반복적이거나 불필요한 걱정에서 벗어나, 더 창의적이고 본질적인 문제에 집중할 수 있는 환경을 만드는 것이 저의 목표입니다.</p> */}
                   <p className="text-lg text-center">My goal is to create an environment where I can focus on more creative and essential problems, free from repetitive or unnecessary worries.</p>
                 </div>
-
+                {/* <p>저는 항상 일을 주도적으로 해결하려고 노력하며, 모든 일의 목적과 근본적인 이유에 대해 깊이 생각하는 편입니다. 주어진 과제를 다루는 것뿐만 아니라 왜 이 일이 필요한지, 어떤 가치를 창출할 수 있는지 스스로 묻고 답하는 과정을 중요하게 생각합니다. 그리고 사람들은 안정적인 기반 위에서 복잡한 시스템과 아키텍처의 본질에 더 몰입할 수 있다고 믿습니다. 반복적이거나 불필요한 걱정에서 벗어나 보다 창의적이고 본질적인 문제에 집중할 수 있는 환경을 만드는 것이 목표입니다.</p> */}
                 {/* Detailed Resume Link */}
                 <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                   <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white">
