@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { ExternalLink, FileUser, Mail } from "lucide-react";
-import Avatar from "@/components/ui/Avatar";
 import TimeBasedBackground from "@/components/ui/TimeBasedBackground";
 import { Button } from "@/components/ui/button";
 import { MAIN } from "@/lib/constants";
