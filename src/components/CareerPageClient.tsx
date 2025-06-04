@@ -43,9 +43,13 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
               <div className="w-full md:w-1/4 mb-6 md:mb-0">
                 <div className="sticky top-20">
                   <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-                    <Link href={company.link} target="_blank" rel="noopener noreferrer">
-                      {company.name}
-                    </Link>
+                    {company.link ? (
+                      <Link href={company.link} target="_blank" rel="noopener noreferrer">
+                        {company.name}
+                      </Link>
+                    ) : (
+                      company.name
+                    )}
                   </h2>
                   <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                     <div className="flex items-center gap-2">

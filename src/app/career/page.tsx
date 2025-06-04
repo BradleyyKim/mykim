@@ -19,7 +19,7 @@ export type Project = {
 
 export type Company = {
   name: string;
-  link: string;
+  link?: string;
   period: string;
   position: string;
   projects: Project[];
@@ -39,9 +39,10 @@ const careerData: Company[] = [
         period: "2025.01 - 2025.05",
         overview: "화성시 교통안전센터에 설치되는 스마트 대시보드 및 모니터링 웹 소프트웨어 개발",
         achievements: [
-          "사용자의 몰입도를 높이는 interactive, dynamic UI/UX 구현 (Framer-motion기반 위젯 시스템)",
-          "복잡한 상태 흐름을 최소한의 전역 상태를 활용해 효율적으로 구조화 및 계층화",
-          "실시간 데이터를 통해 UI 업데이트 및 데이터 시각화를 적용한 모니터링 페이지 구현",
+          "사용자의 몰입도를 높이는 Framer-motion기반 동적 UI 구현으로 사용자 만족도 개선",
+          "컨텍스트 기반 필터링으로 최소한의 전역 상태를 활용해 로딩 최소화",
+          "선택적 쿼리 활성화 및 캐싱으로 네트워크 효율성 극대화",
+          "LocalStorage와 서버 API 이중 저장으로 사용자 편의 극대화",
           "Husky를 활용해 빌드 에러 방지 기능 추가"
         ],
         references: ["https://www.youtube.com/watch?v=J5T5rq83yUo"],
@@ -67,8 +68,9 @@ const careerData: Company[] = [
         period: "2024.01 - 2024.06",
         overview: "노후차량 데이터를 관리하고 관리 감독을 위한 웹 모니터링 시스템 개발",
         achievements: [
-          "카메라 설치 지점의 위도, 경도를 분석해 이미지 내 마커 생성 기능 제작",
-          "노후차량 운행제한 시스템 구현"
+          "좌표계 변환 알고리즘(2D Affine Transformation)을 통한 동적 마커 위치 계산 및 배치",
+          "자동화된 모니터링 시스템 구현(마커 위치 순환, 카메라 이미지 순환)",
+          "Apache Echarts를 활용한 데이터 시각화 구현"
         ],
         references: ["https://youtu.be/y530yT1ESoE"],
         techStack: ["React", "TypeScript", "Bootstrap", "echarts", "recoil", "Scss"]
@@ -79,8 +81,9 @@ const careerData: Company[] = [
         period: "2024.01 - 2024.06",
         overview: "지능형 교통 카메라를 관리하고 기능 설정을 할 수 있는 관리 웹 소프트웨어 개발",
         achievements: [
-          "고객사에서 커스터마이징 가능하도록 formatting JSON을 통해 Server Driven UI 구현",
-          "canvas를 이용한 검지 영역 설정 기능 구현",
+          "서버 메타데이터 기반의 동적 인터페이스 구현(Server Driven UI)",
+          "HOC를 활용한 컴포넌트 재사용성 향상",
+          "Canvas 기반 지능형 검지 영역 편집 시스템 수정 및 유지 보수",
           "Janus gateway + WebRTC를 활용한 멀티채널 영상 스트리밍 구현"
         ],
         references: ["https://www.youtube.com/watch?v=RuzbzvoUqwM"],
@@ -89,23 +92,24 @@ const careerData: Company[] = [
     ]
   },
   {
-    name: "회사명 B",
-    link: "https://www.rexgen.co.kr/",
-    period: "2021.06 - 2023.02",
-    position: "Frontend Developer",
+    name: "개인 프로젝트",
+    // link: "",
+    period: "2025.03 - 현재",
+    position: "Full Stack Developer",
     projects: [
       {
-        id: 3,
-        name: "프로젝트 C",
-        period: "2021.06 - 2022.05",
-        overview: "Vue.js 기반 전자상거래 플랫폼 개발",
+        id: 4,
+        name: "MY Kim Blog",
+        period: "2025.03 - 현재",
+        overview: "Next.js 15 + React(Front-end), Strapi Cloud(Back-end) 기반 블로그 플랫폼 개발",
         achievements: [
-          "장바구니 및 결제 시스템 구현",
+          "Next.js 15 기반 블로그 플랫폼 개발",
           "SEO 최적화로 검색 노출 증대",
-          "PWA 적용으로 모바일 앱 수준의 UX 제공"
+          "PWA 적용으로 모바일 앱 수준의 UX 제공",
+          "i18next를 활용한 다국어 지원 구현"
         ],
-        references: ["https://project-c.example.com"],
-        techStack: ["Vue.js", "Nuxt.js", "Vuex", "SCSS"]
+        references: ["https://mykim.in"],
+        techStack: ["Next.js", "TypeScript", "Tailwind CSS", "i18next", "Shadcn UI", "Vercel", "Strapi Cloud"]
       }
     ]
   }
