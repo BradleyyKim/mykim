@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+echo "🔍 Running TypeScript type check..."
+npm run type-check
+
+echo "🔍 Running ESLint..."
+npm run lint
+
+echo "✅ All checks passed! Committing..."

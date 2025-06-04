@@ -24,13 +24,13 @@ export default function AboutPage() {
     en: [
       "I tend to reflect deeply on the **purpose** and **underlying reason** behind everything I do.",
       "Rather than simply executing tasks, I value the process of asking myself **why this work matters** and **what kind of value it can create**—both for users and for the team.",
-      "As a frontend developer, I believe that designing and experimenting with **user-centered interfaces** requires a **stable and dependable development foundation**.",
+      "As a team, we believe that in order to carefully design and experiment with **truly user-centered interfaces**, it’s essential to have a **stable and trustworthy foundation in place**.",
       "The same applies to life. When our **inner foundation** is solid, we can move forward with **greater clarity and resilience**."
     ],
     ko: [
       "저는 어떤 일이든 그 **목적**과 **본질적인 이유**를 고민하는 편입니다.",
       "단순히 실행하는 것보다, **왜 이 작업이 필요한지**, 그리고 그것이 **어떤 의미와 가치를 만들어낼 수 있는지**를 끊임없이 자문하고 정리하는 과정을 중요하게 생각합니다.",
-      "프론트엔드 팀이 **사용자 경험 중심의 인터페이스**를 정교하게 설계하고 실험하려면, 반드시 **안정적이고 신뢰할 수 있는 개발 환경이라는 기반(foundation)**이 필요하다고 믿습니다.",
+      "팀이 **사용자 경험 중심의 인터페이스**를 정교하게 설계하고 실험하려면, **안정적이고 신뢰할 수 있는 기반(foundation)**이 필요하다고 믿습니다.",
       "삶도 마찬가지입니다. **나를 지탱하는 내면의 기반이 단단할수록**, 더 **깊고 의미 있는 방향**으로 움직일 수 있다고 생각합니다."
     ]
   };

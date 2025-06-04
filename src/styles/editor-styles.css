@@ -24,6 +24,22 @@
 
 .editor-content .tiptap {
   outline: none;
+  padding: 1rem;
+  line-height: 1.6;
+  color: inherit;
+  font-family:
+    "Pretendard Variable",
+    "Pretendard",
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    Roboto,
+    "Helvetica Neue",
+    "Segoe UI",
+    "Apple SD Gothic Neo",
+    "Noto Sans KR",
+    "Malgun Gothic",
+    sans-serif;
 }
 
 /* 빈 문단 처리 */
