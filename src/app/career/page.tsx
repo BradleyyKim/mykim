@@ -35,25 +35,56 @@ const careerData: Company[] = [
     projects: [
       {
         id: 1,
-        name: "화성 스마트 대시보드 & 모니터링",
+        name: "지능형 카메라 스마트 대시보드 & 모니터링 시스템",
         period: "2025.01 - 2025.05",
-        overview: "React와 TypeScript를 사용한 대규모 웹 애플리케이션 개발",
+        overview: "화성시 교통안전센터에 설치되는 스마트 대시보드 및 모니터링 웹 소프트웨어 개발",
         achievements: [
-          "사용자 경험 개선으로 페이지 로딩 속도 40% 향상",
-          "컴포넌트 재사용성 향상으로 개발 효율성 30% 증대",
-          "반응형 디자인 적용으로 모바일 사용자 만족도 향상"
+          "사용자의 몰입도를 높이는 interactive, dynamic UI/UX 구현 (Framer-motion기반 위젯 시스템)",
+          "복잡한 상태 흐름을 최소한의 전역 상태를 활용해 효율적으로 구조화 및 계층화",
+          "실시간 데이터를 통해 UI 업데이트 및 데이터 시각화를 적용한 모니터링 페이지 구현",
+          "Husky를 활용해 빌드 에러 방지 기능 추가"
         ],
-        references: ["https://project-a.example.com", "GitHub Repository"],
-        techStack: ["React", "TypeScript", "Next.js", "Tailwind CSS"]
+        references: ["https://www.youtube.com/watch?v=J5T5rq83yUo"],
+        techStack: [
+          "React",
+          "TypeScript",
+          "Tanstack-query",
+          "Jotai",
+          "socket.io-client",
+          "framer-motion",
+          "Matine UI",
+          "CSS Modules",
+          "dnd-kit",
+          "echarts",
+          "husky",
+          "Vite",
+          "i18next"
+        ]
       },
       {
         id: 2,
-        name: "프로젝트 B",
-        period: "2024.01 - 현재",
-        overview: "마이크로서비스 아키텍처 기반 관리자 대시보드 구축",
-        achievements: ["실시간 데이터 처리 시스템 구현", "사용자 권한 관리 시스템 개발", "데이터 시각화 대시보드 구현"],
-        references: ["https://project-b.example.com"],
-        techStack: ["React", "TypeScript", "D3.js", "Socket.io"]
+        name: "노후차량 운행제한 관리 및 모니터링 시스템",
+        period: "2024.01 - 2024.06",
+        overview: "노후차량 데이터를 관리하고 관리 감독을 위한 웹 모니터링 시스템 개발",
+        achievements: [
+          "카메라 설치 지점의 위도, 경도를 분석해 이미지 내 마커 생성 기능 제작",
+          "노후차량 운행제한 시스템 구현"
+        ],
+        references: ["https://youtu.be/y530yT1ESoE"],
+        techStack: ["React", "TypeScript", "Bootstrap", "echarts", "recoil", "Scss"]
+      },
+      {
+        id: 3,
+        name: "지능형 교통 카메라 임베디드 소프트웨어 개발",
+        period: "2024.01 - 2024.06",
+        overview: "지능형 교통 카메라를 관리하고 기능 설정을 할 수 있는 관리 웹 소프트웨어 개발",
+        achievements: [
+          "고객사에서 커스터마이징 가능하도록 formatting JSON을 통해 Server Driven UI 구현",
+          "canvas를 이용한 검지 영역 설정 기능 구현",
+          "Janus gateway + WebRTC를 활용한 멀티채널 영상 스트리밍 구현"
+        ],
+        references: ["https://www.youtube.com/watch?v=RuzbzvoUqwM"],
+        techStack: ["React", "TypeScript", "Bootstrap", "Scss", "recoil", "zod", "echarts", "swiper"]
       }
     ]
   },

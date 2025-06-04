@@ -27,8 +27,11 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-12 text-center">
-        <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">Career</h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400">경력 및 프로젝트 경험</p>
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex-1"></div>
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 flex-1 text-center">Career</h1>
+          <div className="flex-1 flex justify-end"></div>
+        </div>
       </div>
 
       {/* 회사별 경력 정보 */}
@@ -97,7 +100,7 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
                           {/* 프로젝트 개요 */}
                           <div className="mb-6">
                             <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                              📋 프로젝트 개요
+                              Project Overview
                             </h4>
                             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{project.overview}</p>
                           </div>
@@ -106,7 +109,7 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
                           {project.techStack && project.techStack.length > 0 && (
                             <div className="mb-6">
                               <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                                🛠️ 기술 스택
+                                Tech Stack
                               </h4>
                               <div className="flex flex-wrap gap-2">
                                 {project.techStack.map((tech, index) => (
@@ -124,7 +127,7 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
                           {/* 주요 성과 */}
                           <div className="mb-6">
                             <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                              🎯 주요 성과
+                              Key Achievements
                             </h4>
                             <ul className="space-y-2">
                               {project.achievements.map((achievement, index) => (
@@ -140,7 +143,7 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
                           {project.references && project.references.length > 0 && (
                             <div>
                               <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                                🔗 레퍼런스
+                                References
                               </h4>
                               <div className="space-y-2">
                                 {project.references.map((reference, index) => (

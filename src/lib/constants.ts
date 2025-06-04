@@ -38,6 +38,8 @@ export const MAIN = {
   },
   // 개인 정보
   bio: {
+    name: "김민영",
+    name_en: "Minyoung Kim",
     location: "Seoul, Korea",
     duty: "Web Frontend Engineer",
     tagline: "어쩌면 오늘이 가장 행복한 날일지도 모르겠습니다.",
