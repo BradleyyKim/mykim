@@ -15,10 +15,10 @@ interface PostUpdateData {
 }
 
 // 포스트 수정 (PUT) - slug 기반
-export async function PUT(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const body = await request.json();
-    const postSlug = params.slug;
+    const { slug: postSlug } = await params;
 
     // 안전한 slug 처리: 인코딩되어 있다면 디코딩, 아니라면 그대로 사용
     const decodedSlug = postSlug.includes("%") ? decodeURIComponent(postSlug) : postSlug;
@@ -178,9 +178,9 @@ export async function PUT(request: NextRequest, { params }: { params: { slug: st
 }
 
 // 포스트 삭제 (DELETE) - slug 기반
-export async function DELETE(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
-    const postSlug = params.slug;
+    const { slug: postSlug } = await params;
 
     // 안전한 slug 처리: 인코딩되어 있다면 디코딩, 아니라면 그대로 사용
     const decodedSlug = postSlug.includes("%") ? decodeURIComponent(postSlug) : postSlug;
@@ -288,9 +288,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { slug:
 }
 
 // 단일 포스트 조회 (GET) - slug 기반
-export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
-    const postSlug = params.slug;
+    const { slug: postSlug } = await params;
 
     // 디버깅 정보 출력
     console.log(`[GET] 원본 params.slug:`, postSlug);

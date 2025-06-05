@@ -187,10 +187,10 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
                                     href={reference}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm transition-colors duration-200"
+                                    className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm transition-colors duration-200"
                                   >
-                                    <ExternalLink className="h-4 w-4" />
                                     {reference}
+                                    <ExternalLink className="h-4 w-4 mr-3" />
                                   </a>
                                 ))}
                               </div>
