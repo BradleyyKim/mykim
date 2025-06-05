@@ -80,39 +80,39 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-12 text-center">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex-1"></div>
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 flex-1 text-center">Career</h1>
-          <div className="flex-1 flex justify-end">
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
-              >
-                PDF
-                <Download className="h-4 w-4" />
-                {isDropdownOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              </button>
+        {/* 제목 */}
+        <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-6">Career</h1>
 
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-24 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                  <div className="py-1">
-                    <button
-                      onClick={() => handleDownloadPDF("ko")}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                    >
-                      한국어
-                    </button>
-                    <button
-                      onClick={() => handleDownloadPDF("en")}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                    >
-                      English
-                    </button>
-                  </div>
+        {/* PDF 다운로드 버튼 */}
+        <div className="flex justify-end">
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium shadow-sm"
+            >
+              <Download className="h-4 w-4" />
+              PDF
+              {isDropdownOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-24 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                <div className="py-1">
+                  <button
+                    onClick={() => handleDownloadPDF("ko")}
+                    className="w-full text-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                  >
+                    한국어
+                  </button>
+                  <button
+                    onClick={() => handleDownloadPDF("en")}
+                    className="w-full text-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                  >
+                    English
+                  </button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
