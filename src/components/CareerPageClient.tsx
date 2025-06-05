@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight, ExternalLink, Calendar, MapPin, Briefcase } from "lucide-react";
+import { ChevronDown, ChevronRight, ExternalLink, Calendar, MapPin, Briefcase, Download } from "lucide-react";
 import type { Company } from "@/app/career/page";
 import Link from "next/link";
+import { pdf } from "@react-pdf/renderer";
+import CareerPDFDocument from "./CareerPDFDocument";
 
 interface CareerPageClientProps {
   careerData: Company[];
@@ -24,13 +26,42 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
 
   const isProjectExpanded = (projectId: number) => expandedProjects.has(projectId);
 
+  const handleDownloadPDF = async () => {
+    try {
+      // PDF 문서 생성
+      const blob = await pdf(<CareerPDFDocument careerData={careerData} />).toBlob();
+
+      // 다운로드 링크 생성
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "career-portfolio.pdf";
+      document.body.appendChild(link);
+      link.click();
+
+      // 정리
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("PDF 생성 중 오류 발생:", error);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-12 text-center">
         <div className="flex justify-between items-center mb-4">
           <div className="flex-1"></div>
           <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 flex-1 text-center">Career</h1>
-          <div className="flex-1 flex justify-end"></div>
+          <div className="flex-1 flex justify-end">
+            <button
+              onClick={handleDownloadPDF}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+            >
+              <Download className="h-4 w-4" />
+              Download PDF
+            </button>
+          </div>
         </div>
       </div>
 
