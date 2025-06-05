@@ -1,7 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown, ChevronRight, ExternalLink, Calendar, MapPin, Briefcase, Download } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import {
+  ChevronDown,
+  ChevronRight,
+  ExternalLink,
+  Calendar,
+  MapPin,
+  Briefcase,
+  Download,
+  ChevronUp
+} from "lucide-react";
 import type { Company } from "@/app/career/page";
 import Link from "next/link";
 import { pdf } from "@react-pdf/renderer";
@@ -9,10 +18,13 @@ import CareerPDFDocument from "./CareerPDFDocument";
 
 interface CareerPageClientProps {
   careerData: Company[];
+  careerDataEn: Company[];
 }
 
-export default function CareerPageClient({ careerData }: CareerPageClientProps) {
+export default function CareerPageClient({ careerData, careerDataEn }: CareerPageClientProps) {
   const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set());
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleProject = (projectId: number) => {
     const newExpanded = new Set(expandedProjects);
@@ -26,22 +38,40 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
 
   const isProjectExpanded = (projectId: number) => expandedProjects.has(projectId);
 
-  const handleDownloadPDF = async () => {
+  // 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleDownloadPDF = async (language: "ko" | "en") => {
     try {
+      const data = language === "ko" ? careerData : careerDataEn;
+      const title = language === "ko" ? "경력기술서 - 김민영" : "Career Portfolio - Minyoung Kim";
+
       // PDF 문서 생성
-      const blob = await pdf(<CareerPDFDocument careerData={careerData} />).toBlob();
+      const blob = await pdf(<CareerPDFDocument careerData={data} title={title} />).toBlob();
 
       // 다운로드 링크 생성
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "career-portfolio.pdf";
+      link.download = `career-portfolio-${language}.pdf`;
       document.body.appendChild(link);
       link.click();
 
       // 정리
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      setIsDropdownOpen(false); // 다운로드 후 드롭다운 닫기
     } catch (error) {
       console.error("PDF 생성 중 오류 발생:", error);
     }
@@ -54,13 +84,35 @@ export default function CareerPageClient({ careerData }: CareerPageClientProps) 
           <div className="flex-1"></div>
           <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 flex-1 text-center">Career</h1>
           <div className="flex-1 flex justify-end">
-            <button
-              onClick={handleDownloadPDF}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
-            >
-              <Download className="h-4 w-4" />
-              Download PDF
-            </button>
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+              >
+                PDF
+                <Download className="h-4 w-4" />
+                {isDropdownOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </button>
+
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-24 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                  <div className="py-1">
+                    <button
+                      onClick={() => handleDownloadPDF("ko")}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                      한국어
+                    </button>
+                    <button
+                      onClick={() => handleDownloadPDF("en")}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                      English
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

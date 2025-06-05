@@ -2,10 +2,33 @@ import React from "react";
 import { Document, Page, Text, View, StyleSheet, Font } from "@react-pdf/renderer";
 import type { Company } from "@/app/career/page";
 
-// 한글 폰트 등록 - TTF 형식 사용
+// 로컬 폰트 등록
 Font.register({
   family: "NotoSansKR",
-  src: "https://fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Regular.woff"
+  fonts: [
+    {
+      src: "/fonts/NotoSansKR-Regular.ttf",
+      fontWeight: 400
+    },
+    {
+      src: "/fonts/NotoSansKR-Bold.ttf",
+      fontWeight: 700
+    }
+  ]
+});
+
+Font.register({
+  family: "Roboto",
+  fonts: [
+    {
+      src: "/fonts/Roboto-Regular.ttf",
+      fontWeight: 400
+    },
+    {
+      src: "/fonts/Roboto-Bold.ttf",
+      fontWeight: 700
+    }
+  ]
 });
 
 // PDF 스타일 정의
@@ -63,11 +86,11 @@ const styles = StyleSheet.create({
     color: "#666666"
   },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: "bold",
     marginTop: 8,
     marginBottom: 4,
-    color: "#374151"
+    color: "#000000"
   },
   overview: {
     fontSize: 10,
@@ -103,74 +126,89 @@ const styles = StyleSheet.create({
 
 interface CareerPDFDocumentProps {
   careerData: Company[];
+  title?: string;
 }
 
-const CareerPDFDocument: React.FC<CareerPDFDocumentProps> = ({ careerData }) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Career Portfolio</Text>
+const CareerPDFDocument: React.FC<CareerPDFDocumentProps> = ({ careerData, title = "Career Portfolio" }) => {
+  // 제목에 따라 폰트 패밀리 결정
+  const isKorean = title.includes("경력기술서") || title.includes("김민영");
+  const fontFamily = isKorean ? "NotoSansKR" : "Roboto";
 
-      {careerData.map((company, companyIndex) => (
-        <View key={companyIndex} style={styles.companySection}>
-          {/* 회사 정보 */}
-          <View style={styles.companyHeader}>
-            <Text style={styles.companyName}>{company.name}</Text>
-            <Text style={styles.companyInfo}>Period: {company.period}</Text>
-            <Text style={styles.companyInfo}>Position: {company.position}</Text>
-            <Text style={styles.companyInfo}>Projects: {company.projects.length}</Text>
-          </View>
+  // 동적 스타일
+  const dynamicStyles = StyleSheet.create({
+    ...styles,
+    page: {
+      ...styles.page,
+      fontFamily: fontFamily
+    }
+  });
 
-          {/* 프로젝트 목록 */}
-          {company.projects.map(project => (
-            <View key={project.id} style={styles.projectContainer}>
-              <View style={styles.projectHeader}>
-                <Text style={styles.projectName}>{project.name}</Text>
-                <Text style={styles.projectPeriod}>{project.period}</Text>
-              </View>
+  return (
+    <Document>
+      <Page size="A4" style={dynamicStyles.page}>
+        <Text style={styles.title}>{title}</Text>
 
-              {/* 프로젝트 개요 */}
-              <Text style={styles.sectionTitle}>Project Overview</Text>
-              <Text style={styles.overview}>{project.overview}</Text>
+        {careerData.map((company, companyIndex) => (
+          <View key={companyIndex} style={styles.companySection}>
+            {/* 회사 정보 */}
+            <View style={styles.companyHeader}>
+              <Text style={styles.companyName}>
+                {company.name} <Text style={styles.companyInfo}>{company.period}</Text>
+              </Text>
+              <Text style={styles.companyInfo}>{company.position}</Text>
+            </View>
+            {/* 프로젝트 목록 */}
+            {company.projects.map(project => (
+              <View key={project.id} style={styles.projectContainer}>
+                <View style={styles.projectHeader}>
+                  <Text style={styles.projectName}>{project.name}</Text>
+                  <Text style={styles.projectPeriod}>{project.period}</Text>
+                </View>
 
-              {/* 기술 스택 */}
-              {project.techStack && project.techStack.length > 0 && (
-                <View>
-                  <Text style={styles.sectionTitle}>Tech Stack</Text>
-                  <View style={styles.techStackContainer}>
-                    {project.techStack.map((tech, index) => (
-                      <Text key={index} style={styles.techStackItem}>
-                        {tech}
+                {/* 프로젝트 개요 */}
+                <Text style={styles.sectionTitle}>Project Overview</Text>
+                <Text style={styles.overview}>{project.overview}</Text>
+
+                {/* 기술 스택 */}
+                {project.techStack && project.techStack.length > 0 && (
+                  <View>
+                    <Text style={styles.sectionTitle}>Tech Stack</Text>
+                    <View style={styles.techStackContainer}>
+                      {project.techStack.map((tech, index) => (
+                        <Text key={index} style={styles.techStackItem}>
+                          {tech}
+                        </Text>
+                      ))}
+                    </View>
+                  </View>
+                )}
+
+                {/* 주요 성과 */}
+                <Text style={styles.sectionTitle}>Key Achievements</Text>
+                {project.achievements.map((achievement, index) => (
+                  <Text key={index} style={styles.achievementItem}>
+                    • {achievement}
+                  </Text>
+                ))}
+
+                {/* 레퍼런스 링크 */}
+                {project.references && project.references.length > 0 && (
+                  <View>
+                    <Text style={styles.sectionTitle}>References</Text>
+                    {project.references.map((reference, index) => (
+                      <Text key={index} style={styles.referenceItem}>
+                        {reference}
                       </Text>
                     ))}
                   </View>
-                </View>
-              )}
-
-              {/* 주요 성과 */}
-              <Text style={styles.sectionTitle}>Key Achievements</Text>
-              {project.achievements.map((achievement, index) => (
-                <Text key={index} style={styles.achievementItem}>
-                  • {achievement}
-                </Text>
-              ))}
-
-              {/* 레퍼런스 링크 */}
-              {project.references && project.references.length > 0 && (
-                <View>
-                  <Text style={styles.sectionTitle}>References</Text>
-                  {project.references.map((reference, index) => (
-                    <Text key={index} style={styles.referenceItem}>
-                      {reference}
-                    </Text>
-                  ))}
-                </View>
-              )}
-            </View>
-          ))}
-        </View>
-      ))}
-    </Page>
-  </Document>
-);
+                )}
+              </View>
+            ))}
+          </View>
+        ))}
+      </Page>
+    </Document>
+  );
+};
 
 export default CareerPDFDocument;

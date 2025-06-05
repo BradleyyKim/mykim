@@ -25,7 +25,7 @@ export type Company = {
   projects: Project[];
 };
 
-// 더미 데이터 (나중에 API나 CMS로 교체 가능)
+// 한국어 데이터
 const careerData: Company[] = [
   {
     name: "Rexgen",
@@ -176,6 +176,156 @@ const careerData: Company[] = [
   }
 ];
 
+// 영어 데이터
+const careerDataEn: Company[] = [
+  {
+    name: "Rexgen",
+    link: "https://www.rexgen.co.kr/",
+    period: "Dec 2022 - Present",
+    position: "Frontend Developer",
+    projects: [
+      {
+        id: 1,
+        name: "Intelligent Camera Smart Dashboard & Monitoring System",
+        period: "Jan 2025 - May 2025",
+        overview:
+          "Development of smart dashboard and monitoring web software for traffic congestion analysis and AI-based prediction to reduce traffic delays (Currently in use at Hwaseong City Traffic Safety Center)",
+        achievements: [
+          "Improved user satisfaction by implementing dynamic UI based on Framer-motion to enhance user engagement",
+          "Minimized loading times through context-based filtering with minimal global state",
+          "Maximized network efficiency through selective query activation and caching",
+          "Maximized user convenience through dual storage with LocalStorage and server API",
+          "Added build error prevention features using Husky"
+        ],
+        references: ["https://www.youtube.com/watch?v=J5T5rq83yUo"],
+        techStack: [
+          "React",
+          "TypeScript",
+          "Tanstack-query",
+          "Jotai",
+          "socket.io-client",
+          "framer-motion",
+          "Mantine UI",
+          "CSS Modules",
+          "dnd-kit",
+          "echarts",
+          "husky",
+          "Vite",
+          "i18next"
+        ]
+      },
+      {
+        id: 2,
+        name: "Aged Vehicle Operation Restriction Management & Monitoring System",
+        period: "Apr 2024 - Sep 2024",
+        overview:
+          "Development of web monitoring system for managing aged vehicle data and administrative oversight (Installed and in use at Busan City Hall Transportation Department)",
+        achievements: [
+          "Dynamic marker positioning calculation and placement through coordinate transformation algorithm (2D Affine Transformation)",
+          "Implementation of automated monitoring system (marker position cycling, camera image cycling)",
+          "Data visualization implementation using Apache Echarts"
+        ],
+        references: ["https://youtu.be/y530yT1ESoE"],
+        techStack: ["React", "TypeScript", "Bootstrap", "echarts", "recoil", "Scss"]
+      },
+      {
+        id: 3,
+        name: "Intelligent Traffic Camera Embedded Software Development",
+        period: "Jan 2024 - Jun 2024",
+        overview:
+          "Development of management web software for managing intelligent traffic cameras and setting functions (Installed and in use on Suwon City traffic cameras)",
+        achievements: [
+          "Implementation of dynamic interface based on server metadata (Server Driven UI)",
+          "Enhanced component reusability using HOC",
+          "Modification and maintenance of Canvas-based intelligent detection area editing system",
+          "Implementation of multi-channel video streaming using Janus gateway + WebRTC"
+        ],
+        references: ["https://www.youtube.com/watch?v=RuzbzvoUqwM"],
+        techStack: ["React", "TypeScript", "Bootstrap", "Scss", "recoil", "zod", "echarts", "swiper"]
+      },
+      {
+        id: 4,
+        name: "Rex Smart Portal for Global - Real-time Traffic Monitoring & Enforcement System",
+        period: "Mar 2023 - Oct 2023",
+        overview:
+          "Development of intelligent traffic control system for global export providing real-time CCTV monitoring, traffic violation enforcement, fine issuance and payment, and statistical analysis features (Currently in use by Tajikistan government, with contracts being finalized with Thailand and Vietnam)",
+        achievements: [
+          "Built immediate notification and response system through Socket.IO-based real-time traffic violation event processing",
+          "Implemented intelligent camera location management and data visualization using Google Maps API and RESTful API",
+          "Enhanced customized marker clustering maps and implemented real-time vehicle route tracking",
+          "Built remote real-time monitoring system through HLS protocol-based live CCTV streaming",
+          "Established foundation for global market entry with multi-language support (Korean/English/Russian/Thai)",
+          "Optimized complex real-time data flow with Recoil + Redux hybrid state management",
+          "Supported decision-making through traffic statistics data visualization using ApexCharts/ECharts-based dashboard",
+          "Automated development/staging/production environment deployment with Vite build system",
+          "Optimized control center operator UX with Material-UI-based responsive Enterprise UI"
+        ],
+        references: [],
+        techStack: [
+          "React",
+          "TypeScript",
+          "Vite",
+          "Material-UI (MUI)",
+          "Recoil",
+          "Redux Toolkit",
+          "Socket.IO",
+          "Google Maps API",
+          "Video.js",
+          "ApexCharts",
+          "ECharts",
+          "Styled-Components",
+          "Emotion",
+          "i18next"
+        ]
+      }
+    ]
+  },
+  {
+    name: "Personal Projects",
+    period: "Jan 2025 - Present",
+    position: "Full Stack Developer",
+    projects: [
+      {
+        id: 5,
+        name: "MY Kim Blog - Personal Blog Platform",
+        period: "Jan 2025 - Present",
+        overview:
+          "Modern blog platform based on Next.js 15 + React 19. Implemented Headless CMS architecture using Strapi Cloud as backend",
+        achievements: [
+          "Implemented SSR/ISR hybrid rendering using Next.js 15 App Router + React 19 latest technologies",
+          "Implemented hybrid editing system with markdown + WYSIWYG using TipTap (ProseMirror-based) rich text editor",
+          "Improved loading speed through server state management and caching optimization using Tanstack React Query",
+          "Enhanced page loading speed through automatic WebP image conversion and Next.js Image optimization",
+          "Implemented dark mode support and responsive design with shadcn/ui + Tailwind CSS 4.0",
+          "Built Vercel automatic deployment pipeline and achieved SEO optimization through ISR",
+          "Built type-safe form validation system using React Hook Form + Zod",
+          "Implemented content management automation and RESTful API through Strapi Cloud API integration",
+          "Implemented user experience enhancement features like time-based dynamic backgrounds and daily avatar rotation",
+          "Built automated code quality management system based on ESLint + Prettier + Husky"
+        ],
+        references: ["https://mykim.in", "https://github.com/BradleyyKim"],
+        techStack: [
+          "Next.js 15",
+          "React 19",
+          "TypeScript 5",
+          "Tailwind CSS 4",
+          "Tanstack React Query",
+          "TipTap",
+          "React Hook Form",
+          "Zod",
+          "shadcn/ui",
+          "Strapi Cloud",
+          "Vercel",
+          "WebP Optimization",
+          "next-themes",
+          "Lucide React",
+          "Husky"
+        ]
+      }
+    ]
+  }
+];
+
 export default function CareerPage() {
-  return <CareerPageClient careerData={careerData} />;
+  return <CareerPageClient careerData={careerData} careerDataEn={careerDataEn} />;
 }
