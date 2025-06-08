@@ -109,7 +109,7 @@ const careerData: Company[] = [
           "Vite 빌드 시스템과 다중 환경 배포로 개발/스테이징/운영 환경 자동화",
           "Material-UI 기반 반응형 Enterprise UI로 관제센터 운영자 UX 최적화"
         ],
-        references: [], // 실제 프로젝트 URL이나 데모 링크가 있다면 추가
+        references: ["https://youtu.be/VdZq5tIw20g"],
         techStack: [
           "React",
           "TypeScript",
@@ -260,7 +260,7 @@ const careerDataEn: Company[] = [
           "Automated development/staging/production environment deployment with Vite build system",
           "Optimized control center operator UX with Material-UI-based responsive Enterprise UI"
         ],
-        references: [],
+        references: ["https://youtu.be/VdZq5tIw20g"],
         techStack: [
           "React",
           "TypeScript",
