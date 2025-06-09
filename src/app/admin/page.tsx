@@ -64,14 +64,14 @@ export default function AdminPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold mb-4">포스트 관리</h2>
             <Button className="w-full" onClick={() => router.push("/write")}>
               새 포스트 작성
             </Button>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold mb-4">통계</h2>
             <p>곧 제공될 예정입니다.</p>
           </div>
