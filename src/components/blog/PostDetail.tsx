@@ -42,7 +42,7 @@ export default function PostDetail({
           {categoryName && categorySlug && (
             <div className="flex items-center">
               <Link href={`/category/${categorySlug}`}>
-                <Badge variant="outline" className="hover:bg-gray-100 cursor-pointer">
+                <Badge variant="outline" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                   {categoryName}
                 </Badge>
               </Link>

@@ -115,7 +115,7 @@ export default function RichTextEditor({
       .filter(word => word.length > 0).length;
 
   return (
-    <div className="editor-container" {...dragHandlers} onPaste={handlePaste} onDrop={handleDrop}>
+    <div className="editor-container dark:bg-gray-800" {...dragHandlers} onPaste={handlePaste} onDrop={handleDrop}>
       {/* 툴바 */}
       <EditorToolbar
         editor={editor}

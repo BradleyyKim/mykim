@@ -161,7 +161,7 @@ function ContentEditor({ control, errors, disabled, onPlainTextChange }: Content
           )}
         />
         {disabled && (
-          <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 bg-opacity-50 dark:bg-opacity-50 flex items-center justify-center cursor-not-allowed">
+          <div className="absolute inset-0 bg-gray-100  dark:bg-gray-800 bg-opacity-50 dark:bg-opacity-50 flex items-center justify-center cursor-not-allowed">
             <p className="text-gray-500 font-medium">카테고리가 필요합니다</p>
           </div>
         )}

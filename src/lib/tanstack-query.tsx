@@ -1,6 +1,6 @@
 "use client";
 
-import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState, ReactNode, useEffect } from "react";
 
@@ -77,6 +77,8 @@ export function useLoginMutation() {
 
 // POST 관련 React Query 훅
 export function useCreatePost() {
+  const queryClient = useQueryClient();
+
   const createPost = async (data: {
     title: string;
     content: string;
@@ -103,7 +105,15 @@ export function useCreatePost() {
 
   // useMutation 반환
   return useMutation({
-    mutationFn: createPost
+    mutationFn: createPost,
+    onSuccess: () => {
+      // 포스트 생성 성공 시 posts 캐시를 무효화하여 최신 데이터로 갱신
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      console.log("포스트 생성 완료 및 캐시 무효화");
+    },
+    onError: error => {
+      console.error("포스트 생성 실패:", error);
+    }
   });
 }
 
@@ -117,20 +127,36 @@ export function usePosts() {
 
 // 포스트 수정 훅
 export function useUpdatePost() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: object }) => apiClient.updatePost(id, data)
+    mutationFn: ({ id, data }: { id: number; data: object }) => apiClient.updatePost(id, data),
+    onSuccess: () => {
+      // 포스트 수정 성공 시 관련 캐시들을 무효화
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      console.log("포스트 수정 완료 및 캐시 무효화");
+    }
   });
 }
 
 // 포스트 삭제 훅
 export function useDeletePost() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (id: number) => apiClient.deletePost(id)
+    mutationFn: (id: number) => apiClient.deletePost(id),
+    onSuccess: () => {
+      // 포스트 삭제 성공 시 posts 캐시를 무효화
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      console.log("포스트 삭제 완료 및 캐시 무효화");
+    }
   });
 }
 
 // Slug 기반 포스트 수정 훅
 export function useUpdatePostBySlug() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({
       slug,
@@ -146,13 +172,25 @@ export function useUpdatePostBySlug() {
         featuredImage?: { url: string; alternativeText?: string } | null;
         publishedDate?: string;
       };
-    }) => apiClient.updatePostBySlug(slug, data)
+    }) => apiClient.updatePostBySlug(slug, data),
+    onSuccess: () => {
+      // Slug 기반 포스트 수정 성공 시 관련 캐시들을 무효화
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      console.log("포스트 수정 완료 및 캐시 무효화");
+    }
   });
 }
 
 // Slug 기반 포스트 삭제 훅
 export function useDeletePostBySlug() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (slug: string) => apiClient.deletePostBySlug(slug)
+    mutationFn: (slug: string) => apiClient.deletePostBySlug(slug),
+    onSuccess: () => {
+      // Slug 기반 포스트 삭제 성공 시 posts 캐시를 무효화
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      console.log("포스트 삭제 완료 및 캐시 무효화");
+    }
   });
 }
