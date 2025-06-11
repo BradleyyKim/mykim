@@ -10,6 +10,7 @@ This is a personal blog frontend built with Next.js 15, TypeScript, and Tailwind
 - 🎨 Responsive design with dark mode support
 - 🔍 Search functionality
 - 📱 Mobile-first design
+- 📊 Google Analytics 4 integration with advanced tracking
 
 ## Time-based Background Images
 
@@ -60,6 +61,71 @@ For production, consider using a CDN service like:
 - Cloudinary
 - ImageKit
 - Vercel Image Optimization (automatic)
+
+## Google Analytics Setup
+
+This project includes comprehensive Google Analytics 4 (GA4) integration with blog-specific event tracking.
+
+### 1. Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```bash
+# Google Analytics 설정
+# 운영 환경용 GA4 측정 ID (G-XXXXXXXXXX 형식)
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
+# 개발 환경용 GA4 측정 ID (선택사항)
+NEXT_PUBLIC_GA_MEASUREMENT_ID_DEV=G-YYYYYYYYYY
+
+# 환경 설정
+NODE_ENV=development
+```
+
+### 2. Google Analytics 4 Setup
+
+1. Visit [Google Analytics](https://analytics.google.com/) and create a new property
+2. Choose "Web" as the platform
+3. Copy your Measurement ID (format: `G-XXXXXXXXXX`)
+4. Add the ID to your `.env.local` file
+
+### 3. Tracked Events
+
+The application automatically tracks the following events:
+
+#### Basic Events
+
+- **Page Views**: Automatic tracking on all page navigation
+- **Session Duration**: User engagement metrics
+
+#### Blog-Specific Events
+
+- **Post Views**: When users view a blog post
+- **Reading Progress**: Scroll depth tracking (25%, 50%, 75%, 90%, 100%)
+- **Reading Time**: Time spent on posts (30s, 1m, 2m, 5m milestones)
+- **Category Views**: When users browse categories
+- **Search Queries**: Internal search tracking
+- **Theme Changes**: Dark/light mode switching
+- **External Link Clicks**: Clicks on external links
+
+#### User Interaction Events
+
+- **Complete Reading**: When users finish reading a post
+- **Share Events**: Social media sharing (when implemented)
+
+### 4. Development vs Production
+
+- **Development**: GA events are logged to console (unless dev GA ID is provided)
+- **Production**: Full GA tracking with real data collection
+
+### 5. Privacy Considerations
+
+The implementation includes:
+
+- IP anonymization
+- GDPR-compliant tracking
+- Minimal personal data collection
+- User consent management ready
 
 ## Getting Started
 

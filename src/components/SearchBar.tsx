@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useBlogAnalytics } from "@/hooks/useGoogleAnalytics";
 
 export interface SearchBarProps {
   initialValue?: string;
@@ -11,6 +12,7 @@ export interface SearchBarProps {
 
 export default function SearchBar({ initialValue = "", onSearch }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState(initialValue);
+  const { trackSearch } = useBlogAnalytics();
 
   // initialValue가 변경되면 검색어 상태 업데이트
   useEffect(() => {
@@ -22,6 +24,11 @@ export default function SearchBar({ initialValue = "", onSearch }: SearchBarProp
 
     if (onSearch) {
       onSearch(searchQuery);
+
+      // Google Analytics에 검색 이벤트 추적 (빈 검색어가 아닌 경우)
+      if (searchQuery.trim()) {
+        trackSearch(searchQuery.trim());
+      }
     }
   };
 

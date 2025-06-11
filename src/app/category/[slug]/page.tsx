@@ -5,6 +5,7 @@ import { CategoryNotFound } from "@/components/NotFound";
 import { Button } from "@/components/ui/button";
 import PaginationWrapper from "@/components/blog/PaginationWrapper";
 import { formatDate } from "date-fns";
+import CategoryAnalytics from "@/components/analytics/CategoryAnalytics";
 
 type Props = {
   params: Promise<{
@@ -49,6 +50,9 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-12 ">
+      {/* Google Analytics 카테고리 추적 */}
+      <CategoryAnalytics categoryName={category.name} />
+
       <div className="mb-10">
         <h1 className="text-3xl font-bold mt-4 text-gray-800 dark:text-gray-100">{category.name}</h1>
         {category.description && <p className="text-gray-600 dark:text-gray-400 mt-2">{category.description}</p>}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
+import { useBlogAnalytics } from "@/hooks/useGoogleAnalytics";
 
 interface PostSearchProps {
   isSearchOpen: boolean;
@@ -20,6 +21,20 @@ export default function PostSearch({
   onSearch
 }: PostSearchProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { trackSearch } = useBlogAnalytics();
+
+  // 검색어 변경 시 분석 이벤트 포함한 핸들러
+  const handleSearchWithAnalytics = useCallback(
+    (query: string) => {
+      onSearch(query);
+
+      // Google Analytics에 검색 이벤트 추적 (빈 검색어가 아니고 이전 검색어와 다른 경우)
+      if (query.trim() && query.trim() !== searchQuery.trim()) {
+        trackSearch(query.trim());
+      }
+    },
+    [onSearch, searchQuery, trackSearch]
+  );
 
   // 검색창이 열릴 때 자동 포커스
   const handleToggleSearch = () => {
@@ -41,12 +56,12 @@ export default function PostSearch({
               type="text"
               placeholder="게시물 검색..."
               value={searchQuery}
-              onChange={e => onSearch(e.target.value)}
+              onChange={e => handleSearchWithAnalytics(e.target.value)}
               className="pr-10 shadow-sm border-blue-200 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
             />
             {searchQuery && (
               <button
-                onClick={() => onSearch("")}
+                onClick={() => handleSearchWithAnalytics("")}
                 className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 aria-label="검색어 지우기"
               >

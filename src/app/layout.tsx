@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { TanstackProvider } from "@/lib/tanstack-query";
@@ -7,6 +8,8 @@ import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import Header from "@/components/Header";
 import InfoCopyRight from "@/components/blog/InfoCopyRight";
+import { getGAMeasurementId, isGAEnabled } from "@/lib/google-analytics";
+import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 
 export const metadata: Metadata = {
   title: "My Kim",
@@ -36,17 +39,21 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <TanstackProvider>
             <AuthProvider>
-              <Suspense fallback={<div className="h-14 border-b bg-background/95"></div>}>
-                <Header />
-              </Suspense>
-              <main className="min-h-screen flex flex-col">
-                <div className="flex-1">{children}</div>
-                <InfoCopyRight />
-              </main>
+              <AnalyticsProvider>
+                <Suspense fallback={<div className="h-14 border-b bg-background/95"></div>}>
+                  <Header />
+                </Suspense>
+                <main className="min-h-screen flex flex-col">
+                  <div className="flex-1">{children}</div>
+                  <InfoCopyRight />
+                </main>
+              </AnalyticsProvider>
             </AuthProvider>
           </TanstackProvider>
         </ThemeProvider>
         <SpeedInsights />
+        {/* Google Analytics */}
+        {isGAEnabled() && getGAMeasurementId() && <GoogleAnalytics gaId={getGAMeasurementId()!} />}
       </body>
     </html>
   );

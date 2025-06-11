@@ -4,12 +4,18 @@ import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { useBlogAnalytics } from "@/hooks/useGoogleAnalytics";
 
 export function ThemeMode() {
   const { theme, setTheme } = useTheme();
+  const { trackThemeChange } = useBlogAnalytics();
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+
+    // Google Analytics에 테마 변경 이벤트 추적
+    trackThemeChange(newTheme);
   };
 
   return (

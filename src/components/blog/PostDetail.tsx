@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
@@ -7,6 +9,7 @@ import { Post } from "@/lib/api";
 import { getCategorySlug, getCategoryName } from "@/lib/utils";
 import { renderTiptapContent } from "@/lib/tiptap-renderer";
 import { PostDetailActions } from "./PostDetailActions";
+import { usePostAnalytics } from "@/hooks/useGoogleAnalytics";
 
 interface PostDetailProps {
   post: Post;
@@ -29,6 +32,9 @@ export default function PostDetail({
 
   // Tiptap JSON 콘텐츠를 HTML로 렌더링
   const renderedContent = renderTiptapContent(post.content);
+
+  // Google Analytics 포스트 분석 (자동으로 포스트 조회, 스크롤, 읽기 시간 추적)
+  usePostAnalytics(post.slug, categoryName, post.title);
 
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl">

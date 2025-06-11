@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PenTool } from "lucide-react";
 import { getCategoryName, getFirstEmojiOrString } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import { useState, useEffect } from "react";
 import type { PostsByYear } from "@/app/page";
 
 interface HomePageClientProps {
@@ -13,6 +14,12 @@ interface HomePageClientProps {
 
 export default function HomePageClient({ postsByYear, filteredYears }: HomePageClientProps) {
   const { isLoggedIn } = useAuth();
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Hydration 완료 확인
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   return (
     <>
@@ -51,7 +58,7 @@ export default function HomePageClient({ postsByYear, filteredYears }: HomePageC
                                 </h2>
                                 {categoryName && (
                                   <div className="ml-4 flex-shrink-0 dark:bg-gray-800 rounded-full px-3 py-1 text-sm text-gray-800 dark:text-gray-200">
-                                    {getFirstEmojiOrString(categoryName)}
+                                    {isHydrated ? getFirstEmojiOrString(categoryName) : categoryName}
                                   </div>
                                 )}
                               </div>

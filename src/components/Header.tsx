@@ -19,6 +19,7 @@ import {
 import { ThemeMode } from "@/components/ThemeMode";
 import { MAIN } from "@/lib/constants";
 import { Category, fetchCategories } from "@/lib/api";
+import { useBlogAnalytics } from "@/hooks/useGoogleAnalytics";
 
 /**
  * Header 컴포넌트
@@ -31,6 +32,7 @@ export default function Header() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { trackThemeChange } = useBlogAnalytics();
   const currentCategory = searchParams.get("category");
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
@@ -200,7 +202,14 @@ export default function Header() {
                     <span>About</span>
                   </DropdownMenuItem>
                   {/* ThemeMode 버튼 - 모바일에서만 표시 */}
-                  <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      const newTheme = theme === "dark" ? "light" : "dark";
+                      setTheme(newTheme);
+                      // Google Analytics에 테마 변경 이벤트 추적
+                      trackThemeChange(newTheme);
+                    }}
+                  >
                     <div className="flex items-start">
                       <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                       <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
