@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import PostDetail from "@/components/blog/PostDetail";
 import { PostNotFound } from "@/components/NotFound";
-import { extractPlainText } from "@/lib/tiptap-renderer";
+import { getPostBySlug } from "@/lib/services/post-service";
+import { extractPlainText, extractFirstImageFromTiptapContent } from "@/lib/tiptap-renderer";
 import { MAIN } from "@/lib/constants";
-import { getPostBySlug } from "@/lib";
 
 // ISR 설정
 export const revalidate = 300; // 5분
@@ -19,15 +19,41 @@ export async function generateStaticParams() {
   return [];
 }
 
+// 썸네일 이미지 URL 생성 함수
+function getThumbnailImage(post: { featuredImage?: { url?: string } | null; content: string | object }): string {
+  // 1. featuredImage가 있으면 사용
+  if (post.featuredImage?.url) {
+    return post.featuredImage.url;
+  }
+
+  // 2. 콘텐츠에서 첫 번째 이미지 추출
+  const firstImage = extractFirstImageFromTiptapContent(post.content);
+  if (firstImage) {
+    return firstImage;
+  }
+
+  // 3. 기본 프로필 이미지 사용
+  return MAIN.image;
+}
+
 // 구조화된 데이터 생성 함수
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function generateStructuredData(post: any) {
+function generateStructuredData(post: {
+  title: string;
+  description?: string | null;
+  content: string | object;
+  publishedDate?: string | null;
+  updatedAt?: string;
+  slug: string;
+  featuredImage?: { url?: string } | null;
+}) {
+  const thumbnailImage = getThumbnailImage(post);
+
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
-    description: post.description,
-    image: post.featuredImage?.url || undefined,
+    description: post.description || extractPlainText(post.content, 160),
+    image: thumbnailImage,
     datePublished: post.publishedDate || undefined,
     dateModified: post.updatedAt || undefined,
     author: {
@@ -54,6 +80,14 @@ function generateStructuredData(post: any) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
+  // 빌드 시점에서는 기본 메타데이터 반환
+  if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_API_URL?.startsWith("http")) {
+    return {
+      title: `Post: ${slug}`,
+      description: "Blog post content"
+    };
+  }
+
   try {
     const post = await getPostBySlug(slug);
 
@@ -65,7 +99,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const description = post.description || extractPlainText(post.content, 160);
-    const imageUrl = post.featuredImage?.url || MAIN.image;
+    const thumbnailImage = getThumbnailImage(post);
 
     return {
       title: post.title,
@@ -79,7 +113,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         authors: [MAIN.author],
         images: [
           {
-            url: imageUrl,
+            url: thumbnailImage,
             width: 1200,
             height: 630,
             alt: post.title
@@ -91,7 +125,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         card: "summary_large_image",
         title: post.title,
         description,
-        images: [imageUrl],
+        images: [thumbnailImage],
         creator: MAIN.twitter
       },
       alternates: {

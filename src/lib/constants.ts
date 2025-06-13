@@ -25,7 +25,7 @@ export const MAIN = {
   author: "김민영",
   author_en: "Minyoung Kim",
   url: "https://mykim.in",
-  image: "https://mykim.in/images/logo.png",
+  image: "https://mykim.in/images/avatars/mykim-avatar-1.png",
   twitter: "@mykim",
   facebook: "https://www.facebook.com/01029421924",
   // 소셜 링크
