@@ -1,0 +1,14 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://mykim.in/sitemap.xml
+
+# Disallow admin and edit pages
+Disallow: /admin/
+Disallow: /edit/
+Disallow: /write/
+
+# Crawl-delay
+Crawl-delay: 10 

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import PaginationWrapper from "@/components/blog/PaginationWrapper";
 import { formatDate } from "date-fns";
 import CategoryAnalytics from "@/components/analytics/CategoryAnalytics";
+import { MAIN } from "@/lib/constants";
 
 type Props = {
   params: Promise<{
@@ -27,9 +28,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const { category } = categoryData;
+  const title = `${category.name} - ${MAIN.title}`;
+  const description = category.description || `${category.name} 카테고리의 글 목록입니다.`;
+
   return {
-    title: `${categoryData.category.name} - 블로그`,
-    description: categoryData.category.description || `${categoryData.category.name} 카테고리의 글 목록입니다.`
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: `${MAIN.url}/category/${category.slug}`,
+      siteName: MAIN.title
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description
+    },
+    alternates: {
+      canonical: `${MAIN.url}/category/${category.slug}`
+    }
   };
 }
 

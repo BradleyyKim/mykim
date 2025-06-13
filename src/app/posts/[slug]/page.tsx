@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import PostDetail from "@/components/blog/PostDetail";
 import { PostNotFound } from "@/components/NotFound";
-import { getPostBySlug } from "@/lib/services/post-service";
+import { getPostBySlug } from "@/lib/api";
 import { extractPlainText } from "@/lib/tiptap-renderer";
+import { MAIN } from "@/lib/constants";
 
 // ISR 설정
 export const revalidate = 300; // 5분
@@ -18,17 +19,39 @@ export async function generateStaticParams() {
   return [];
 }
 
-// 동적 메타데이터 생성 - 빌드 시점에서 안전하게 처리
+// 구조화된 데이터 생성 함수
+function generateStructuredData(post: any) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    image: post.featuredImage?.url,
+    datePublished: post.publishedDate,
+    dateModified: post.updatedAt,
+    author: {
+      "@type": "Person",
+      name: MAIN.author,
+      url: MAIN.url
+    },
+    publisher: {
+      "@type": "Organization",
+      name: MAIN.title,
+      logo: {
+        "@type": "ImageObject",
+        url: MAIN.image
+      }
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${MAIN.url}/posts/${post.slug}`
+    }
+  };
+}
+
+// 동적 메타데이터 생성
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-
-  // 빌드 시점에서는 기본 메타데이터 반환
-  if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_API_URL?.startsWith("http")) {
-    return {
-      title: `Post: ${slug}`,
-      description: "Blog post content"
-    };
-  }
 
   try {
     const post = await getPostBySlug(slug);
@@ -40,9 +63,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       };
     }
 
+    const description = post.description || extractPlainText(post.content, 160);
+    const imageUrl = post.featuredImage?.url || MAIN.image;
+
     return {
       title: post.title,
-      description: post.description || extractPlainText(post.content, 160)
+      description,
+      openGraph: {
+        title: post.title,
+        description,
+        type: "article",
+        publishedTime: post.publishedDate,
+        modifiedTime: post.updatedAt,
+        authors: [MAIN.author],
+        images: [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: post.title
+          }
+        ],
+        url: `${MAIN.url}/posts/${post.slug}`
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: post.title,
+        description,
+        images: [imageUrl],
+        creator: MAIN.twitter
+      },
+      alternates: {
+        canonical: `${MAIN.url}/posts/${post.slug}`
+      }
     };
   } catch (error) {
     console.warn(`Metadata generation failed for slug: ${slug}`, error);
@@ -64,5 +117,13 @@ export default async function PostPage({ params }: Props) {
     return <PostNotFound />;
   }
 
-  return <PostDetail post={post} />;
+  // 구조화된 데이터를 JSON-LD로 추가
+  const structuredData = generateStructuredData(post);
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <PostDetail post={post} />
+    </>
+  );
 }
