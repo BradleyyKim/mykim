@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import PostDetail from "@/components/blog/PostDetail";
 import { PostNotFound } from "@/components/NotFound";
-import { getPostBySlug } from "@/lib/api";
 import { extractPlainText } from "@/lib/tiptap-renderer";
 import { MAIN } from "@/lib/constants";
+import { getPostBySlug } from "@/lib";
 
 // ISR 설정
 export const revalidate = 300; // 5분
@@ -20,15 +20,16 @@ export async function generateStaticParams() {
 }
 
 // 구조화된 데이터 생성 함수
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function generateStructuredData(post: any) {
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
-    image: post.featuredImage?.url,
-    datePublished: post.publishedDate,
-    dateModified: post.updatedAt,
+    image: post.featuredImage?.url || undefined,
+    datePublished: post.publishedDate || undefined,
+    dateModified: post.updatedAt || undefined,
     author: {
       "@type": "Person",
       name: MAIN.author,
@@ -73,8 +74,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: post.title,
         description,
         type: "article",
-        publishedTime: post.publishedDate,
-        modifiedTime: post.updatedAt,
+        publishedTime: post.publishedDate || undefined,
+        modifiedTime: post.updatedAt || undefined,
         authors: [MAIN.author],
         images: [
           {
