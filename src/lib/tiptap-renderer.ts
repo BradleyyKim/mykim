@@ -130,3 +130,57 @@ export function extractPlainText(content: string | object, maxLength: number = 1
     return typeof content === "string" ? content.substring(0, maxLength) : "콘텐츠를 불러올 수 없습니다.";
   }
 }
+
+/**
+ * Tiptap JSON 콘텐츠에서 첫 번째 이미지 URL 추출
+ * @param content - Tiptap JSON 형식의 콘텐츠 또는 문자열
+ * @returns 첫 번째 이미지 URL 또는 null
+ */
+export function extractFirstImageFromTiptapContent(content: string | object): string | null {
+  try {
+    let jsonContent: unknown;
+
+    if (typeof content === "string") {
+      try {
+        jsonContent = JSON.parse(content);
+      } catch {
+        // JSON 파싱 실패 시 HTML에서 이미지 추출 시도
+        const imgRegex = /<img[^>]+src="([^">]+)"/;
+        const imgMatch = content.match(imgRegex);
+        return imgMatch?.[1] || null;
+      }
+    } else {
+      jsonContent = content;
+    }
+
+    // Tiptap JSON 구조에서 이미지 노드 찾기
+    function findImageInNode(node: unknown): string | null {
+      if (!node || typeof node !== "object") return null;
+
+      const nodeObj = node as Record<string, unknown>;
+
+      // 현재 노드가 이미지 노드인지 확인
+      if (nodeObj.type === "image" && nodeObj.attrs && typeof nodeObj.attrs === "object" && nodeObj.attrs !== null) {
+        const attrs = nodeObj.attrs as Record<string, unknown>;
+        if (typeof attrs.src === "string") {
+          return attrs.src;
+        }
+      }
+
+      // 자식 노드들을 재귀적으로 검색
+      if (nodeObj.content && Array.isArray(nodeObj.content)) {
+        for (const childNode of nodeObj.content) {
+          const imageUrl = findImageInNode(childNode);
+          if (imageUrl) return imageUrl;
+        }
+      }
+
+      return null;
+    }
+
+    return findImageInNode(jsonContent);
+  } catch (error) {
+    console.error("Error extracting first image from Tiptap content:", error);
+    return null;
+  }
+}

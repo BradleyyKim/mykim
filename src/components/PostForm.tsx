@@ -13,6 +13,7 @@ import { useForm, Controller, Control, UseFormRegister, FieldErrors } from "reac
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { generateSlugFromText, suggestSlugFromTitle } from "@/lib/slug-utils";
+import { extractFirstImageFromTiptapContent } from "@/lib/tiptap-renderer";
 
 // Zod schema for form validation
 const postSchema = z.object({
@@ -279,12 +280,6 @@ function SubmitButtonGroup({ isSubmitting, disabled, onCancel, submitText }: Sub
 }
 
 // 유틸리티 함수들
-const extractFirstImageFromHtml = (html: string) => {
-  const imgRegex = /<img[^>]+src="([^">]+)"/;
-  const imgMatch = html.match(imgRegex);
-  return imgMatch?.[1] || null;
-};
-
 const stripHtml = (html: string) => {
   return html.replace(/<\/?[^>]+(>|$)/g, "");
 };
@@ -491,7 +486,7 @@ export default function PostForm({ initialData, onSubmit, submitText, title }: P
     }
 
     // 내용에서 첫 번째 이미지를 찾아서 featuredImage로 설정
-    const imageUrl = extractFirstImageFromHtml(data.content);
+    const imageUrl = extractFirstImageFromTiptapContent(data.content);
 
     let featuredImage = null;
     if (imageUrl) {
