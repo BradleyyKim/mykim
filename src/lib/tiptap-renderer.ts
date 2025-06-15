@@ -147,7 +147,11 @@ export function extractFirstImageFromTiptapContent(content: string | object): st
         // JSON 파싱 실패 시 HTML에서 이미지 추출 시도
         const imgRegex = /<img[^>]+src="([^">]+)"/;
         const imgMatch = content.match(imgRegex);
-        return imgMatch?.[1] || null;
+        const imageUrl = imgMatch?.[1] || null;
+
+        // TODO: 향후 Base64 이미지를 Vercel Blob으로 자동 변환 예정
+        // 현재는 Base64도 썸네일로 허용 (사용자 요청)
+        return imageUrl;
       }
     } else {
       jsonContent = content;
@@ -163,6 +167,8 @@ export function extractFirstImageFromTiptapContent(content: string | object): st
       if (nodeObj.type === "image" && nodeObj.attrs && typeof nodeObj.attrs === "object" && nodeObj.attrs !== null) {
         const attrs = nodeObj.attrs as Record<string, unknown>;
         if (typeof attrs.src === "string") {
+          // TODO: 향후 Base64 이미지를 Vercel Blob으로 자동 변환 예정
+          // 현재는 Base64도 썸네일로 허용 (사용자 요청)
           return attrs.src;
         }
       }
