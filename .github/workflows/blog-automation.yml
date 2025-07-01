@@ -1,0 +1,139 @@
+name: 📝 Blog Automation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # 매일 자정에 실행 (KST 기준 오전 9시)
+    - cron: "0 0 * * *"
+
+jobs:
+  test-and-build:
+    name: Test and Build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run type check
+        run: npm run type-check
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build project
+        run: npm run build
+
+  seo-check:
+    name: SEO and Performance Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Wait for deployment
+        run: sleep 60
+
+      - name: Check sitemap
+        run: |
+          curl -f https://mykim.in/sitemap.xml || exit 1
+          echo "✅ Sitemap is accessible"
+
+      - name: Check robots.txt
+        run: |
+          curl -f https://mykim.in/robots.txt || exit 1
+          echo "✅ Robots.txt is accessible"
+
+      - name: Check RSS feed
+        run: |
+          curl -f https://mykim.in/rss.xml || exit 1
+          echo "✅ RSS feed is accessible"
+
+  create-weekly-report:
+    name: Create Weekly Report
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate weekly report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+            // 지난 주 이슈들 가져오기
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              since: oneWeekAgo.toISOString(),
+              state: 'all'
+            });
+
+            // 지난 주 PR들 가져오기
+            const prs = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all'
+            });
+
+            const weeklyReport = `
+            # 📊 Weekly Report (${oneWeekAgo.toISOString().split('T')[0]} ~ ${new Date().toISOString().split('T')[0]})
+
+            ## 📈 Statistics
+            - 새로운 이슈: ${issues.data.length}개
+            - 새로운 PR: ${prs.data.length}개
+            - 완료된 작업: ${issues.data.filter(i => i.state === 'closed').length}개
+
+            ## 🎯 주요 활동
+            ${issues.data.slice(0, 5).map(issue => `- [#${issue.number}](${issue.html_url}) ${issue.title}`).join('\n')}
+
+            ## 📝 다음 주 계획
+            - [ ] 새로운 기능 개발
+            - [ ] 버그 수정
+            - [ ] 성능 최적화
+            `;
+
+            // 이슈로 주간 리포트 생성
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📊 Weekly Report - ${new Date().toISOString().split('T')[0]}`,
+              body: weeklyReport,
+              labels: ['report', 'weekly']
+            });
+
+  auto-assign-reviewer:
+    name: Auto assign reviewer
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    steps:
+      - name: Auto assign reviewer
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // PR 작성자가 본인이면 자동으로 리뷰어 할당하지 않음
+            if (context.payload.pull_request.user.login === 'BradleyyKim') {
+              console.log('PR author is the owner, skipping auto-assignment');
+              return;
+            }
+
+            await github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              reviewers: ['BradleyyKim']
+            });
