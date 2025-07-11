@@ -45,8 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         return false;
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error("인증 상태 확인 오류:", error);
       setIsLoggedIn(false);
       setUser(null);
       return false;
