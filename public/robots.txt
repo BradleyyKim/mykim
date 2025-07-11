@@ -4,6 +4,7 @@ Allow: /
 
 # Sitemap location
 Sitemap: https://mykim.in/sitemap.xml
+Sitemap: https://mykim.in/rss.xml
 
 # Disallow admin and edit pages
 Disallow: /admin/
