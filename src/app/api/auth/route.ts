@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     const token = request.cookies.get("adminToken");
 
     if (!token) {
-      return NextResponse.json({ isLoggedIn: false }, { status: 401 });
+      return NextResponse.json({ isLoggedIn: false });
     }
 
     // Strapi API URL

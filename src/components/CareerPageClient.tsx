@@ -98,12 +98,12 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
             {isDropdownOpen && (
               <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-24 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                 <div className="py-1">
-                  <button
+                  {/* <button
                     onClick={() => handleDownloadPDF("ko")}
                     className="w-full text-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                   >
                     한국어
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => handleDownloadPDF("en")}
                     className="w-full text-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
