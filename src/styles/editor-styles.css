@@ -121,6 +121,18 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
+/* 애니메이션 이미지 스타일 */
+.editor-content .tiptap img.editor-image[data-animated="true"] {
+  /* 애니메이션 이미지 전용 스타일 */
+  animation-play-state: running;
+  image-rendering: auto; /* 부드러운 애니메이션 */
+}
+
+/* 호버 시 애니메이션 일시정지 (선택사항) */
+.editor-content .tiptap img.editor-image[data-animated="true"]:hover {
+  animation-play-state: paused;
+}
+
 /* 링크 스타일 */
 .editor-content .tiptap a.editor-link {
   color: #3b82f6;

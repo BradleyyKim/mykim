@@ -12,6 +12,38 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 애니메이션 이미지 여부 확인
+  const isAnimatedImage = useCallback((file: File): boolean => {
+    return file.type === "image/gif" || file.type === "image/webp" || file.name.toLowerCase().endsWith(".gif");
+  }, []);
+
+  // 파일 크기 검증
+  const validateFileSize = useCallback(
+    (file: File): { valid: boolean; message?: string } => {
+      const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+      const MAX_ANIMATED_SIZE = 15 * 1024 * 1024; // 15MB (애니메이션은 조금 더 허용)
+
+      if (isAnimatedImage(file)) {
+        if (file.size > MAX_ANIMATED_SIZE) {
+          return {
+            valid: false,
+            message: `애니메이션 이미지는 ${MAX_ANIMATED_SIZE / 1024 / 1024}MB 이하만 지원됩니다. (현재: ${(file.size / 1024 / 1024).toFixed(1)}MB)`
+          };
+        }
+      } else {
+        if (file.size > MAX_FILE_SIZE) {
+          return {
+            valid: false,
+            message: `이미지는 ${MAX_FILE_SIZE / 1024 / 1024}MB 이하만 지원됩니다. (현재: ${(file.size / 1024 / 1024).toFixed(1)}MB)`
+          };
+        }
+      }
+
+      return { valid: true };
+    },
+    [isAnimatedImage]
+  );
+
   // Base64 방식 업로드 (복사 붙여넣기용)
   const handleBase64Upload = useCallback(
     async (file: File) => {
@@ -71,6 +103,122 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
       } catch (error) {
         console.error("Base64 업로드 오류:", error);
         setError(error instanceof Error ? error.message : "이미지 처리 중 오류가 발생했습니다.");
+        setIsUploading(false);
+      }
+    },
+    [editor]
+  );
+
+  // 애니메이션 이미지 전용 업로드 (압축 없이)
+  const handleAnimatedImageUpload = useCallback(
+    async (file: File, source: "file" | "paste" | "drop") => {
+      if (!editor) return;
+
+      try {
+        if (source === "file") {
+          // 서버 업로드 (압축 없이)
+          const formData = new FormData();
+          formData.append("image", file); // 압축하지 않음
+
+          const response = await fetch("/api/upload/image", {
+            method: "POST",
+            body: formData
+          });
+
+          if (!response.ok) {
+            throw new Error("서버 업로드에 실패했습니다");
+          }
+
+          const uploadResult = await response.json();
+
+          // 업로드된 URL로 이미지 삽입
+          editor
+            .chain()
+            .focus()
+            .setImage({
+              src: uploadResult.url,
+              alt: file.name,
+              title: file.name
+            })
+            .run();
+
+          // 애니메이션 속성 추가 (안전한 방식)
+          try {
+            const { state } = editor;
+            const { selection } = state;
+            if (selection && selection.from !== selection.to) {
+              editor
+                .chain()
+                .setNodeSelection(selection.from)
+                .updateAttributes("image", { "data-animated": "true" })
+                .run();
+            }
+          } catch (error) {
+            console.warn("애니메이션 속성 설정 실패:", error);
+            // 속성 설정 실패해도 이미지는 정상 삽입됨
+          }
+
+          console.log("애니메이션 이미지 서버 업로드 완료:", file.name);
+          setIsUploading(false);
+        } else {
+          // Base64 방식 (압축 없이)
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64data = reader.result as string;
+            editor
+              .chain()
+              .focus()
+              .setImage({
+                src: base64data,
+                alt: file.name,
+                title: file.name
+              })
+              .run();
+
+            // 애니메이션 속성 추가 (안전한 방식)
+            try {
+              const { state } = editor;
+              const { selection } = state;
+              if (selection && selection.from !== selection.to) {
+                editor
+                  .chain()
+                  .setNodeSelection(selection.from)
+                  .updateAttributes("image", { "data-animated": "true" })
+                  .run();
+              }
+            } catch (error) {
+              console.warn("애니메이션 속성 설정 실패:", error);
+              // 속성 설정 실패해도 이미지는 정상 삽입됨
+            }
+
+            console.log("애니메이션 이미지 Base64 업로드 완료:", file.name);
+            setIsUploading(false);
+          };
+
+          reader.onerror = () => {
+            setError("애니메이션 이미지 처리 중 오류가 발생했습니다.");
+            setIsUploading(false);
+          };
+
+          reader.readAsDataURL(file); // 압축 없이 직접 처리
+        }
+      } catch (error) {
+        console.error("애니메이션 이미지 업로드 실패:", error);
+
+        // 구체적인 에러 메시지 제공
+        let errorMessage = "애니메이션 이미지 처리 중 오류가 발생했습니다.";
+
+        if (error instanceof Error) {
+          if (error.message.includes("서버 업로드에 실패")) {
+            errorMessage = "서버 업로드에 실패했습니다. 네트워크 연결을 확인해주세요.";
+          } else if (error.message.includes("FileReader")) {
+            errorMessage = "파일 읽기에 실패했습니다. 파일이 손상되었을 수 있습니다.";
+          } else {
+            errorMessage = error.message;
+          }
+        }
+
+        setError(errorMessage);
         setIsUploading(false);
       }
     },
@@ -137,16 +285,29 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
     async (file: File, source: "file" | "paste" | "drop" = "paste") => {
       if (!editor) return;
 
+      // 파일 크기 검증
+      const sizeValidation = validateFileSize(file);
+      if (!sizeValidation.valid) {
+        setError(sizeValidation.message || "파일 크기가 너무 큽니다.");
+        return;
+      }
+
       setIsUploading(true);
       setError(null);
 
       try {
-        if (source === "file") {
-          // 파일 첨부 (모바일 포함): 실제 파일 업로드 시도
-          await handleRealFileUpload(file);
+        if (isAnimatedImage(file)) {
+          // 애니메이션 이미지는 압축하지 않고 직접 처리
+          await handleAnimatedImageUpload(file, source);
         } else {
-          // 복사 붙여넣기/드롭: Base64 방식 사용
-          await handleBase64Upload(file);
+          // 정적 이미지는 기존 압축 로직 사용
+          if (source === "file") {
+            // 파일 첨부 (모바일 포함): 실제 파일 업로드 시도
+            await handleRealFileUpload(file);
+          } else {
+            // 복사 붙여넣기/드롭: Base64 방식 사용
+            await handleBase64Upload(file);
+          }
         }
       } catch (error) {
         console.error("이미지 업로드 오류:", error);
@@ -154,7 +315,7 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
         setIsUploading(false);
       }
     },
-    [editor, handleRealFileUpload, handleBase64Upload]
+    [editor, handleRealFileUpload, handleBase64Upload, handleAnimatedImageUpload, isAnimatedImage, validateFileSize]
   );
 
   // 파일 선택 핸들러 (모바일 첨부)
