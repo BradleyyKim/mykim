@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { ClipboardEvent, RefObject, useCallback } from "react";
 import { EditorContent } from "@tiptap/react";
 
 // 유틸리티
@@ -34,7 +34,7 @@ export default function RichTextEditor({
   maxLength
 }: RichTextEditorProps) {
   // 에디터 내용이 변경될 때 처리
-  const handleUpdate = React.useCallback(
+  const handleUpdate = useCallback(
     (newContent: string) => {
       // HTML 내용 업데이트
       onChange(newContent);
@@ -62,9 +62,56 @@ export default function RichTextEditor({
   // 링크 처리 훅
   const { setLink, unsetLink, isLinkActive } = useLinkHandler({ editor });
 
+  // URL에서 이미지 삽입
+  const insertImageFromUrl = useCallback(
+    (imageUrl: string) => {
+      if (!editor) return;
+
+      // URL에서 파일명 추출 시도
+      const getFileNameFromUrl = (url: string): string => {
+        try {
+          const urlObj = new URL(url);
+          const pathname = urlObj.pathname;
+          const filename = pathname.split("/").pop() || "";
+
+          if (filename && filename.includes(".")) {
+            return filename;
+          }
+
+          // 파일명이 없으면 호스트명 기반으로 생성
+          const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+          const extension = url.toLowerCase().includes(".webp")
+            ? "webp"
+            : url.toLowerCase().includes(".jpg")
+              ? "jpg"
+              : url.toLowerCase().includes(".png")
+                ? "png"
+                : "jpg";
+          return `image-${timestamp}.${extension}`;
+        } catch {
+          const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+          return `image-${timestamp}.jpg`;
+        }
+      };
+
+      const fileName = getFileNameFromUrl(imageUrl);
+
+      editor
+        .chain()
+        .focus()
+        .setImage({
+          src: imageUrl,
+          alt: fileName,
+          title: fileName
+        })
+        .run();
+    },
+    [editor]
+  );
+
   // 붙여넣기 이벤트 처리
-  const handlePaste = React.useCallback(
-    (event: React.ClipboardEvent) => {
+  const handlePaste = useCallback(
+    (event: ClipboardEvent) => {
       const clipboardData = event.clipboardData;
       if (!clipboardData) return;
 
@@ -91,7 +138,7 @@ export default function RichTextEditor({
         return;
       }
     },
-    [handleImageUpload]
+    [handleImageUpload, insertImageFromUrl]
   );
 
   // 이미지 URL 여부 확인
@@ -122,65 +169,6 @@ export default function RichTextEditor({
     }
   };
 
-  // URL에서 이미지 삽입
-  const insertImageFromUrl = (imageUrl: string) => {
-    if (!editor) return;
-
-    // URL에서 파일명 추출 시도
-    const getFileNameFromUrl = (url: string): string => {
-      try {
-        const urlObj = new URL(url);
-        const pathname = urlObj.pathname;
-        const filename = pathname.split("/").pop() || "";
-
-        if (filename && filename.includes(".")) {
-          return filename;
-        }
-
-        // 파일명이 없으면 호스트명 기반으로 생성
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-        const extension = url.toLowerCase().includes(".webp")
-          ? "webp"
-          : url.toLowerCase().includes(".jpg")
-            ? "jpg"
-            : url.toLowerCase().includes(".png")
-              ? "png"
-              : "jpg";
-        return `image-${timestamp}.${extension}`;
-      } catch {
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-        return `image-${timestamp}.jpg`;
-      }
-    };
-
-    const fileName = getFileNameFromUrl(imageUrl);
-
-    editor
-      .chain()
-      .focus()
-      .setImage({
-        src: imageUrl,
-        alt: fileName,
-        title: fileName
-      })
-      .run();
-  };
-
-  // 드롭 이벤트 처리
-  const handleDrop = React.useCallback(
-    (event: React.DragEvent) => {
-      const files = Array.from(event.dataTransfer?.files || []);
-      const imageFiles = files.filter(file => file.type.startsWith("image/"));
-
-      if (imageFiles.length > 0) {
-        event.preventDefault();
-        const imageFile = imageFiles[0];
-        handleImageUpload(imageFile);
-      }
-    },
-    [handleImageUpload]
-  );
-
   // 이미지 버튼 클릭 핸들러
   const handleImageButtonClick = () => {
     fileInputRef.current?.click();
@@ -200,7 +188,7 @@ export default function RichTextEditor({
       .filter(word => word.length > 0).length;
 
   return (
-    <div className="editor-container dark:bg-gray-800" {...dragHandlers} onPaste={handlePaste} onDrop={handleDrop}>
+    <div className="editor-container dark:bg-gray-800" {...dragHandlers} onPaste={handlePaste}>
       {/* 툴바 */}
       <EditorToolbar
         editor={editor}
@@ -208,7 +196,7 @@ export default function RichTextEditor({
         onLinkClick={setLink}
         onUnlinkClick={unsetLink}
         isLinkActive={isLinkActive}
-        fileInputRef={fileInputRef as React.RefObject<HTMLInputElement>}
+        fileInputRef={fileInputRef as RefObject<HTMLInputElement>}
         onFileSelect={handleFileSelect}
       />
 

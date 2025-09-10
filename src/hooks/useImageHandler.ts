@@ -12,61 +12,6 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 실제 파일을 서버에 업로드 (모바일 파일 첨부용)
-  const handleRealFileUpload = useCallback(
-    async (file: File) => {
-      if (!editor) return;
-
-      setIsUploading(true);
-      setError(null);
-
-      try {
-        // 파일 압축
-        const compressedFile = await imageCompression(file, {
-          maxSizeMB: 2,
-          maxWidthOrHeight: 1920,
-          useWebWorker: true
-        });
-
-        // 실제 파일을 서버에 업로드
-        const formData = new FormData();
-        formData.append("image", compressedFile);
-
-        const response = await fetch("/api/upload/image", {
-          method: "POST",
-          body: formData
-        });
-
-        if (!response.ok) {
-          throw new Error("서버 업로드에 실패했습니다");
-        }
-
-        const uploadResult = await response.json();
-
-        // 업로드된 URL로 이미지 삽입
-        editor
-          .chain()
-          .focus()
-          .setImage({
-            src: uploadResult.url,
-            alt: uploadResult.filename,
-            title: uploadResult.filename
-          })
-          .run();
-
-        console.log("실제 파일 업로드 완료:", uploadResult.filename);
-        setIsUploading(false);
-      } catch (error) {
-        console.error("실제 파일 업로드 실패:", error);
-
-        // 실패 시 Base64 방식으로 폴백
-        console.log("Base64 방식으로 폴백 처리");
-        await handleBase64Upload(file);
-      }
-    },
-    [editor]
-  );
-
   // Base64 방식 업로드 (복사 붙여넣기용)
   const handleBase64Upload = useCallback(
     async (file: File) => {
@@ -132,6 +77,61 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
     [editor]
   );
 
+  // 실제 파일을 서버에 업로드 (모바일 파일 첨부용)
+  const handleRealFileUpload = useCallback(
+    async (file: File) => {
+      if (!editor) return;
+
+      setIsUploading(true);
+      setError(null);
+
+      try {
+        // 파일 압축
+        const compressedFile = await imageCompression(file, {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true
+        });
+
+        // 실제 파일을 서버에 업로드
+        const formData = new FormData();
+        formData.append("image", compressedFile);
+
+        const response = await fetch("/api/upload/image", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error("서버 업로드에 실패했습니다");
+        }
+
+        const uploadResult = await response.json();
+
+        // 업로드된 URL로 이미지 삽입
+        editor
+          .chain()
+          .focus()
+          .setImage({
+            src: uploadResult.url,
+            alt: uploadResult.filename,
+            title: uploadResult.filename
+          })
+          .run();
+
+        console.log("실제 파일 업로드 완료:", uploadResult.filename);
+        setIsUploading(false);
+      } catch (error) {
+        console.error("실제 파일 업로드 실패:", error);
+
+        // 실패 시 Base64 방식으로 폴백
+        console.log("Base64 방식으로 폴백 처리");
+        await handleBase64Upload(file);
+      }
+    },
+    [editor, handleBase64Upload]
+  );
+
   // 통합 이미지 업로드 핸들러
   const handleImageUpload = useCallback(
     async (file: File, source: "file" | "paste" | "drop" = "paste") => {
@@ -175,7 +175,10 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
 
   // 드래그 이벤트 핸들러들
   const dragHandlers = {
-    onDragEnter: () => setIsDragOver(true),
+    onDragEnter: (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragOver(true);
+    },
     onDragLeave: (e: React.DragEvent) => {
       if (!e.currentTarget.contains(e.relatedTarget as Node)) {
         setIsDragOver(false);
@@ -185,7 +188,18 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
       e.preventDefault();
       setIsDragOver(true);
     },
-    onDrop: () => setIsDragOver(false)
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragOver(false);
+
+      const files = Array.from(e.dataTransfer?.files || []);
+      const imageFiles = files.filter(file => file.type.startsWith("image/"));
+
+      if (imageFiles.length > 0) {
+        const imageFile = imageFiles[0];
+        handleImageUpload(imageFile, "drop");
+      }
+    }
   };
 
   // 에디터 프롭스에서 사용할 핸들러들
