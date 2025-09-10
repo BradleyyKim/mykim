@@ -4,12 +4,13 @@ import { Upload, X } from "lucide-react";
 
 interface EditorOverlaysProps {
   isUploading: boolean;
+  uploadStatus?: string;
   isDragOver: boolean;
   error: string | null;
   onErrorClose: () => void;
 }
 
-export function EditorOverlays({ isUploading, isDragOver, error, onErrorClose }: EditorOverlaysProps) {
+export function EditorOverlays({ isUploading, uploadStatus, isDragOver, error, onErrorClose }: EditorOverlaysProps) {
   return (
     <>
       {/* 업로드 중 오버레이 */}
@@ -17,7 +18,7 @@ export function EditorOverlays({ isUploading, isDragOver, error, onErrorClose }:
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-4 rounded-lg shadow-lg flex items-center space-x-3">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            <span className="text-gray-700">이미지 업로드 중...</span>
+            <span className="text-gray-700">{uploadStatus || "이미지 업로드 중..."}</span>
           </div>
         </div>
       )}

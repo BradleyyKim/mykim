@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { ProtectedRoute } from "@/lib/auth";
-import { useUpdatePostBySlug } from "@/lib/tanstack-query";
+import { useUpdatePostBySlug, queryClient } from "@/lib/tanstack-query";
 import PostForm from "@/components/PostForm";
 import { Loader2 } from "lucide-react";
 import { getCategorySlug } from "@/lib/utils";
@@ -23,7 +23,29 @@ function EditPageContent() {
     const loadPost = async () => {
       try {
         setIsLoading(true);
-        // 기존의 getPostBySlug 함수 사용
+
+        // 1. 캐시 무효화 (최신 데이터 보장)
+
+        // TanStack Query 캐시 무효화
+        await queryClient.invalidateQueries({
+          queryKey: ["posts"]
+        });
+        await queryClient.invalidateQueries({
+          queryKey: ["post", postSlug]
+        });
+
+        // Next.js ISR 캐시 무효화 (서버 액션으로 실행)
+        try {
+          await fetch(`/api/revalidate?tag=post-${postSlug}`, {
+            method: "POST"
+          });
+        } catch (revalidateError) {
+          console.warn("[EditPage] ISR 캐시 무효화 실패:", revalidateError);
+          // ISR 캐시 무효화 실패해도 계속 진행
+        }
+
+        // 2. 최신 포스트 데이터 로드
+
         const postData = await getPostBySlug(postSlug);
 
         if (!postData) {

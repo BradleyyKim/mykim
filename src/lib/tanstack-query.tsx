@@ -41,20 +41,27 @@ export const useAdminAuth = () => {
   };
 };
 
+// 전역 QueryClient 인스턴스 생성
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // 캐시 전략 최적화
+      staleTime: 5 * 60 * 1000, // 5분 (기존 1분에서 증가)
+      gcTime: 10 * 60 * 1000, // 10분 (가비지 컬렉션 시간)
+      refetchOnWindowFocus: false, // 윈도우 포커스 시 재요청 비활성화
+      refetchOnMount: true, // 컴포넌트 마운트 시 재요청 활성화
+      retry: 2, // 실패 시 2번 재시도
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000) // 지수 백오프
+    },
+    mutations: {
+      retry: 1, // 뮤테이션 실패 시 1번 재시도
+      retryDelay: 1000 // 1초 후 재시도
+    }
+  }
+});
+
 // TanStack Query 프로바이더 컴포넌트
 export function TanstackProvider({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000, // 1분
-            refetchOnWindowFocus: false
-          }
-        }
-      })
-  );
-
   return (
     <QueryClientProvider client={queryClient}>
       {children}
@@ -62,6 +69,9 @@ export function TanstackProvider({ children }: { children: ReactNode }) {
     </QueryClientProvider>
   );
 }
+
+// queryClient export (다른 컴포넌트에서 사용 가능)
+export { queryClient };
 
 // 로그인 관련 React Query 훅
 export function useLoginMutation() {
@@ -106,9 +116,15 @@ export function useCreatePost() {
   // useMutation 반환
   return useMutation({
     mutationFn: createPost,
-    onSuccess: () => {
-      // 포스트 생성 성공 시 posts 캐시를 무효화하여 최신 데이터로 갱신
+    onSuccess: data => {
+      // 포스트 생성 성공 시 관련 캐시들을 무효화
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+      // 특정 포스트 캐시도 무효화 (slug가 있는 경우)
+      if (data?.data?.slug) {
+        queryClient.invalidateQueries({ queryKey: ["post", data.data.slug] });
+      }
+
       console.log("포스트 생성 완료 및 캐시 무효화");
     },
     onError: error => {
@@ -173,9 +189,16 @@ export function useUpdatePostBySlug() {
         publishedDate?: string;
       };
     }) => apiClient.updatePostBySlug(slug, data),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       // Slug 기반 포스트 수정 성공 시 관련 캐시들을 무효화
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+      // 기존 slug와 새 slug 모두 무효화
+      queryClient.invalidateQueries({ queryKey: ["post", variables.slug] });
+      if (variables.data.slug && variables.data.slug !== variables.slug) {
+        queryClient.invalidateQueries({ queryKey: ["post", variables.data.slug] });
+      }
+
       console.log("포스트 수정 완료 및 캐시 무효화");
     }
   });

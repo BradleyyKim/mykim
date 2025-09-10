@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef } from "react";
 import { Editor } from "@tiptap/react";
 import imageCompression from "browser-image-compression";
+import { base64ToFile } from "@/lib/image-upload-service";
+import { queryClient } from "@/lib/tanstack-query";
 
 interface UseImageHandlerProps {
   editor: Editor | null;
@@ -8,6 +10,7 @@ interface UseImageHandlerProps {
 
 export function useImageHandler({ editor }: UseImageHandlerProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string>("");
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,7 +47,70 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
     [isAnimatedImage]
   );
 
-  // Base64 방식 업로드 (복사 붙여넣기용)
+  // Base64를 서버에 업로드하는 함수
+  const uploadBase64ToServer = useCallback(async (base64Data: string, fileName: string): Promise<string> => {
+    try {
+      setUploadStatus("이미지를 서버에 업로드하는 중...");
+
+      // Base64를 File 객체로 변환
+      const file = base64ToFile(base64Data, fileName);
+
+      // 파일 크기 확인 (Base64는 원본보다 약 33% 큼)
+      const maxSize = 15 * 1024 * 1024; // 15MB
+      if (file.size > maxSize) {
+        throw new Error(`이미지가 너무 큽니다. (${(file.size / 1024 / 1024).toFixed(1)}MB / 최대 15MB)`);
+      }
+
+      setUploadStatus("서버에 전송 중...");
+
+      // 서버에 업로드
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await fetch("/api/upload/image", {
+        method: "POST",
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("서버 업로드 응답:", response.status, errorText);
+
+        if (response.status === 413) {
+          throw new Error("이미지가 너무 큽니다. 더 작은 이미지를 사용해주세요.");
+        } else if (response.status === 401) {
+          throw new Error("인증이 필요합니다. 다시 로그인해주세요.");
+        } else if (response.status >= 500) {
+          throw new Error("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        } else {
+          throw new Error(`서버 업로드에 실패했습니다. (${response.status})`);
+        }
+      }
+
+      setUploadStatus("업로드 완료!");
+
+      const uploadResult = await response.json();
+
+      if (!uploadResult.url) {
+        throw new Error("서버에서 이미지 URL을 받지 못했습니다.");
+      }
+
+      // 이미지 업로드 성공 시 관련 캐시 무효화
+      try {
+        await queryClient.invalidateQueries({ queryKey: ["posts"] });
+      } catch (cacheError) {
+        console.warn("[ImageHandler] 캐시 무효화 실패:", cacheError);
+        // 캐시 무효화 실패해도 이미지 업로드는 성공했으므로 계속 진행
+      }
+
+      return uploadResult.url;
+    } catch (error) {
+      console.error("Base64 서버 업로드 실패:", error);
+      throw error;
+    }
+  }, []);
+
+  // Base64 방식 업로드 (복사 붙여넣기용) - 이제 서버에 업로드
   const handleBase64Upload = useCallback(
     async (file: File) => {
       if (!editor) return;
@@ -75,23 +141,46 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
 
         const improvedFileName = generateImageFileName(file);
 
-        // FileReader로 Base64 변환
+        // FileReader로 Base64 변환 후 서버에 업로드
         const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64data = reader.result as string;
+        reader.onloadend = async () => {
+          try {
+            const base64data = reader.result as string;
 
-          editor
-            .chain()
-            .focus()
-            .setImage({
-              src: base64data,
-              alt: improvedFileName,
-              title: improvedFileName
-            })
-            .run();
+            // Base64를 서버에 업로드
+            const serverUrl = await uploadBase64ToServer(base64data, improvedFileName);
 
-          console.log("Base64 방식 업로드 완료:", improvedFileName);
-          setIsUploading(false);
+            // 서버 URL로 이미지 삽입
+            editor
+              .chain()
+              .focus()
+              .setImage({
+                src: serverUrl,
+                alt: improvedFileName,
+                title: improvedFileName
+              })
+              .run();
+
+            console.log("Base64 → 서버 업로드 완료:", improvedFileName, "URL:", serverUrl);
+            setIsUploading(false);
+          } catch (error) {
+            console.error("Base64 서버 업로드 실패, Base64로 폴백:", error);
+
+            // 서버 업로드 실패 시 Base64로 폴백
+            const base64data = reader.result as string;
+            editor
+              .chain()
+              .focus()
+              .setImage({
+                src: base64data,
+                alt: improvedFileName,
+                title: improvedFileName
+              })
+              .run();
+
+            console.log("Base64 폴백 업로드 완료:", improvedFileName);
+            setIsUploading(false);
+          }
         };
 
         reader.onerror = () => {
@@ -106,7 +195,7 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
         setIsUploading(false);
       }
     },
-    [editor]
+    [editor, uploadBase64ToServer]
   );
 
   // 애니메이션 이미지 전용 업로드 (압축 없이)
@@ -161,38 +250,77 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
           console.log("애니메이션 이미지 서버 업로드 완료:", file.name);
           setIsUploading(false);
         } else {
-          // Base64 방식 (압축 없이)
+          // Base64 방식 (압축 없이) - 이제 서버에 업로드
           const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64data = reader.result as string;
-            editor
-              .chain()
-              .focus()
-              .setImage({
-                src: base64data,
-                alt: file.name,
-                title: file.name
-              })
-              .run();
-
-            // 애니메이션 속성 추가 (안전한 방식)
+          reader.onloadend = async () => {
             try {
-              const { state } = editor;
-              const { selection } = state;
-              if (selection && selection.from !== selection.to) {
-                editor
-                  .chain()
-                  .setNodeSelection(selection.from)
-                  .updateAttributes("image", { "data-animated": "true" })
-                  .run();
-              }
-            } catch (error) {
-              console.warn("애니메이션 속성 설정 실패:", error);
-              // 속성 설정 실패해도 이미지는 정상 삽입됨
-            }
+              const base64data = reader.result as string;
 
-            console.log("애니메이션 이미지 Base64 업로드 완료:", file.name);
-            setIsUploading(false);
+              // Base64를 서버에 업로드
+              const serverUrl = await uploadBase64ToServer(base64data, file.name);
+
+              // 서버 URL로 이미지 삽입
+              editor
+                .chain()
+                .focus()
+                .setImage({
+                  src: serverUrl,
+                  alt: file.name,
+                  title: file.name
+                })
+                .run();
+
+              // 애니메이션 속성 추가 (안전한 방식)
+              try {
+                const { state } = editor;
+                const { selection } = state;
+                if (selection && selection.from !== selection.to) {
+                  editor
+                    .chain()
+                    .setNodeSelection(selection.from)
+                    .updateAttributes("image", { "data-animated": "true" })
+                    .run();
+                }
+              } catch (error) {
+                console.warn("애니메이션 속성 설정 실패:", error);
+                // 속성 설정 실패해도 이미지는 정상 삽입됨
+              }
+
+              console.log("애니메이션 이미지 Base64 → 서버 업로드 완료:", file.name, "URL:", serverUrl);
+              setIsUploading(false);
+            } catch (error) {
+              console.error("애니메이션 이미지 서버 업로드 실패, Base64로 폴백:", error);
+
+              // 서버 업로드 실패 시 Base64로 폴백
+              const base64data = reader.result as string;
+              editor
+                .chain()
+                .focus()
+                .setImage({
+                  src: base64data,
+                  alt: file.name,
+                  title: file.name
+                })
+                .run();
+
+              // 애니메이션 속성 추가 (폴백 시에도)
+              try {
+                const { state } = editor;
+                const { selection } = state;
+                if (selection && selection.from !== selection.to) {
+                  editor
+                    .chain()
+                    .setNodeSelection(selection.from)
+                    .updateAttributes("image", { "data-animated": "true" })
+                    .run();
+                }
+              } catch (error) {
+                console.warn("애니메이션 속성 설정 실패:", error);
+              }
+
+              console.log("애니메이션 이미지 Base64 폴백 업로드 완료:", file.name);
+              setIsUploading(false);
+            }
           };
 
           reader.onerror = () => {
@@ -222,7 +350,7 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
         setIsUploading(false);
       }
     },
-    [editor]
+    [editor, uploadBase64ToServer]
   );
 
   // 실제 파일을 서버에 업로드 (모바일 파일 첨부용)
@@ -400,6 +528,7 @@ export function useImageHandler({ editor }: UseImageHandlerProps) {
   return {
     // 상태
     isUploading,
+    uploadStatus,
     isDragOver,
     error,
     setError,

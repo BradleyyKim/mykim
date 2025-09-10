@@ -65,7 +65,11 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       },
       next: {
         revalidate: REVALIDATE_TIME,
-        tags: [`post-${slug}`]
+        tags: [
+          `post-${slug}`, // 특정 포스트 태그
+          "posts", // 전체 포스트 목록 태그
+          "posts-list" // 포스트 목록 캐시 태그
+        ]
       }
     });
 

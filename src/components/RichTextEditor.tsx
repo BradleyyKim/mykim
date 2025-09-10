@@ -56,8 +56,17 @@ export default function RichTextEditor({
   });
 
   // 이미지 처리 훅
-  const { isUploading, isDragOver, error, setError, fileInputRef, handleFileSelect, dragHandlers, handleImageUpload } =
-    useImageHandler({ editor });
+  const {
+    isUploading,
+    uploadStatus,
+    isDragOver,
+    error,
+    setError,
+    fileInputRef,
+    handleFileSelect,
+    dragHandlers,
+    handleImageUpload
+  } = useImageHandler({ editor });
 
   // 링크 처리 훅
   const { setLink, unsetLink, isLinkActive } = useLinkHandler({ editor });
@@ -216,7 +225,13 @@ export default function RichTextEditor({
       )}
 
       {/* 오버레이들 */}
-      <EditorOverlays isUploading={isUploading} isDragOver={isDragOver} error={error} onErrorClose={handleErrorClose} />
+      <EditorOverlays
+        isUploading={isUploading}
+        uploadStatus={uploadStatus}
+        isDragOver={isDragOver}
+        error={error}
+        onErrorClose={handleErrorClose}
+      />
     </div>
   );
 }

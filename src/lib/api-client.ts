@@ -1,7 +1,8 @@
 /**
  * 프론트엔드에서 사용하는 API 클라이언트 유틸리티
  */
-import { revalidatePosts, revalidatePost, revalidatePath } from "./revalidate";
+// revalidate 함수들은 서버 사이드에서만 사용 가능하므로 제거
+// 대신 API 엔드포인트를 통해 호출
 
 // API 요청 옵션 생성
 const createFetchOptions = (method: string, body?: Record<string, unknown> | null, isAuthRequired: boolean = false) => {
@@ -130,20 +131,23 @@ export const apiClient = {
     const result = await response.json();
     console.log("[apiClient] 포스트 생성 성공, ID:", result.id);
 
-    // 포스트 생성 성공 후 재검증 실행
+    // 포스트 생성 성공 후 재검증 실행 (API 엔드포인트를 통해)
     console.log("[apiClient] 재검증 시작");
 
     try {
-      // 전체 포스트 목록 재검증 (메인 페이지용)
-      await revalidatePosts();
+      // ISR 캐시 무효화를 위한 API 호출
+      const revalidatePromises = [
+        // 전체 포스트 목록 재검증
+        fetch(`/api/revalidate?tag=posts`, { method: "POST" })
+      ];
 
-      // 특정 포스트 재검증 (필요한 경우)
-      if (result.id) {
-        await revalidatePost(result.id);
+      // 특정 포스트 재검증 (slug가 있는 경우)
+      if (result?.data?.slug) {
+        revalidatePromises.push(fetch(`/api/revalidate?tag=post-${result.data.slug}`, { method: "POST" }));
       }
 
-      // 메인 페이지 경로 재검증
-      await revalidatePath("/");
+      // 모든 재검증 요청을 병렬로 실행
+      await Promise.allSettled(revalidatePromises);
 
       console.log("[apiClient] 재검증 완료");
     } catch (error) {
@@ -197,12 +201,14 @@ export const apiClient = {
     const result = await response.json();
     console.log(`[apiClient] 포스트 수정 성공: ID=${id}`);
 
-    // 수정 후 재검증 실행
+    // 수정 후 재검증 실행 (API 엔드포인트를 통해)
     try {
-      await revalidatePosts();
-      await revalidatePost(id);
-      await revalidatePath("/");
-      await revalidatePath(`/posts/${id}`);
+      const revalidatePromises = [
+        fetch(`/api/revalidate?tag=posts`, { method: "POST" }),
+        fetch(`/api/revalidate?tag=post-${id}`, { method: "POST" })
+      ];
+
+      await Promise.allSettled(revalidatePromises);
       console.log("[apiClient] 포스트 수정 후 재검증 완료");
     } catch (error) {
       console.error("[apiClient] 수정 후 재검증 실패:", error);
@@ -230,10 +236,9 @@ export const apiClient = {
     const result = await response.json();
     console.log(`[apiClient] 포스트 삭제 성공: ID=${id}`);
 
-    // 삭제 후 재검증 실행
+    // 삭제 후 재검증 실행 (API 엔드포인트를 통해)
     try {
-      await revalidatePosts();
-      await revalidatePath("/");
+      await fetch(`/api/revalidate?tag=posts`, { method: "POST" });
       console.log("[apiClient] 포스트 삭제 후 재검증 완료");
     } catch (error) {
       console.error("[apiClient] 삭제 후 재검증 실패:", error);
@@ -272,11 +277,25 @@ export const apiClient = {
     const result = await response.json();
     console.log(`[apiClient] 포스트 수정 성공: slug=${slug}`);
 
-    // 수정 후 재검증 실행
+    // 수정 후 재검증 실행 (API 엔드포인트를 통해)
     try {
-      await revalidatePosts();
-      await revalidatePath("/");
-      await revalidatePath(`/posts/${slug}`);
+      // ISR 캐시 무효화를 위한 API 호출
+      const revalidatePromises = [
+        // 특정 포스트 캐시 태그 재검증
+        fetch(`/api/revalidate?tag=post-${slug}`, { method: "POST" })
+      ];
+
+      // 새 slug가 다른 경우 기존 slug도 재검증
+      if (data.slug && data.slug !== slug) {
+        revalidatePromises.push(fetch(`/api/revalidate?tag=post-${data.slug}`, { method: "POST" }));
+      }
+
+      // 전체 포스트 목록 재검증
+      revalidatePromises.push(fetch(`/api/revalidate?tag=posts`, { method: "POST" }));
+
+      // 모든 재검증 요청을 병렬로 실행
+      await Promise.allSettled(revalidatePromises);
+
       console.log("[apiClient] 포스트 수정 후 재검증 완료");
     } catch (error) {
       console.error("[apiClient] 수정 후 재검증 실패:", error);
@@ -304,10 +323,14 @@ export const apiClient = {
     const result = await response.json();
     console.log(`[apiClient] 포스트 삭제 성공: slug=${slug}`);
 
-    // 삭제 후 재검증 실행
+    // 삭제 후 재검증 실행 (API 엔드포인트를 통해)
     try {
-      await revalidatePosts();
-      await revalidatePath("/");
+      const revalidatePromises = [
+        fetch(`/api/revalidate?tag=posts`, { method: "POST" }),
+        fetch(`/api/revalidate?tag=post-${slug}`, { method: "POST" })
+      ];
+
+      await Promise.allSettled(revalidatePromises);
       console.log("[apiClient] 포스트 삭제 후 재검증 완료");
     } catch (error) {
       console.error("[apiClient] 삭제 후 재검증 실패:", error);
