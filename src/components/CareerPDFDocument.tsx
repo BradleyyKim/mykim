@@ -158,8 +158,8 @@ const CareerPDFDocument: React.FC<CareerPDFDocumentProps> = ({ careerData, title
               <Text style={styles.companyInfo}>{company.position}</Text>
             </View>
             {/* 프로젝트 목록 */}
-            {company.projects.map(project => (
-              <View key={project.id} style={styles.projectContainer}>
+            {company.projects.map((project, projectIndex) => (
+              <View key={`${companyIndex}-${projectIndex}`} style={styles.projectContainer}>
                 <View style={styles.projectHeader}>
                   <Text style={styles.projectName}>{project.name}</Text>
                   <Text style={styles.projectPeriod}>{project.period}</Text>

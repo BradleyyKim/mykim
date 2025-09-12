@@ -99,3 +99,80 @@ export function getCategoryName(category: unknown): string | null {
 
   return null;
 }
+
+/**
+ * PDF 파일을 Strapi에 업로드하는 함수
+ */
+export async function uploadPDFToStrapi(pdfBuffer: Buffer, fileName: string): Promise<{ url: string; id: number }> {
+  const formData = new FormData();
+  const blob = new Blob([pdfBuffer], { type: "application/pdf" });
+  formData.append("files", blob, fileName);
+
+  const STRAPI_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+  const response = await fetch(`${STRAPI_URL}/upload`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error(`Strapi 업로드 실패: ${response.status}`);
+  }
+
+  const result = await response.json();
+  return {
+    url: result[0].url,
+    id: result[0].id
+  };
+}
+
+/**
+ * Strapi에서 PDF 파일을 조회하는 함수
+ */
+export async function getPDFFromStrapi(language: string): Promise<{ url: string; id: number; name: string } | null> {
+  try {
+    const STRAPI_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+    // Strapi v5에서는 /api/upload/files 대신 /api/upload/files 사용
+    const response = await fetch(`${STRAPI_URL}/upload/files`, {
+      headers: {
+        Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`
+      }
+    });
+
+    const files = await response.json();
+
+    console.log(`[getPDFFromStrapi] 검색 중인 언어: ${language}`);
+    console.log(`[getPDFFromStrapi] Strapi API 응답 구조:`, JSON.stringify(files, null, 2));
+    console.log(`[getPDFFromStrapi] files.data 존재 여부:`, !!files.data);
+    console.log(`[getPDFFromStrapi] files.data 타입:`, typeof files.data);
+    console.log(`[getPDFFromStrapi] files.data 길이:`, files.data?.length || "undefined");
+
+    // Strapi v5 응답 구조에 맞게 수정
+    // v5에서는 { data: [...] } 구조 또는 직접 배열 구조
+    let fileList = [];
+
+    if (files.data && Array.isArray(files.data)) {
+      // Strapi v5 표준 구조: { data: [...] }
+      fileList = files.data;
+    } else if (Array.isArray(files)) {
+      // 직접 배열 구조: [...]
+      fileList = files;
+    } else if (files.results && Array.isArray(files.results)) {
+      // 일부 버전에서 사용하는 구조: { results: [...] }
+      fileList = files.results;
+    }
+
+    console.log(`[getPDFFromStrapi] 파일 목록:`, fileList.map((file: { name: string }) => file.name) || []);
+
+    const pdfFile = fileList.find((file: { name: string }) => file.name.includes(`career-portfolio-${language}`));
+
+    console.log(`[getPDFFromStrapi] 찾은 PDF 파일:`, pdfFile ? pdfFile.name : "없음");
+
+    return pdfFile ? { url: pdfFile.url, id: pdfFile.id, name: pdfFile.name } : null;
+  } catch (error) {
+    console.error("Strapi에서 PDF 가져오기 실패:", error);
+    return null;
+  }
+}

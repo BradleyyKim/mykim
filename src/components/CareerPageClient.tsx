@@ -13,8 +13,7 @@ import {
 } from "lucide-react";
 import type { Company } from "@/app/career/page";
 import Link from "next/link";
-import { pdf } from "@react-pdf/renderer";
-import CareerPDFDocument from "./CareerPDFDocument";
+import { useAuth } from "@/lib/auth";
 
 interface CareerPageClientProps {
   careerData: Company[];
@@ -22,21 +21,26 @@ interface CareerPageClientProps {
 }
 
 export default function CareerPageClient({ careerData, careerDataEn }: CareerPageClientProps) {
-  const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set());
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string>("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { isLoggedIn, isLoading } = useAuth();
 
-  const toggleProject = (projectId: number) => {
+  const toggleProject = (companyIndex: number, projectIndex: number) => {
+    const projectKey = `${companyIndex}-${projectIndex}`;
     const newExpanded = new Set(expandedProjects);
-    if (newExpanded.has(projectId)) {
-      newExpanded.delete(projectId);
+    if (newExpanded.has(projectKey)) {
+      newExpanded.delete(projectKey);
     } else {
-      newExpanded.add(projectId);
+      newExpanded.add(projectKey);
     }
     setExpandedProjects(newExpanded);
   };
 
-  const isProjectExpanded = (projectId: number) => expandedProjects.has(projectId);
+  const isProjectExpanded = (companyIndex: number, projectIndex: number) =>
+    expandedProjects.has(`${companyIndex}-${projectIndex}`);
 
   // 드롭다운 외부 클릭 시 닫기
   useEffect(() => {
@@ -52,15 +56,57 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
     };
   }, []);
 
+  const handleUploadPDF = async (language: "ko" | "en") => {
+    try {
+      setIsUploading(true);
+      setUploadProgress("PDF를 생성하는 중...");
+
+      const data = language === "ko" ? careerData : careerDataEn;
+
+      // PDF 생성 및 업로드
+      const response = await fetch("/api/admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include", // 쿠키 포함
+        body: JSON.stringify({
+          action: "upload-pdf",
+          language,
+          careerData: data
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("PDF 업로드에 실패했습니다.");
+      }
+
+      await response.json();
+      setUploadProgress("업로드 완료!");
+
+      alert(`${language === "ko" ? "한국어" : "영어"} PDF가 성공적으로 업로드되었습니다!`);
+    } catch (error) {
+      console.error("PDF 업로드 실패:", error);
+      alert("PDF 업로드에 실패했습니다.");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress("");
+    }
+  };
+
   const handleDownloadPDF = async (language: "ko" | "en") => {
     try {
-      const data = language === "ko" ? careerData : careerDataEn;
-      const title = language === "ko" ? "경력기술서 - 김민영" : "Career Portfolio - Minyoung Kim";
+      setIsDropdownOpen(false);
 
-      // PDF 문서 생성
-      const blob = await pdf(<CareerPDFDocument careerData={data} title={title} />).toBlob();
+      // Strapi에서 PDF 다운로드
+      const response = await fetch(`/api/download-pdf?language=${language}`);
 
-      // 다운로드 링크 생성
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "PDF 다운로드에 실패했습니다.");
+      }
+
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -68,17 +114,49 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
       document.body.appendChild(link);
       link.click();
 
-      // 정리
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      setIsDropdownOpen(false); // 다운로드 후 드롭다운 닫기
+
+      alert("PDF 다운로드가 완료되었습니다!");
     } catch (error) {
-      console.error("PDF 생성 중 오류 발생:", error);
+      console.error("PDF 다운로드 중 오류 발생:", error);
+      const errorMessage = error instanceof Error ? error.message : "PDF 다운로드에 실패했습니다.";
+      alert(errorMessage);
     }
   };
 
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">로딩 중...</div>;
+  }
+
   return (
     <div className="container mx-auto px-4 py-12">
+      {/* 관리자 업로드 버튼 */}
+      {isLoggedIn && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">관리자 도구</h3>
+            <div className="space-y-2">
+              <button
+                onClick={() => handleUploadPDF("ko")}
+                disabled={isUploading}
+                className="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUploading && uploadProgress.includes("한국어") ? "업로드 중..." : "한국어 PDF 업로드"}
+              </button>
+              <button
+                onClick={() => handleUploadPDF("en")}
+                disabled={isUploading}
+                className="w-full px-3 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUploading && uploadProgress.includes("영어") ? "업로드 중..." : "영어 PDF 업로드"}
+              </button>
+            </div>
+            {isUploading && <div className="mt-2 text-xs text-gray-500">{uploadProgress}</div>}
+          </div>
+        </div>
+      )}
+
       <div className="mb-12 text-center">
         {/* 제목 */}
         <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-6">Career</h1>
@@ -98,12 +176,12 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
             {isDropdownOpen && (
               <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-24 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                 <div className="py-1">
-                  {/* <button
+                  <button
                     onClick={() => handleDownloadPDF("ko")}
                     className="w-full text-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                   >
                     한국어
-                  </button> */}
+                  </button>
                   <button
                     onClick={() => handleDownloadPDF("en")}
                     className="w-full text-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
@@ -154,14 +232,14 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
               {/* 프로젝트 목록 (우측 또는 하단) */}
               <div className="w-full md:w-3/4">
                 <div className="space-y-4">
-                  {company.projects.map(project => (
+                  {company.projects.map((project, projectIndex) => (
                     <div
-                      key={project.id}
+                      key={`${companyIndex}-${projectIndex}`}
                       className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md"
                     >
                       {/* 토글 헤더 */}
                       <button
-                        onClick={() => toggleProject(project.id)}
+                        onClick={() => toggleProject(companyIndex, projectIndex)}
                         className="w-full px-6 py-4 text-left bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                       >
                         <div className="flex items-center justify-between">
@@ -172,7 +250,7 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
                             <p className="text-sm text-gray-600 dark:text-gray-400">{project.period}</p>
                           </div>
                           <div className="ml-4">
-                            {isProjectExpanded(project.id) ? (
+                            {isProjectExpanded(companyIndex, projectIndex) ? (
                               <ChevronDown className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                             ) : (
                               <ChevronRight className="h-5 w-5 text-gray-600 dark:text-gray-400" />
@@ -182,7 +260,7 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
                       </button>
 
                       {/* 토글 콘텐츠 */}
-                      {isProjectExpanded(project.id) && (
+                      {isProjectExpanded(companyIndex, projectIndex) && (
                         <div className="px-6 py-6 bg-white dark:bg-gray-900">
                           {/* 프로젝트 개요 */}
                           <div className="mb-6">

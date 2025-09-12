@@ -8,7 +8,6 @@ export const metadata: Metadata = {
 
 // 경력 데이터 타입 정의
 export type Project = {
-  id: number;
   name: string;
   period: string;
   overview: string;
@@ -34,7 +33,6 @@ const careerData: Company[] = [
     position: "Frontend Developer",
     projects: [
       {
-        id: 1,
         name: "지능형 카메라 스마트 대시보드 & 모니터링 시스템",
         period: "2025.01 - 2025.05",
         overview:
@@ -65,7 +63,6 @@ const careerData: Company[] = [
         ]
       },
       {
-        id: 2,
         name: "노후차량 운행제한 관리 및 모니터링 시스템",
         period: "2024.04 - 2024.09",
         overview:
@@ -79,7 +76,6 @@ const careerData: Company[] = [
         techStack: ["React", "TypeScript", "Bootstrap", "echarts", "recoil", "Scss"]
       },
       {
-        id: 3,
         name: "지능형 교통 카메라 임베디드 소프트웨어 개발",
         period: "2024.01 - 2024.06",
         overview:
@@ -94,7 +90,6 @@ const careerData: Company[] = [
         techStack: ["React", "TypeScript", "Bootstrap", "Scss", "recoil", "zod", "echarts", "swiper"]
       },
       {
-        id: 4,
         name: "Rex Smart Portal for Global - 실시간 교통 모니터링 및 단속 관리 시스템",
         period: "2023.03 - 2023.10",
         overview:
@@ -137,7 +132,6 @@ const careerData: Company[] = [
     position: "Full Stack Developer",
     projects: [
       {
-        id: 5,
         name: "MY Kim Blog - 개인 블로그 플랫폼",
         period: "2025.01 - 현재",
         overview:
@@ -186,7 +180,6 @@ const careerDataEn: Company[] = [
     position: "Frontend Developer",
     projects: [
       {
-        id: 1,
         name: "Intelligent Camera Smart Dashboard & Monitoring System",
         period: "Jan 2025 - May 2025",
         overview:
@@ -216,7 +209,6 @@ const careerDataEn: Company[] = [
         ]
       },
       {
-        id: 2,
         name: "Aged Vehicle Operation Restriction Management & Monitoring System",
         period: "Apr 2024 - Sep 2024",
         overview:
@@ -230,7 +222,6 @@ const careerDataEn: Company[] = [
         techStack: ["React", "TypeScript", "Bootstrap", "echarts", "recoil", "Scss"]
       },
       {
-        id: 3,
         name: "Intelligent Traffic Camera Embedded Software Development",
         period: "Jan 2024 - Jun 2024",
         overview:
@@ -245,7 +236,6 @@ const careerDataEn: Company[] = [
         techStack: ["React", "TypeScript", "Bootstrap", "Scss", "recoil", "zod", "echarts", "swiper"]
       },
       {
-        id: 4,
         name: "Rex Smart Portal for Global - Real-time Traffic Monitoring & Enforcement System",
         period: "Mar 2023 - Oct 2023",
         overview:
@@ -287,7 +277,6 @@ const careerDataEn: Company[] = [
     position: "Full Stack Developer",
     projects: [
       {
-        id: 5,
         name: "MY Kim Blog - Personal Blog Platform",
         period: "Jan 2025 - Present",
         overview:
