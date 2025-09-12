@@ -33,7 +33,9 @@ export async function generateCareerPDF(data: Company[], language: "ko" | "en"):
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
-      margin: { top: "30px", right: "30px", bottom: "30px", left: "30px" }
+      margin: { top: "30px", right: "30px", bottom: "30px", left: "30px" },
+      displayHeaderFooter: false,
+      preferCSSPageSize: true
     });
 
     return Buffer.from(pdfBuffer);
@@ -43,6 +45,8 @@ export async function generateCareerPDF(data: Company[], language: "ko" | "en"):
 }
 
 function generateHTMLTemplate(data: Company[], language: "ko" | "en"): string {
+  console.log(`[pdf-generator] PDF 생성에 사용되는 ${language} 데이터:`, JSON.stringify(data, null, 2));
+
   const title = language === "ko" ? "경력기술서 - 김민영" : "Career Portfolio - Minyoung Kim";
 
   return `
@@ -50,6 +54,9 @@ function generateHTMLTemplate(data: Company[], language: "ko" | "en"): string {
     <html>
     <head>
       <meta charset="UTF-8">
+      <title>${title}</title>
+      <meta name="author" content="김민영">
+      <meta name="subject" content="경력기술서">
       <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
       <style>
         body {

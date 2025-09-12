@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateCareerPDF } from "@/lib/pdf-generator";
-import { uploadPDFToStrapi } from "@/lib/strapi-utils";
+import { uploadPDFToStrapi, deleteOldPDFsFromStrapi } from "@/lib/strapi-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,33 +23,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "유효하지 않은 토큰입니다." }, { status: 401 });
     }
 
-    const { action, language, careerData } = await request.json();
+    const { action, careerData } = await request.json();
+
+    console.log(`[admin/route] API로 수신된 데이터:`, JSON.stringify(careerData, null, 2));
 
     // 액션별 처리
     switch (action) {
-      case "upload-pdf":
-        if (!language || !careerData) {
-          return NextResponse.json({ error: "언어와 경력 데이터가 필요합니다." }, { status: 400 });
+      case "upload-all-pdfs":
+        if (!careerData) {
+          return NextResponse.json({ error: "경력 데이터가 필요합니다." }, { status: 400 });
         }
 
-        // PDF 생성
-        const pdfBuffer = await generateCareerPDF(careerData, language);
+        const results = [];
 
-        // 파일명 생성 (타임스탬프 포함)
-        const timestamp = new Date().toISOString().split("T")[0];
-        const fileName = `career-portfolio-${language}-${timestamp}.pdf`;
+        // 한국어 PDF 업로드
+        await deleteOldPDFsFromStrapi("ko");
+        const koPdfBuffer = await generateCareerPDF(careerData, "ko");
+        const koTimestamp = new Date().toISOString().split("T")[0];
+        const koFileName = `career-portfolio-ko-${koTimestamp}.pdf`;
+        const koUploadResult = await uploadPDFToStrapi(koPdfBuffer, koFileName);
+        results.push({ language: "ko", file: koUploadResult });
 
-        // Strapi에 업로드
-        const uploadResult = await uploadPDFToStrapi(pdfBuffer, fileName);
+        // 영어 PDF 업로드
+        await deleteOldPDFsFromStrapi("en");
+        const enPdfBuffer = await generateCareerPDF(careerData, "en");
+        const enTimestamp = new Date().toISOString().split("T")[0];
+        const enFileName = `career-portfolio-en-${enTimestamp}.pdf`;
+        const enUploadResult = await uploadPDFToStrapi(enPdfBuffer, enFileName);
+        results.push({ language: "en", file: enUploadResult });
 
         return NextResponse.json({
           success: true,
-          message: `${language === "ko" ? "한국어" : "영어"} PDF가 성공적으로 업로드되었습니다.`,
-          file: {
-            url: uploadResult.url,
-            id: uploadResult.id,
-            name: fileName
-          }
+          message: "한국어 및 영어 PDF가 성공적으로 업로드되었습니다.",
+          files: results
         });
 
       default:

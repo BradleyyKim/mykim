@@ -131,6 +131,65 @@ export async function uploadPDFToStrapi(pdfBuffer: Buffer, fileName: string): Pr
 /**
  * Strapi에서 PDF 파일을 조회하는 함수
  */
+/**
+ * Strapi에서 특정 언어의 기존 PDF 파일들을 삭제하는 함수
+ */
+export async function deleteOldPDFsFromStrapi(language: string): Promise<void> {
+  try {
+    const STRAPI_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+    const response = await fetch(`${STRAPI_URL}/upload/files`, {
+      headers: {
+        Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`
+      }
+    });
+
+    const files = await response.json();
+
+    // Strapi v5 응답 구조에 맞게 수정
+    let fileList = [];
+
+    if (files.data && Array.isArray(files.data)) {
+      fileList = files.data;
+    } else if (Array.isArray(files)) {
+      fileList = files;
+    } else if (files.results && Array.isArray(files.results)) {
+      fileList = files.results;
+    }
+
+    // 해당 언어의 PDF 파일들 찾기
+    const pdfFiles = fileList.filter((file: { name: string; id: number }) =>
+      file.name.includes(`career-portfolio-${language}`)
+    );
+
+    console.log(
+      `[deleteOldPDFsFromStrapi] 삭제할 ${language} PDF 파일들:`,
+      pdfFiles.map((f: { name: string }) => f.name)
+    );
+
+    // 각 파일 삭제
+    for (const file of pdfFiles) {
+      try {
+        const deleteResponse = await fetch(`${STRAPI_URL}/upload/files/${file.id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`
+          }
+        });
+
+        if (deleteResponse.ok) {
+          console.log(`[deleteOldPDFsFromStrapi] ${file.name} 삭제 완료`);
+        } else {
+          console.error(`[deleteOldPDFsFromStrapi] ${file.name} 삭제 실패:`, deleteResponse.status);
+        }
+      } catch (error) {
+        console.error(`[deleteOldPDFsFromStrapi] ${file.name} 삭제 중 에러:`, error);
+      }
+    }
+  } catch (error) {
+    console.error("기존 PDF 파일 삭제 실패:", error);
+  }
+}
+
 export async function getPDFFromStrapi(language: string): Promise<{ url: string; id: number; name: string } | null> {
   try {
     const STRAPI_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
@@ -166,7 +225,17 @@ export async function getPDFFromStrapi(language: string): Promise<{ url: string;
 
     console.log(`[getPDFFromStrapi] 파일 목록:`, fileList.map((file: { name: string }) => file.name) || []);
 
-    const pdfFile = fileList.find((file: { name: string }) => file.name.includes(`career-portfolio-${language}`));
+    // 최신 PDF 파일 찾기 (createdAt 기준으로 정렬)
+    const pdfFiles = fileList.filter((file: { name: string; createdAt?: string }) =>
+      file.name.includes(`career-portfolio-${language}`)
+    );
+    const pdfFile =
+      pdfFiles.length > 0
+        ? pdfFiles.sort(
+            (a: { createdAt: string }, b: { createdAt: string }) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )[0]
+        : null;
 
     console.log(`[getPDFFromStrapi] 찾은 PDF 파일:`, pdfFile ? pdfFile.name : "없음");
 

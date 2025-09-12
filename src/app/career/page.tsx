@@ -146,6 +146,7 @@ const careerData: Company[] = [
           "React Hook Form + Zod를 활용한 타입 안전 폼 검증 시스템 구축",
           "Strapi Cloud API 연동으로 컨텐츠 관리 자동화 및 RESTful API 구현",
           "시간대별 동적 배경 및 일일 아바타 로테이션 등 사용자 경험 개선 기능 구현",
+          "Puppeteer 기반 서버사이드 PDF 생성 시스템으로 한국어 폰트 렌더링 문제를 해결",
           "ESLint + Prettier + Husky 기반 코드 품질 관리 자동화 시스템 구축"
         ],
         references: ["https://mykim.in", "https://github.com/BradleyyKim"],
@@ -291,6 +292,7 @@ const careerDataEn: Company[] = [
           "Built type-safe form validation system using React Hook Form + Zod",
           "Implemented content management automation and RESTful API through Strapi Cloud API integration",
           "Implemented user experience enhancement features like time-based dynamic backgrounds and daily avatar rotation",
+          "Implemented server-side PDF generation system using Puppeteer to resolve Korean font rendering issues",
           "Built automated code quality management system based on ESLint + Prettier + Husky"
         ],
         references: ["https://mykim.in", "https://github.com/BradleyyKim"],

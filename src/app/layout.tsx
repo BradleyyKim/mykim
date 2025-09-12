@@ -8,6 +8,7 @@ import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import Header from "@/components/Header";
 import InfoCopyRight from "@/components/blog/InfoCopyRight";
+import { Toaster } from "@/components/ui/sonner";
 import { getGAMeasurementId, isGAEnabled } from "@/lib/google-analytics";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { MAIN } from "@/lib/constants";
@@ -97,6 +98,7 @@ export default function RootLayout({
             </AuthProvider>
           </TanstackProvider>
         </ThemeProvider>
+        <Toaster position="top-center" richColors />
         <SpeedInsights />
         {/* Google Analytics */}
         {isGAEnabled() && getGAMeasurementId() && <GoogleAnalytics gaId={getGAMeasurementId()!} />}

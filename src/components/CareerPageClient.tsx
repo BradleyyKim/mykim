@@ -14,13 +14,14 @@ import {
 import type { Company } from "@/app/career/page";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
+import { toast } from "sonner";
 
 interface CareerPageClientProps {
   careerData: Company[];
   careerDataEn: Company[];
 }
 
-export default function CareerPageClient({ careerData, careerDataEn }: CareerPageClientProps) {
+export default function CareerPageClient({ careerData }: CareerPageClientProps) {
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -56,24 +57,21 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
     };
   }, []);
 
-  const handleUploadPDF = async (language: "ko" | "en") => {
+  const handleUploadAllPDFs = async () => {
     try {
       setIsUploading(true);
-      setUploadProgress("PDF를 생성하는 중...");
+      setUploadProgress("한국어 PDF 업로드 중... (1/2)");
 
-      const data = language === "ko" ? careerData : careerDataEn;
-
-      // PDF 생성 및 업로드
+      // 한국어/영어 순차 업로드
       const response = await fetch("/api/admin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        credentials: "include", // 쿠키 포함
+        credentials: "include",
         body: JSON.stringify({
-          action: "upload-pdf",
-          language,
-          careerData: data
+          action: "upload-all-pdfs",
+          careerData: careerData // 한국어 데이터 사용
         })
       });
 
@@ -81,13 +79,11 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
         throw new Error("PDF 업로드에 실패했습니다.");
       }
 
-      await response.json();
-      setUploadProgress("업로드 완료!");
-
-      alert(`${language === "ko" ? "한국어" : "영어"} PDF가 성공적으로 업로드되었습니다!`);
+      const result = await response.json();
+      toast.success(result.message);
     } catch (error) {
       console.error("PDF 업로드 실패:", error);
-      alert("PDF 업로드에 실패했습니다.");
+      toast.error("PDF 업로드에 실패했습니다.");
     } finally {
       setIsUploading(false);
       setUploadProgress("");
@@ -117,11 +113,11 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      alert("PDF 다운로드가 완료되었습니다!");
+      toast.success("PDF 다운로드가 완료되었습니다!");
     } catch (error) {
       console.error("PDF 다운로드 중 오류 발생:", error);
       const errorMessage = error instanceof Error ? error.message : "PDF 다운로드에 실패했습니다.";
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -138,18 +134,11 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
             <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">관리자 도구</h3>
             <div className="space-y-2">
               <button
-                onClick={() => handleUploadPDF("ko")}
+                onClick={handleUploadAllPDFs}
                 disabled={isUploading}
-                className="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-3 py-2 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isUploading && uploadProgress.includes("한국어") ? "업로드 중..." : "한국어 PDF 업로드"}
-              </button>
-              <button
-                onClick={() => handleUploadPDF("en")}
-                disabled={isUploading}
-                className="w-full px-3 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isUploading && uploadProgress.includes("영어") ? "업로드 중..." : "영어 PDF 업로드"}
+                {isUploading && uploadProgress.includes("(1/2)") ? "전체 업로드 중..." : "PDF 업로드"}
               </button>
             </div>
             {isUploading && <div className="mt-2 text-xs text-gray-500">{uploadProgress}</div>}
