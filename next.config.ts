@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
+// 빌드 시 버전 정보 생성
+const buildDate = new Date().toISOString().split("T")[0];
+const buildTime = new Date().toISOString().split("T")[1].split(".")[0];
+
 const nextConfig: NextConfig = {
+  // 환경 변수 설정
+  env: {
+    NEXT_PUBLIC_APP_VERSION: process.env.npm_package_version || "0.1.0",
+    NEXT_PUBLIC_BUILD_DATE: buildDate,
+    NEXT_PUBLIC_BUILD_TIME: buildTime
+  },
   /* config options here */
   typescript: {
     // tsconfig.build.json을 사용하도록 설정

@@ -15,6 +15,7 @@ import type { Company } from "@/app/career/page";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import AdminToolbarUniversal from "@/components/AdminToolbarUniversal";
 
 interface CareerPageClientProps {
   careerData: Company[];
@@ -24,11 +25,8 @@ interface CareerPageClientProps {
 export default function CareerPageClient({ careerData, careerDataEn }: CareerPageClientProps) {
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<string>("");
-  const [currentStep, setCurrentStep] = useState<string>("");
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { isLoggedIn, isLoading } = useAuth();
+  const { isLoading } = useAuth();
 
   const toggleProject = (companyIndex: number, projectIndex: number) => {
     const projectKey = `${companyIndex}-${projectIndex}`;
@@ -60,10 +58,6 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
 
   const handleUploadAllPDFs = async () => {
     try {
-      setIsUploading(true);
-      setUploadProgress("PDF 생성 및 업로드 중...");
-      setCurrentStep("");
-
       // 서버에서 PDF 생성 및 업로드
       const response = await fetch("/api/admin", {
         method: "POST",
@@ -86,11 +80,7 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
       toast.success(result.message);
     } catch (error) {
       console.error("PDF 생성 및 업로드 실패:", error);
-      toast.error("PDF 생성 및 업로드에 실패했습니다.");
-    } finally {
-      setIsUploading(false);
-      setUploadProgress("");
-      setCurrentStep("");
+      throw error; // AdminToolbar에서 처리하도록 에러를 다시 던짐
     }
   };
 
@@ -131,34 +121,28 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
 
   return (
     <div className="container mx-auto px-4 py-12">
-      {/* 관리자 업로드 버튼 */}
-      {isLoggedIn && (
-        <div className="fixed top-4 right-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">관리자 도구</h3>
-            <div className="space-y-2">
-              <button
-                onClick={handleUploadAllPDFs}
-                disabled={isUploading}
-                className="w-full px-3 py-2 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isUploading ? "PDF 생성 및 업로드 중..." : "PDF 생성 및 업로드"}
-              </button>
-            </div>
-            {isUploading && (
-              <div className="mt-2 space-y-1">
-                <div className="text-xs text-gray-500">{uploadProgress}</div>
-                {currentStep && (
-                  <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">{currentStep}</div>
-                )}
-                <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
-                  <div className="bg-blue-600 h-1.5 rounded-full animate-pulse" style={{ width: "100%" }}></div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* 관리자 도구 */}
+      <AdminToolbarUniversal
+        actions={[
+          {
+            label: "PDF 생성 및 업로드",
+            onClick: handleUploadAllPDFs,
+            icon: (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+            ),
+            variant: "primary"
+          }
+        ]}
+        showVersionInfo={true}
+        position="bottom-right"
+      />
 
       <div className="mb-12 text-center">
         {/* 제목 */}
