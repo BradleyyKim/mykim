@@ -7,16 +7,18 @@ on:
     types: [opened, closed, ready_for_review, converted_to_draft]
 
 jobs:
-  add-to-project:
-    name: Add issue/PR to project
-    runs-on: ubuntu-latest
-    if: github.event.action == 'opened'
-    steps:
-      - name: Add to project
-        uses: actions/add-to-project@v0.5.0
-        with:
-          project-url: https://github.com/users/BradleyyKim/projects/1 # 프로젝트 URL로 변경
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+  # add-to-project:
+  #   name: Add issue/PR to project
+  #   runs-on: ubuntu-latest
+  #   if: github.event.action == 'opened'
+  #   steps:
+  #     - name: Add to project
+  #       uses: actions/add-to-project@v0.5.0
+  #       with:
+  #         # GitHub Project URL - 실제 프로젝트 번호로 변경 필요
+  #         project-url: https://github.com/users/BradleyyKim/projects/1
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #       continue-on-error: true # 프로젝트 추가 실패 시에도 워크플로우 계속 진행
 
   move-to-in-progress:
     name: Move linked issues to In Progress
