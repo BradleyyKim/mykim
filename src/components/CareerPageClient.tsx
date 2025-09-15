@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import AdminToolbarUniversal from "@/components/AdminToolbarUniversal";
+import { generateClientPDF, downloadPDF } from "@/lib/client-pdf-generator";
 
 interface CareerPageClientProps {
   careerData: Company[];
@@ -56,30 +57,30 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
     };
   }, []);
 
-  const handleUploadAllPDFs = async () => {
+  const handleGeneratePDFs = async () => {
     try {
-      // 서버에서 PDF 생성 및 업로드
-      const response = await fetch("/api/admin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          action: "upload-all-pdfs",
-          careerData: careerData,
-          careerDataEn: careerDataEn
-        })
-      });
+      toast.info("PDF 생성 중...");
 
-      if (!response.ok) {
-        throw new Error("PDF 생성 및 업로드에 실패했습니다.");
-      }
+      // 클라이언트에서 한국어 PDF 생성
+      const koBlob = await generateClientPDF(careerData, "ko");
+      const koTimestamp = new Date().toISOString().split("T")[0];
+      const koFilename = `career-portfolio-ko-${koTimestamp}.pdf`;
 
-      const result = await response.json();
-      toast.success(result.message);
+      // 클라이언트에서 영어 PDF 생성
+      const enBlob = await generateClientPDF(careerDataEn, "en");
+      const enFilename = `career-portfolio-en-${koTimestamp}.pdf`;
+
+      // 두 PDF를 순차적으로 다운로드
+      downloadPDF(koBlob, koFilename);
+
+      // 약간의 지연 후 영어 PDF 다운로드
+      setTimeout(() => {
+        downloadPDF(enBlob, enFilename);
+      }, 1000);
+
+      toast.success("PDF 생성 완료! 파일이 다운로드되었습니다. Strapi GUI에서 수동으로 업로드해주세요.");
     } catch (error) {
-      console.error("PDF 생성 및 업로드 실패:", error);
+      console.error("PDF 생성 실패:", error);
       throw error; // AdminToolbar에서 처리하도록 에러를 다시 던짐
     }
   };
@@ -87,25 +88,16 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
   const handleDownloadPDF = async (language: "ko" | "en") => {
     try {
       setIsDropdownOpen(false);
+      toast.info("PDF 생성 중...");
 
-      // Strapi에서 PDF 다운로드
-      const response = await fetch(`/api/download-pdf?language=${language}`);
+      // 클라이언트 사이드에서 PDF 생성
+      const data = language === "ko" ? careerData : careerDataEn;
+      const blob = await generateClientPDF(data, language);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "PDF 다운로드에 실패했습니다.");
-      }
-
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `career-portfolio-${language}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      // PDF 다운로드
+      const timestamp = new Date().toISOString().split("T")[0];
+      const filename = `career-portfolio-${language}-${timestamp}.pdf`;
+      downloadPDF(blob, filename);
 
       toast.success("PDF 다운로드가 완료되었습니다!");
     } catch (error) {
@@ -120,13 +112,13 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12" id="career-content">
       {/* 관리자 도구 */}
       <AdminToolbarUniversal
         actions={[
           {
-            label: "PDF 생성 및 업로드",
-            onClick: handleUploadAllPDFs,
+            label: "PDF 생성",
+            onClick: handleGeneratePDFs,
             icon: (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
