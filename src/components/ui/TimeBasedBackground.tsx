@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useTimeBasedBackground } from "@/hooks/useTimeBasedBackground";
+import { useTimeBasedBackground } from "@/hooks/ui";
 
 interface TimeBasedBackgroundProps {
   className?: string;

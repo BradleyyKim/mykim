@@ -1,6 +1,6 @@
 "use client";
 
-import { usePageTracking } from "@/hooks/useGoogleAnalytics";
+import { usePageTracking } from "@/hooks/analytics";
 import { useState, useEffect } from "react";
 import ExternalLinkTracker from "./ExternalLinkTracker";
 

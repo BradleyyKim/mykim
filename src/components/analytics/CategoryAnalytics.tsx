@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useBlogAnalytics } from "@/hooks/useGoogleAnalytics";
+import { useBlogAnalytics } from "@/hooks/analytics";
 
 interface CategoryAnalyticsProps {
   categoryName: string;

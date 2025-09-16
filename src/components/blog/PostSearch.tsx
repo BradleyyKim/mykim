@@ -3,7 +3,7 @@
 import { useRef, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
-import { useBlogAnalytics } from "@/hooks/useGoogleAnalytics";
+import { useBlogAnalytics } from "@/hooks/analytics";
 
 interface PostSearchProps {
   isSearchOpen: boolean;

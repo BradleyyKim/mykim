@@ -1,4 +1,4 @@
-import CareerPageClient from "@/components/CareerPageClient";
+import { CareerPageClient } from "@/components/layout";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

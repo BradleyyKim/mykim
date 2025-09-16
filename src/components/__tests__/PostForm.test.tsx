@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import PostForm from "../PostForm";
+import PostForm from "../forms/PostForm";
 
 // API 모킹
 jest.mock("../../lib/api", () => ({

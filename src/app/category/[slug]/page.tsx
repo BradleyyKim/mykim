@@ -1,7 +1,7 @@
 import { Metadata } from "next";
-import { getCategoryData } from "@/lib/services/post-service";
+import { getCategoryData } from "@/lib/cms";
 import Link from "next/link";
-import { CategoryNotFound } from "@/components/NotFound";
+import { NotFound as CategoryNotFound } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import PaginationWrapper from "@/components/blog/PaginationWrapper";
 import { formatDate } from "date-fns";

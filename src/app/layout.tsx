@@ -3,13 +3,13 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Suspense } from "react";
 import "./globals.css";
-import { TanstackProvider } from "@/lib/tanstack-query";
+import { TanstackProvider } from "@/lib/query";
 import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import Header from "@/components/Header";
-import InfoCopyRight from "@/components/blog/InfoCopyRight";
+import { Header } from "@/components/layout";
+import { InfoCopyRight } from "@/components/layout";
 import { Toaster } from "@/components/ui/sonner";
-import { getGAMeasurementId, isGAEnabled } from "@/lib/google-analytics";
+import { getGAMeasurementId, isGAEnabled } from "@/lib/analytics";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { MAIN } from "@/lib/constants";
 

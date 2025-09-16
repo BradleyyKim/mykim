@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { AVATAR } from "@/lib/constants";
-import { useDailyAvatar } from "@/hooks/useDailyAvatar";
+import { useDailyAvatar } from "@/hooks/ui";
 
 interface AvatarProps {
   src?: string;

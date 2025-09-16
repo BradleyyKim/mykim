@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { ProtectedRoute } from "@/lib/auth";
-import { useUpdatePostBySlug, queryClient } from "@/lib/tanstack-query";
-import PostForm from "@/components/PostForm";
+import { useUpdatePostBySlug, queryClient } from "@/lib/query";
+import { PostForm } from "@/components/forms";
 import { Loader2 } from "lucide-react";
 import { getCategorySlug } from "@/lib/utils";
-import { getPostBySlug } from "@/lib/services/post-service";
+import { getPostBySlug } from "@/lib/cms";
 import { Post } from "@/lib/api";
 
 function EditPageContent() {

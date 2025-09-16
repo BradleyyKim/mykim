@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { useDeletePostBySlug } from "@/lib/tanstack-query";
+import { useDeletePostBySlug } from "@/lib/query";
 
 interface PostDetailActionsProps {
   postSlug: string;
