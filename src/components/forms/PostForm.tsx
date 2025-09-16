@@ -7,13 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, X, AlertCircle } from "lucide-react";
-import RichTextEditor from "@/components/RichTextEditor";
+import RichTextEditor from "./RichTextEditor";
 import { Category, fetchCategories } from "@/lib/api";
 import { useForm, Controller, Control, UseFormRegister, FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { generateSlugFromText, suggestSlugFromTitle } from "@/lib/slug-utils";
-import { extractFirstImageFromTiptapContent } from "@/lib/tiptap-renderer";
+import { generateSlugFromText, suggestSlugFromTitle } from "@/lib/content";
+import { extractFirstImageFromTiptapContent } from "@/lib/content";
 
 // Zod schema for form validation
 const postSchema = z.object({

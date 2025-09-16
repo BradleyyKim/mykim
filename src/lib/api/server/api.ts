@@ -1,5 +1,5 @@
 // API 관련 모듈 임포트
-import { API_ENDPOINTS, POSTS_PER_PAGE, REVALIDATE_TIME } from "./constants";
+import { API_ENDPOINTS, POSTS_PER_PAGE, REVALIDATE_TIME } from "../../constants";
 
 // 빌드 시점에서 API 호출이 안전한지 확인하는 함수
 function isSafeToCallAPI(): boolean {
@@ -87,7 +87,7 @@ export interface PaginationResult<T> {
 }
 
 // Strapi API 응답 타입 정의
-interface StrapiResponse<T> {
+export interface StrapiResponse<T> {
   data: T;
   meta?: {
     pagination?: {

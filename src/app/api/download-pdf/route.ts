@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPDFFromStrapi } from "@/lib/strapi-utils";
+import { getPDFFromStrapi } from "@/lib/cms";
 
 export async function GET(request: NextRequest) {
   try {

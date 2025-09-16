@@ -7,9 +7,9 @@ import { ko } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Post } from "@/lib/api";
 import { getCategorySlug, getCategoryName } from "@/lib/utils";
-import { renderTiptapContent } from "@/lib/tiptap-renderer";
+import { renderTiptapContent } from "@/lib/content";
 import { PostDetailActions } from "./PostDetailActions";
-import { usePostAnalytics } from "@/hooks/useGoogleAnalytics";
+import { usePostAnalytics } from "@/hooks/analytics";
 
 interface PostDetailProps {
   post: Post;

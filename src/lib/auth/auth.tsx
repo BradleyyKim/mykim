@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { apiClient } from "./api-client";
+import { apiClient } from "../api/client";
 import { Loader2 } from "lucide-react";
 
 // 사용자 타입 정의

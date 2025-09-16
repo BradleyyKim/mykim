@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { fetchPaginatedPosts } from "@/lib/api";
-import HomePageClient from "@/components/HomePageClient";
+import { HomePageClient } from "@/components/layout";
 
 export const metadata: Metadata = {
   title: "MYKim",

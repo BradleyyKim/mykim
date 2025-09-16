@@ -1,8 +1,8 @@
 "use client";
 
-import { useCreatePost } from "@/lib/tanstack-query";
+import { useCreatePost } from "@/lib/query";
 import { ProtectedRoute } from "@/lib/auth";
-import PostForm from "@/components/PostForm";
+import { PostForm } from "@/components/forms";
 
 function WritePageContent() {
   const createPostMutation = useCreatePost();

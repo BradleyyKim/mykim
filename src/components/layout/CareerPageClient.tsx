@@ -16,7 +16,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import AdminToolbarUniversal from "@/components/AdminToolbarUniversal";
-import { generateClientPDF, downloadPDF } from "@/lib/client-pdf-generator";
+import { generateClientPDF, downloadPDF } from "@/lib/media";
 
 interface CareerPageClientProps {
   careerData: Company[];

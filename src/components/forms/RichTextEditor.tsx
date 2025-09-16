@@ -4,12 +4,12 @@ import { ClipboardEvent, RefObject, useCallback } from "react";
 import { EditorContent } from "@tiptap/react";
 
 // 유틸리티
-import { stripHtml } from "@/lib/text-utils";
+import { stripHtml } from "@/lib/content";
 
 // 커스텀 훅들
-import { useImageHandler } from "@/hooks/useImageHandler";
-import { useLinkHandler } from "@/hooks/useLinkHandler";
-import { useEditorConfig } from "@/hooks/useEditorConfig";
+import { useImageHandler } from "@/hooks/editor";
+import { useLinkHandler } from "@/hooks/editor";
+import { useEditorConfig } from "@/hooks/editor";
 
 // 컴포넌트들
 import { EditorToolbar } from "@/components/editor/EditorToolbar";

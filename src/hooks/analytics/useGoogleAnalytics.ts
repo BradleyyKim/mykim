@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
-import { trackPageView, blogEvents, trackScrollDepth, trackReadingTime } from "@/lib/google-analytics";
+import { trackPageView, blogEvents, trackScrollDepth, trackReadingTime } from "@/lib/analytics";
 
 // 페이지 조회 추적 훅
 export function usePageTracking() {

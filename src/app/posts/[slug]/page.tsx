@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import PostDetail from "@/components/blog/PostDetail";
-import { PostNotFound } from "@/components/NotFound";
-import { getPostBySlug } from "@/lib/services/post-service";
-import { extractPlainText, extractFirstImageFromTiptapContent } from "@/lib/tiptap-renderer";
+import { NotFound as PostNotFound } from "@/components/ui";
+import { getPostBySlug } from "@/lib/cms";
+import { extractPlainText, extractFirstImageFromTiptapContent } from "@/lib/content";
 import { MAIN } from "@/lib/constants";
 
 // ISR 설정

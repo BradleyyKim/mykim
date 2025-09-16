@@ -1,5 +1,5 @@
 import { fetchPaginatedPosts } from "@/lib/api";
-import { extractPlainText } from "@/lib/tiptap-renderer";
+import { extractPlainText } from "@/lib/content";
 
 export async function GET() {
   try {

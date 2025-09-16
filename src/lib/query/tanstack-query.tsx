@@ -5,7 +5,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState, ReactNode, useEffect } from "react";
 
 // API 클라이언트 가져오기
-import { apiClient } from "./api-client";
+import { apiClient } from "../api/client";
 
 // 관리자 상태 관리
 export const useAdminAuth = () => {

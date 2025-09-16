@@ -1,8 +1,8 @@
 import { useState, useCallback, useRef } from "react";
 import { Editor } from "@tiptap/react";
 import imageCompression from "browser-image-compression";
-import { base64ToFile } from "@/lib/image-upload-service";
-import { queryClient } from "@/lib/tanstack-query";
+import { base64ToFile } from "@/lib/media";
+import { queryClient } from "@/lib/query";
 
 interface UseImageHandlerProps {
   editor: Editor | null;

@@ -16,10 +16,10 @@ import {
   DropdownMenuGroup,
   DropdownMenuLabel
 } from "@/components/ui/dropdown-menu";
-import { ThemeMode } from "@/components/ThemeMode";
+import { ThemeMode } from "@/components/ui";
 import { MAIN } from "@/lib/constants";
 import { Category, fetchCategories } from "@/lib/api";
-import { useBlogAnalytics } from "@/hooks/useGoogleAnalytics";
+import { useBlogAnalytics } from "@/hooks/analytics";
 
 /**
  * Header 컴포넌트

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useBlogAnalytics } from "@/hooks/useGoogleAnalytics";
+import { useBlogAnalytics } from "@/hooks/analytics";
 
 /**
  * 외부 링크 클릭 추적 컴포넌트
