@@ -7,7 +7,7 @@
 export * from "./editor";
 
 // Text utilities
-export { stripHtml, calculateReadingTime } from "./text-utils";
+export { stripHtml } from "./text-utils";
 
 // Slug utilities
 export { containsKorean, generateSlugFromText, suggestSlugFromTitle } from "./slug-utils";

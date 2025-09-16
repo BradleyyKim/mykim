@@ -27,7 +27,6 @@ export { default as PostDetail } from "./blog/PostDetail";
 export { PostDetailActions } from "./blog/PostDetailActions";
 
 // Admin components (기존 구조 유지)
-export { default as AdminToolbar } from "./AdminToolbar";
 export { default as AdminToolbarUniversal } from "./AdminToolbarUniversal";
 
 // Providers

@@ -16,7 +16,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import AdminToolbarUniversal from "@/components/AdminToolbarUniversal";
-import { generateClientPDF, downloadPDF } from "@/lib/media";
+import { generateClientPDF, previewPDF } from "@/lib/media";
 
 interface CareerPageClientProps {
   careerData: Company[];
@@ -57,52 +57,36 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
     };
   }, []);
 
-  const handleGeneratePDFs = async () => {
-    try {
-      toast.info("PDF 생성 중...");
-
-      // 클라이언트에서 한국어 PDF 생성
-      const koBlob = await generateClientPDF(careerData, "ko");
-      const koTimestamp = new Date().toISOString().split("T")[0];
-      const koFilename = `career-portfolio-ko-${koTimestamp}.pdf`;
-
-      // 클라이언트에서 영어 PDF 생성
-      const enBlob = await generateClientPDF(careerDataEn, "en");
-      const enFilename = `career-portfolio-en-${koTimestamp}.pdf`;
-
-      // 두 PDF를 순차적으로 다운로드
-      downloadPDF(koBlob, koFilename);
-
-      // 약간의 지연 후 영어 PDF 다운로드
-      setTimeout(() => {
-        downloadPDF(enBlob, enFilename);
-      }, 1000);
-
-      toast.success("PDF 생성 완료! 파일이 다운로드되었습니다. Strapi GUI에서 수동으로 업로드해주세요.");
-    } catch (error) {
-      console.error("PDF 생성 실패:", error);
-      throw error; // AdminToolbar에서 처리하도록 에러를 다시 던짐
-    }
-  };
-
   const handleDownloadPDF = async (language: "ko" | "en") => {
     try {
       setIsDropdownOpen(false);
       toast.info("PDF 생성 중...");
 
-      // 클라이언트 사이드에서 PDF 생성
+      // CSS Print Media 방식으로 PDF 생성
       const data = language === "ko" ? careerData : careerDataEn;
-      const blob = await generateClientPDF(data, language);
+      await generateClientPDF(data, language);
 
-      // PDF 다운로드
-      const timestamp = new Date().toISOString().split("T")[0];
-      const filename = `career-portfolio-${language}-${timestamp}.pdf`;
-      downloadPDF(blob, filename);
-
-      toast.success("PDF 다운로드가 완료되었습니다!");
+      toast.success("PDF 생성 완료! 인쇄 대화상자에서 PDF로 저장해주세요.");
     } catch (error) {
       console.error("PDF 다운로드 중 오류 발생:", error);
       const errorMessage = error instanceof Error ? error.message : "PDF 다운로드에 실패했습니다.";
+      toast.error(errorMessage);
+    }
+  };
+
+  const handlePreviewPDF = async (language: "ko" | "en") => {
+    try {
+      setIsDropdownOpen(false);
+      toast.info("PDF 미리보기 생성 중...");
+
+      // CSS Print Media 방식으로 PDF 미리보기
+      const data = language === "ko" ? careerData : careerDataEn;
+      await previewPDF(data, language);
+
+      toast.success("PDF 미리보기가 열렸습니다!");
+    } catch (error) {
+      console.error("PDF 미리보기 중 오류 발생:", error);
+      const errorMessage = error instanceof Error ? error.message : "PDF 미리보기에 실패했습니다.";
       toast.error(errorMessage);
     }
   };
@@ -114,27 +98,7 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
   return (
     <div className="container mx-auto px-4 py-12" id="career-content">
       {/* 관리자 도구 */}
-      <AdminToolbarUniversal
-        actions={[
-          {
-            label: "PDF 생성",
-            onClick: handleGeneratePDFs,
-            icon: (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-            ),
-            variant: "primary"
-          }
-        ]}
-        showVersionInfo={true}
-        position="bottom-right"
-      />
+      <AdminToolbarUniversal actions={[]} showVersionInfo={true} position="bottom-right" />
 
       <div className="mb-12 text-center">
         {/* 제목 */}
@@ -153,19 +117,42 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
             </button>
 
             {isDropdownOpen && (
-              <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-24 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+              <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                 <div className="py-1">
+                  <div className="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                    한국어
+                  </div>
+                  <button
+                    onClick={() => handlePreviewPDF("ko")}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
+                  >
+                    <span>👁️</span>
+                    미리보기
+                  </button>
                   <button
                     onClick={() => handleDownloadPDF("ko")}
-                    className="w-full text-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
                   >
-                    한국어
+                    <span>📄</span>
+                    PDF 다운로드
+                  </button>
+
+                  <div className="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 mt-1">
+                    English
+                  </div>
+                  <button
+                    onClick={() => handlePreviewPDF("en")}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
+                  >
+                    <span>👁️</span>
+                    Preview
                   </button>
                   <button
                     onClick={() => handleDownloadPDF("en")}
-                    className="w-full text-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
                   >
-                    English
+                    <span>📄</span>
+                    Download PDF
                   </button>
                 </div>
               </div>
