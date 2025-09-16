@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 // 빌드 시 버전 정보 생성
-const buildDate = "2025-09-15";
-const buildTime = "07:09:50";
+const buildDate = "2025-09-16";
+const buildTime = "07:38:28";
 
 const nextConfig: NextConfig = {
   // 환경 변수 설정
