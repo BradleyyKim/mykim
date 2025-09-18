@@ -60,13 +60,10 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
   const handleDownloadPDF = async (language: "ko" | "en") => {
     try {
       setIsDropdownOpen(false);
-      toast.info("PDF 생성 중...");
 
       // CSS Print Media 방식으로 PDF 생성
       const data = language === "ko" ? careerData : careerDataEn;
       await generateClientPDF(data, language);
-
-      toast.success("PDF 생성 완료! 인쇄 대화상자에서 PDF로 저장해주세요.");
     } catch (error) {
       console.error("PDF 다운로드 중 오류 발생:", error);
       const errorMessage = error instanceof Error ? error.message : "PDF 다운로드에 실패했습니다.";
@@ -77,7 +74,6 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
   const handlePreviewPDF = async (language: "ko" | "en") => {
     try {
       setIsDropdownOpen(false);
-      toast.info("PDF 미리보기 생성 중...");
 
       // CSS Print Media 방식으로 PDF 미리보기
       const data = language === "ko" ? careerData : careerDataEn;

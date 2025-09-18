@@ -1,0 +1,349 @@
+# AI Cursor Rules for Frontend Development
+
+## 🎯 Project Context
+
+- **Framework**: Next.js 14+ (App Router), React 18+, TypeScript
+- **Styling**: TailwindCSS, Shadcn/ui components
+- **State Management**: TanStack Query, React Context
+- **Architecture**: Domain-driven design with barrel exports
+- **Folder Structure**: api/, auth/, analytics/, cms/, content/, media/, cache/, query/, ui/
+
+## 🏗️ Architecture & Structure
+
+### Domain Organization
+
+- Organize code by business domain, not technical layers
+- Use barrel exports (index.ts) for clean imports
+- Keep related functionality together (cohesion)
+- Minimize cross-domain dependencies (coupling)
+
+### File Naming Conventions
+
+- Components: PascalCase (e.g., `UserProfile.tsx`)
+- Hooks: camelCase with `use` prefix (e.g., `useUserData.ts`)
+- Utilities: camelCase (e.g., `formatDate.ts`)
+- Types: PascalCase with descriptive names (e.g., `UserProfileProps`)
+
+## 💻 Code Style & Conventions
+
+### TypeScript Best Practices
+
+- Use strict mode and enable all strict flags
+- Prefer `interface` for object shapes, `type` for unions/primitives
+- Use generic types for reusable components
+- Implement proper type guards and assertions
+- Avoid `any` - use `unknown` or specific types
+
+### Component Patterns
+
+- Use functional components with hooks
+- Implement proper prop destructuring
+- Use default exports for main components
+- Keep components focused on single responsibility
+- Extract complex logic into custom hooks
+
+### Import Organization
+
+```typescript
+// 1. React and Next.js
+import React from "react";
+import { NextPage } from "next";
+
+// 2. External libraries
+import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+
+// 3. Internal modules (domain-based)
+import { apiClient } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+
+// 4. Relative imports
+import { UserCard } from "./UserCard";
+```
+
+## 🚀 Performance & Optimization
+
+### Bundle Optimization
+
+- Use dynamic imports for code splitting
+- Implement lazy loading for heavy components
+- Optimize images with Next.js Image component
+- Use WebP format for better compression
+
+### Rendering Performance
+
+- Use `useMemo` for expensive calculations
+- Use `useCallback` for stable function references
+- Implement `React.memo` for pure components
+- Avoid unnecessary re-renders with proper dependencies
+
+### Memory Management
+
+- Clean up event listeners in useEffect
+- Cancel API requests on component unmount
+- Use proper dependency arrays in hooks
+- Avoid memory leaks with proper cleanup
+
+## 🎨 Styling & UI/UX
+
+### TailwindCSS Patterns
+
+- Use utility classes for consistent spacing
+- Implement responsive design with breakpoints
+- Use CSS variables for theme customization
+- Follow mobile-first approach
+
+### Component Design
+
+- Use Shadcn/ui components as base
+- Implement consistent spacing and typography
+- Ensure proper contrast ratios for accessibility
+- Use semantic HTML elements
+
+### Dark Mode Support
+
+- Use CSS variables for theme switching
+- Implement proper theme provider pattern
+- Test both light and dark modes
+- Use system preference detection
+
+## ♿ Accessibility & UX
+
+### Accessibility (a11y)
+
+- Use semantic HTML elements
+- Implement proper ARIA attributes
+- Ensure keyboard navigation support
+- Provide alternative text for images
+- Use proper heading hierarchy
+
+### User Experience
+
+- Implement loading states and skeletons
+- Provide error boundaries and fallback UI
+- Use proper form validation and feedback
+- Implement proper focus management
+- Ensure responsive design across devices
+
+## 🔒 Security & Best Practices
+
+### Security Measures
+
+- Sanitize user inputs to prevent XSS
+- Implement proper CSRF protection
+- Use environment variables for sensitive data
+- Validate data on both client and server
+- Implement proper authentication patterns
+
+### Code Quality
+
+- Use ESLint and Prettier for consistency
+- Implement proper error handling
+- Use TypeScript strict mode
+- Write meaningful commit messages
+- Follow semantic versioning
+
+## 🧪 Testing & Quality Assurance
+
+### Testing Strategy
+
+- Write unit tests for utility functions
+- Test components with React Testing Library
+- Implement integration tests for user flows
+- Use E2E tests for critical paths
+- Maintain good test coverage
+
+### Code Review
+
+- Review for performance implications
+- Check accessibility compliance
+- Verify security best practices
+- Ensure proper error handling
+- Validate TypeScript types
+
+## 📱 Responsive Design
+
+### Breakpoint Strategy
+
+- Mobile: 320px - 768px
+- Tablet: 768px - 1024px
+- Desktop: 1024px+
+- Use TailwindCSS responsive prefixes
+
+### Layout Patterns
+
+- Use CSS Grid for complex layouts
+- Implement Flexbox for component alignment
+- Use container queries for component-level responsiveness
+- Test on real devices and browsers
+
+## 🌐 Internationalization (i18n)
+
+### Translation Patterns
+
+- Use consistent translation keys
+- Implement proper pluralization
+- Support RTL languages when needed
+- Use date and number formatting
+- Implement proper text direction
+
+### Content Management
+
+- Separate content from code
+- Use proper content structure
+- Implement content validation
+- Support dynamic content updates
+
+## 🔧 Development Workflow
+
+### Git Workflow
+
+- Use feature branches for development
+- Write descriptive commit messages
+- Use conventional commits format
+- Implement proper branch protection
+- Use pull request templates
+
+### Code Organization
+
+- Keep related files together
+- Use proper folder structure
+- Implement barrel exports
+- Maintain clean import paths
+- Document complex logic
+
+## 📊 Analytics & Monitoring
+
+### Performance Monitoring
+
+- Implement Core Web Vitals tracking
+- Monitor bundle size and performance
+- Track user interactions and errors
+- Use proper analytics implementation
+- Monitor API response times
+
+### Error Tracking
+
+- Implement proper error boundaries
+- Log errors to external services
+- Track user experience metrics
+- Monitor application health
+- Implement proper alerting
+
+## 🚀 Deployment & DevOps
+
+### Build Optimization
+
+- Optimize bundle size and chunks
+- Implement proper caching strategies
+- Use CDN for static assets
+- Implement proper environment configuration
+- Use proper build optimization
+
+### Performance Monitoring
+
+- Monitor application performance
+- Track user experience metrics
+- Implement proper logging
+- Use performance budgets
+- Monitor Core Web Vitals
+
+## 📚 Documentation & Maintenance
+
+### Code Documentation
+
+- Write clear component documentation
+- Document complex business logic
+- Use proper TypeScript comments
+- Maintain README files
+- Document API interfaces
+
+### Maintenance
+
+- Keep dependencies updated
+- Remove unused code regularly
+- Refactor complex components
+- Maintain proper test coverage
+- Follow security best practices
+
+## 🎯 Specific Patterns for This Project
+
+### PDF Generation
+
+- Use CSS Print Media for better quality
+- Implement proper page breaks
+- Support multiple languages
+- Use proper typography for printing
+- Implement proper error handling
+
+### API Integration
+
+- Use TanStack Query for data fetching
+- Implement proper error handling
+- Use optimistic updates when appropriate
+- Implement proper caching strategies
+- Use proper loading states
+
+### Form Handling
+
+- Use proper validation patterns
+- Implement proper error states
+- Use controlled components
+- Implement proper accessibility
+- Use proper form libraries
+
+## 🚨 Common Pitfalls to Avoid
+
+### Performance Issues
+
+- Don't use inline functions in JSX
+- Avoid unnecessary re-renders
+- Don't forget to clean up effects
+- Avoid large bundle sizes
+- Don't ignore performance budgets
+
+### Security Issues
+
+- Don't expose sensitive data in client code
+- Avoid XSS vulnerabilities
+- Don't trust client-side validation
+- Avoid CSRF attacks
+- Don't ignore security headers
+
+### Accessibility Issues
+
+- Don't forget keyboard navigation
+- Avoid poor color contrast
+- Don't ignore screen readers
+- Avoid missing alt text
+- Don't forget focus management
+
+## 🎉 Success Metrics
+
+### Code Quality
+
+- High TypeScript coverage
+- Good test coverage
+- Clean code reviews
+- Proper error handling
+- Good performance metrics
+
+### User Experience
+
+- Fast loading times
+- Good accessibility scores
+- Responsive design
+- Proper error states
+- Good user feedback
+
+### Maintainability
+
+- Clean code structure
+- Good documentation
+- Proper testing
+- Easy to understand
+- Easy to extend
+
+---
+
+**Remember**: These rules are guidelines, not strict requirements. Adapt them to your specific project needs and team preferences. The goal is to create maintainable, performant, and user-friendly frontend applications.
