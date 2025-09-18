@@ -45,16 +45,32 @@ export default function PostDetail({
             <time dateTime={displayDate}>{formattedDate}</time>
           </div>
 
-          {categoryName && categorySlug && (
-            <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            {categoryName && categorySlug && (
               <Link href={`/category/${categorySlug}`}>
                 <Badge variant="outline" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                   {categoryName}
                 </Badge>
               </Link>
-            </div>
-          )}
+            )}
+          </div>
         </div>
+
+        {/* 태그 목록 */}
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {post.tags.map(tag => (
+              <Link key={tag.id} href={`/tags/${tag.slug}`}>
+                <Badge
+                  variant="secondary"
+                  className="hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer transition-colors duration-200"
+                >
+                  #{tag.name}
+                </Badge>
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* 관리자용 액션 버튼들 */}
         <PostDetailActions postSlug={post.slug} />

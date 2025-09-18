@@ -77,6 +77,7 @@ function EditPageContent() {
       alternativeText?: string;
     } | null;
     publishedDate?: string;
+    tags?: string[];
   }) => {
     if (!post) {
       throw new Error("포스트 데이터가 없습니다");
@@ -91,7 +92,8 @@ function EditPageContent() {
         category: data.category,
         slug: data.slug,
         featuredImage: data.featuredImage,
-        publishedDate: data.publishedDate
+        publishedDate: data.publishedDate,
+        tags: data.tags
       }
     });
   };
@@ -128,7 +130,8 @@ function EditPageContent() {
         description: post.description || "",
         category: categorySlug || "",
         publishedDate: post.publishedDate || "",
-        slug: post.slug || ""
+        slug: post.slug || "",
+        tags: post.tags?.map(tag => tag.name).filter((name): name is string => typeof name === "string") || []
       }}
       onSubmit={handleSubmit}
       submitText="수정하기"

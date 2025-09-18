@@ -22,7 +22,8 @@ const postSchema = z.object({
   category: z.string().min(1, "카테고리는 필수 항목입니다."),
   description: z.string().optional(),
   publishedDate: z.string().optional(),
-  slug: z.string().min(1, "URL 슬러그는 필수 항목입니다.")
+  slug: z.string().min(1, "URL 슬러그는 필수 항목입니다."),
+  tags: z.array(z.string()).optional()
 });
 
 type PostFormData = z.infer<typeof postSchema>;
@@ -211,9 +212,20 @@ interface TagsInputProps {
   onAddTag: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onRemoveTag: (tag: string) => void;
   disabled: boolean;
+  onCompositionStart: () => void;
+  onCompositionEnd: () => void;
 }
 
-function TagsInput({ tags, tagInput, setTagInput, onAddTag, onRemoveTag, disabled }: TagsInputProps) {
+function TagsInput({
+  tags,
+  tagInput,
+  setTagInput,
+  onAddTag,
+  onRemoveTag,
+  disabled,
+  onCompositionStart,
+  onCompositionEnd
+}: TagsInputProps) {
   return (
     <div className="space-y-2">
       <Label htmlFor="tags">태그</Label>
@@ -222,6 +234,8 @@ function TagsInput({ tags, tagInput, setTagInput, onAddTag, onRemoveTag, disable
         value={tagInput}
         onChange={e => setTagInput(e.target.value)}
         onKeyDown={onAddTag}
+        onCompositionStart={onCompositionStart}
+        onCompositionEnd={onCompositionEnd}
         placeholder="태그를 입력하고 Enter를 누르세요"
         disabled={disabled}
       />
@@ -375,6 +389,7 @@ interface PostFormProps {
     category?: string;
     publishedDate?: string;
     slug?: string;
+    tags?: string[];
   };
   onSubmit: (
     data: PostFormData & {
@@ -389,12 +404,13 @@ interface PostFormProps {
 export default function PostForm({ initialData, onSubmit, submitText, title }: PostFormProps) {
   const router = useRouter();
   const [tagInput, setTagInput] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(initialData?.tags || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [generatedSlug, setGeneratedSlug] = useState<string>("");
+  const [isComposing, setIsComposing] = useState(false);
 
   // 통합된 상태 변수 계산
   const isFormDisabled = categories.length === 0;
@@ -463,15 +479,26 @@ export default function PostForm({ initialData, onSubmit, submitText, title }: P
   }, []);
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && tagInput.trim() !== "") {
+    if (e.key === "Enter" && !isComposing) {
       e.preventDefault();
-      setTags([...tags, tagInput.trim()]);
-      setTagInput("");
+      const trimmedInput = tagInput.trim();
+      if (trimmedInput !== "" && !tags.includes(trimmedInput)) {
+        setTags([...tags, trimmedInput]);
+        setTagInput("");
+      }
     }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleCompositionStart = () => {
+    setIsComposing(true);
+  };
+
+  const handleCompositionEnd = () => {
+    setIsComposing(false);
   };
 
   // Plain text 변경 처리 (자동 description 생성)
@@ -522,7 +549,8 @@ export default function PostForm({ initialData, onSubmit, submitText, title }: P
         description,
         category: selectedCategory.id.toString(),
         slug: finalSlug,
-        featuredImage
+        featuredImage,
+        tags: tags
       });
 
       // 성공 시 메인 페이지로 이동
@@ -566,6 +594,8 @@ export default function PostForm({ initialData, onSubmit, submitText, title }: P
           onAddTag={handleAddTag}
           onRemoveTag={handleRemoveTag}
           disabled={isFormDisabled}
+          onCompositionStart={handleCompositionStart}
+          onCompositionEnd={handleCompositionEnd}
         />
         <SlugInput
           control={control}

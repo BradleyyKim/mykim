@@ -18,6 +18,7 @@ function WritePageContent() {
       alternativeText?: string;
     } | null;
     publishedDate?: string;
+    tags?: string[];
   }) => {
     await createPostMutation.mutateAsync({
       title: data.title,
@@ -26,7 +27,8 @@ function WritePageContent() {
       category: data.category,
       slug: data.slug,
       featuredImage: data.featuredImage,
-      publishedDate: data.publishedDate
+      publishedDate: data.publishedDate,
+      tags: data.tags
     });
   };
 
