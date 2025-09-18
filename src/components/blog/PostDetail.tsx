@@ -60,7 +60,7 @@ export default function PostDetail({
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
             {post.tags.map(tag => (
-              <Link key={tag.id} href={`/tags/${tag.slug}`}>
+              <Link key={tag.id} href={`/tags/${encodeURIComponent(tag.name || "")}`}>
                 <Badge
                   variant="secondary"
                   className="hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer transition-colors duration-200"

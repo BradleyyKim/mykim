@@ -12,7 +12,7 @@ export {
   fetchPostsByCategory,
   fetchCategoryBySlug,
   fetchTags,
-  fetchTagBySlug,
+  fetchTagByName,
   fetchPostsByTag,
   type Post,
   type Category,

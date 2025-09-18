@@ -113,11 +113,7 @@ export async function POST(request: NextRequest) {
             headers,
             body: JSON.stringify({
               data: {
-                name: tagName,
-                slug: tagName
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")
-                  .replace(/[^\w-]/g, "")
+                name: tagName
               }
             })
           });

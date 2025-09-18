@@ -22,7 +22,7 @@ export default function TagDetailPageClient({ tag, initialPosts }: TagDetailPage
 
     setIsLoading(true);
     try {
-      const newPosts = await fetchPostsByTag(tag.slug || "", page);
+      const newPosts = await fetchPostsByTag(tag.name || "", page);
       setPosts(newPosts);
       setCurrentPage(page);
 

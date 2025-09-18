@@ -155,11 +155,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             headers,
             body: JSON.stringify({
               data: {
-                name: tagName,
-                slug: tagName
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")
-                  .replace(/[^\w-]/g, "")
+                name: tagName
               }
             })
           });

@@ -67,12 +67,14 @@ export default function HomePageClient({ postsByYear, filteredYears }: HomePageC
                               {post.tags && post.tags.length > 0 && (
                                 <div className="flex flex-wrap gap-1 mt-2">
                                   {post.tags.slice(0, 3).map(tag => (
-                                    <span
+                                    <Link
                                       key={tag.id}
-                                      className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full"
+                                      href={`/tags/${encodeURIComponent(tag.name || "")}`}
+                                      className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full hover:bg-blue-100 dark:hover:bg-blue-800 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                                      onClick={e => e.stopPropagation()} // 부모 Link 클릭 방지
                                     >
                                       #{tag.name}
-                                    </span>
+                                    </Link>
                                   ))}
                                   {post.tags.length > 3 && (
                                     <span className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full">

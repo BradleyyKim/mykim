@@ -380,16 +380,18 @@ export async function fetchTags(): Promise<Tag[]> {
   }
 }
 
-// slug로 특정 태그 정보 가져오기
-export async function fetchTagBySlug(slug: string): Promise<Tag | null> {
+// name으로 특정 태그 정보 가져오기
+export async function fetchTagByName(name: string): Promise<Tag | null> {
   if (!isSafeToCallAPI()) {
     return null;
   }
 
   try {
-    const response = await fetch(`${API_ENDPOINTS.TAGS || "/api/tags"}?filters[slug][$eq]=${slug}`, {
+    const url = `${API_ENDPOINTS.TAGS || "/api/tags"}?filters[name][$eq]=${name}`;
+
+    const response = await fetch(url, {
       next: {
-        tags: [`tag-${slug}`],
+        tags: [`tag-${name}`],
         revalidate: REVALIDATE_TIME
       }
     });
@@ -416,18 +418,18 @@ export async function fetchTagBySlug(slug: string): Promise<Tag | null> {
   }
 }
 
-// 태그별 게시물 가져오기
-export async function fetchPostsByTag(tagSlug: string, page = 1): Promise<PaginationResult<Post>> {
+// 태그별 게시물 가져오기 (name 기반)
+export async function fetchPostsByTag(tagName: string, page = 1): Promise<PaginationResult<Post>> {
   if (!isSafeToCallAPI()) {
     return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
   }
 
   try {
-    const url = `${API_ENDPOINTS.POSTS}?filters[tags][slug][$eq]=${tagSlug}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate[0]=category&populate[1]=tags`;
+    const url = `${API_ENDPOINTS.POSTS}?filters[tags][name][$eq]=${tagName}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate[0]=category&populate[1]=tags`;
 
     const response = await fetch(url, {
       next: {
-        tags: ["posts", `tag-${tagSlug}`],
+        tags: ["posts", `tag-${tagName}`],
         revalidate: REVALIDATE_TIME
       }
     });
@@ -438,7 +440,7 @@ export async function fetchPostsByTag(tagSlug: string, page = 1): Promise<Pagina
         console.warn("Tags relationship not configured yet, returning empty results");
         return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
       }
-      throw new Error(`Failed to fetch posts for tag ${tagSlug}: ${response.status}`);
+      throw new Error(`Failed to fetch posts for tag ${tagName}: ${response.status}`);
     }
 
     const data = (await response.json()) as StrapiResponse<Post[]>;

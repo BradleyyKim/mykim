@@ -2,6 +2,10 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 import { fetchPaginatedPosts } from "@/lib/api";
 import { HomePageClient } from "@/components/layout";
+import { getRevalidateTime } from "@/lib/cache/revalidate-config";
+
+// ISR 설정 - 중앙화된 설정 사용
+export const revalidate = getRevalidateTime("HOME");
 
 export const metadata: Metadata = {
   title: "MYKim",
@@ -133,7 +137,6 @@ async function HomePageContentWrapper() {
   }
 }
 
-// Next.js에게 정적 생성 페이지로 설정하고 주기적으로 재검증하도록 설정
-export const revalidate = 300; // 5분
+// 중복된 revalidate 선언 제거됨 - 상단에서 중앙화된 설정 사용
 
 export type { PostsByYear };

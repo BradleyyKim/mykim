@@ -8,6 +8,13 @@ interface TagsPageClientProps {
 }
 
 export default function TagsPageClient({ tags }: TagsPageClientProps) {
+  // 디버깅을 위한 로그
+  console.log("TagsPageClient - tags:", tags);
+  console.log(
+    "TagsPageClient - filtered tags:",
+    tags.filter(tag => tag.slug && tag.slug.trim() !== "")
+  );
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
@@ -42,7 +49,7 @@ export default function TagsPageClient({ tags }: TagsPageClientProps) {
             {tags.map(tag => (
               <Link
                 key={tag.id}
-                href={`/tags/${tag.slug}`}
+                href={`/tags/${encodeURIComponent(tag.name || "")}`}
                 className="group relative inline-flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 hover:scale-105 hover:shadow-sm"
               >
                 {/* 태그 아이콘 */}
