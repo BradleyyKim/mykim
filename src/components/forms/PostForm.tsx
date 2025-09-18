@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { generateSlugFromText, suggestSlugFromTitle } from "@/lib/content";
 import { extractFirstImageFromTiptapContent } from "@/lib/content";
+import type { PostFormData, PostFormProps } from "@/lib/types/post";
 
 // Zod schema for form validation
 const postSchema = z.object({
@@ -23,10 +24,10 @@ const postSchema = z.object({
   description: z.string().optional(),
   publishedDate: z.string().optional(),
   slug: z.string().min(1, "URL 슬러그는 필수 항목입니다."),
-  tags: z.array(z.string()).optional()
+  tags: z.array(z.string().max(50, "태그는 50자를 초과할 수 없습니다.")).optional()
 });
 
-type PostFormData = z.infer<typeof postSchema>;
+// PostFormData는 이제 통합 타입에서 import
 
 // 공통 에러 메시지 컴포넌트
 interface FormErrorMessageProps {
@@ -238,7 +239,11 @@ function TagsInput({
         onCompositionEnd={onCompositionEnd}
         placeholder="태그를 입력하고 Enter를 누르세요"
         disabled={disabled}
+        className={tagInput.length > 50 ? "border-red-500 focus:border-red-500" : ""}
       />
+      {tagInput.length > 50 && (
+        <p className="text-xs text-red-500 mt-1">태그는 50자를 초과할 수 없습니다. ({tagInput.length}/50)</p>
+      )}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {tags.map((tag, index) => (
@@ -380,26 +385,7 @@ const parsePublishedDate = (publishedDate?: string): string => {
   }
 };
 
-// 메인 PostForm 컴포넌트
-interface PostFormProps {
-  initialData?: {
-    title?: string;
-    content?: string;
-    description?: string;
-    category?: string;
-    publishedDate?: string;
-    slug?: string;
-    tags?: string[];
-  };
-  onSubmit: (
-    data: PostFormData & {
-      slug?: string;
-      featuredImage?: { url: string; alternativeText?: string } | null;
-    }
-  ) => Promise<void>;
-  submitText: string;
-  title: string;
-}
+// PostFormProps는 이제 통합 타입에서 import
 
 export default function PostForm({ initialData, onSubmit, submitText, title }: PostFormProps) {
   const router = useRouter();
@@ -482,9 +468,17 @@ export default function PostForm({ initialData, onSubmit, submitText, title }: P
     if (e.key === "Enter" && !isComposing) {
       e.preventDefault();
       const trimmedInput = tagInput.trim();
+
+      // 태그 길이 검증
+      if (trimmedInput.length > 50) {
+        setError("태그는 50자를 초과할 수 없습니다.");
+        return;
+      }
+
       if (trimmedInput !== "" && !tags.includes(trimmedInput)) {
         setTags([...tags, trimmedInput]);
         setTagInput("");
+        setError(null); // 에러 초기화
       }
     }
   };
@@ -509,6 +503,13 @@ export default function PostForm({ initialData, onSubmit, submitText, title }: P
   const handleFormSubmit = async (data: PostFormData) => {
     if (isFormDisabled) {
       setError("카테고리를 가져올 수 없어 작성할 수 없습니다. 나중에 다시 시도해주세요.");
+      return;
+    }
+
+    // 태그 길이 검증
+    const longTags = tags.filter(tag => tag.length > 50);
+    if (longTags.length > 0) {
+      setError(`다음 태그가 50자를 초과합니다: ${longTags.join(", ")}`);
       return;
     }
 

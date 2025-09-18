@@ -1,19 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-// 요청 바디 타입 정의
-interface PostUpdateData {
-  title: string;
-  content: string;
-  description?: string;
-  publishedDate?: string;
-  slug?: string;
-  category?: string | number;
-  featuredImage?: {
-    url: string;
-    alternativeText?: string;
-  };
-  tags?: number[];
-}
+import type { PostUpdateRequest } from "@/lib/types/post";
 
 // 포스트 수정 (PUT) - slug 기반
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -95,7 +81,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         description: body.description,
         publishedDate: body.publishedDate,
         slug: body.slug || body.title.toLowerCase().replace(/\s+/g, "-")
-      } as PostUpdateData
+      } as PostUpdateRequest
     };
 
     // 빈 문자열인 필드들을 제거

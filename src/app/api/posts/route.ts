@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { PostCreateRequest } from "@/lib/types/post";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,18 +37,7 @@ export async function POST(request: NextRequest) {
       Authorization: headers.Authorization ? `${headers.Authorization.substring(0, 20)}...` : "None"
     });
 
-    // 요청 바디 타입 설정
-    interface PostData {
-      title: string;
-      content: string;
-      slug: string;
-      description: string;
-      publishedDate?: string | null;
-      postStatus?: string | null;
-      category?: string | number | { id: number | string };
-      featuredImage?: { url: string; alternativeText?: string };
-      tags?: string[];
-    }
+    // PostData 타입은 이제 통합 타입에서 import
 
     // 요청 바디 구성
     const requestBody = {
@@ -59,7 +49,7 @@ export async function POST(request: NextRequest) {
         featuredImage: body.featuredImage,
         publishedDate: body.publishedDate,
         tags: body.tags || []
-      } as PostData
+      } as PostCreateRequest
     };
 
     // 카테고리가 있으면 추가

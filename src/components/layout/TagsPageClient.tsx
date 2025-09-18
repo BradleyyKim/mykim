@@ -69,7 +69,7 @@ export default function TagsPageClient({ tags }: TagsPageClientProps) {
                 </div>
 
                 {/* 태그 이름 */}
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors duration-200 truncate max-w-[200px]">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors duration-200">
                   {tag.name}
                 </span>
 

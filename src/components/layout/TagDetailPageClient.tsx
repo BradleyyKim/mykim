@@ -82,7 +82,7 @@ export default function TagDetailPageClient({ tag, initialPosts }: TagDetailPage
                           className="group border-b border-gray-200 dark:border-gray-700 pb-6 last:border-b-0"
                         >
                           <Link href={`/posts/${post.slug}`} className="block">
-                            <div className="flex justify-between items-start gap-4">
+                            <div className="flex justify-between items-center gap-4">
                               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 flex-1">
                                 {post.title}
                               </h2>

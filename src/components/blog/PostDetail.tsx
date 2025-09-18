@@ -5,17 +5,12 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
-import { Post } from "@/lib/api";
+// Post 타입은 PostDetailProps에서 import됨
 import { getCategorySlug, getCategoryName } from "@/lib/utils";
 import { renderTiptapContent } from "@/lib/content";
 import { PostDetailActions } from "./PostDetailActions";
 import { usePostAnalytics } from "@/hooks/analytics";
-
-interface PostDetailProps {
-  post: Post;
-  categoryName?: string | null;
-  categorySlug?: string | null;
-}
+import type { PostDetailProps } from "@/lib/types/post";
 
 export default function PostDetail({
   post,
