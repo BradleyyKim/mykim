@@ -2,10 +2,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fetchTagByName, fetchPostsByTag } from "@/lib/api";
 import TagDetailPageClient from "@/components/layout/TagDetailPageClient";
-import { getRevalidateTime } from "@/lib/cache/revalidate-config";
-
-// ISR 설정 - 중앙화된 설정 사용
-export const revalidate = getRevalidateTime("TAG_DETAIL");
+// ISR 설정 - 5분 캐시
+export const revalidate = 300;
 
 interface TagPageProps {
   params: Promise<{

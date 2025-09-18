@@ -4,10 +4,8 @@ import { NotFound as PostNotFound } from "@/components/ui";
 import { getPostBySlug } from "@/lib/cms";
 import { extractPlainText, extractFirstImageFromTiptapContent } from "@/lib/content";
 import { MAIN } from "@/lib/constants";
-import { getRevalidateTime } from "@/lib/cache/revalidate-config";
-
-// ISR 설정 - 중앙화된 설정 사용
-export const revalidate = getRevalidateTime("POST_DETAIL");
+// ISR 설정 - 5분 캐시
+export const revalidate = 300;
 
 type Props = {
   params: Promise<{

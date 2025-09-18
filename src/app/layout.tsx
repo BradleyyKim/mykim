@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+// Vercel Analytics는 VercelAnalyticsProvider에서 처리
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Suspense } from "react";
 import "./globals.css";
@@ -11,6 +11,7 @@ import { InfoCopyRight } from "@/components/layout";
 import { Toaster } from "@/components/ui/sonner";
 import { getGAMeasurementId, isGAEnabled } from "@/lib/analytics";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
+import { VercelAnalyticsProvider } from "@/components/providers/analytics-provider";
 import { MAIN } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -87,19 +88,20 @@ export default function RootLayout({
           <TanstackProvider>
             <AuthProvider>
               <AnalyticsProvider>
-                <Suspense fallback={<div className="h-14 border-b bg-background/95"></div>}>
-                  <Header />
-                </Suspense>
-                <main className="min-h-screen flex flex-col">
-                  <div className="flex-1">{children}</div>
-                  <InfoCopyRight />
-                </main>
+                <VercelAnalyticsProvider>
+                  <Suspense fallback={<div className="h-14 border-b bg-background/95"></div>}>
+                    <Header />
+                  </Suspense>
+                  <main className="min-h-screen flex flex-col">
+                    <div className="flex-1">{children}</div>
+                    <InfoCopyRight />
+                  </main>
+                </VercelAnalyticsProvider>
               </AnalyticsProvider>
             </AuthProvider>
           </TanstackProvider>
         </ThemeProvider>
         <Toaster position="top-center" richColors />
-        <SpeedInsights />
         {/* Google Analytics */}
         {isGAEnabled() && getGAMeasurementId() && <GoogleAnalytics gaId={getGAMeasurementId()!} />}
       </body>

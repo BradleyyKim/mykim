@@ -10,6 +10,8 @@ import { getCategorySlug, getCategoryName } from "@/lib/utils";
 import { renderTiptapContent } from "@/lib/content";
 import { PostDetailActions } from "./PostDetailActions";
 import { usePostAnalytics } from "@/hooks/analytics";
+import { trackPostView } from "@/lib/analytics/vercel-analytics";
+import { useEffect } from "react";
 import type { PostDetailProps } from "@/lib/types/post";
 
 export default function PostDetail({
@@ -30,6 +32,11 @@ export default function PostDetail({
 
   // Google Analytics 포스트 분석 (자동으로 포스트 조회, 스크롤, 읽기 시간 추적)
   usePostAnalytics(post.slug, categoryName, post.title);
+
+  // Vercel Analytics 포스트 조회 추적
+  useEffect(() => {
+    trackPostView(post.slug, post.title);
+  }, [post.slug, post.title]);
 
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl">

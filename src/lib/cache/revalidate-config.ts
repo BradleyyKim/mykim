@@ -20,26 +20,26 @@ export const REVALIDATE_CONFIG = {
 } as const;
 
 /**
- * 페이지별 revalidate 설정
+ * 페이지별 revalidate 설정 (정적 값)
  */
 export const PAGE_REVALIDATE = {
   // 홈페이지
-  HOME: REVALIDATE_CONFIG.CURRENT,
+  HOME: 300,
 
   // 카테고리 페이지
-  CATEGORY: REVALIDATE_CONFIG.CURRENT,
+  CATEGORY: 300,
 
   // 태그 페이지
-  TAGS: REVALIDATE_CONFIG.CURRENT,
+  TAGS: 300,
 
   // 태그 상세 페이지
-  TAG_DETAIL: REVALIDATE_CONFIG.CURRENT,
+  TAG_DETAIL: 300,
 
   // 포스트 상세 페이지
-  POST_DETAIL: REVALIDATE_CONFIG.CURRENT,
+  POST_DETAIL: 300,
 
   // 기타 페이지
-  DEFAULT: REVALIDATE_CONFIG.CURRENT
+  DEFAULT: 300
 } as const;
 
 /**

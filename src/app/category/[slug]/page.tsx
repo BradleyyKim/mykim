@@ -7,7 +7,7 @@ import PaginationWrapper from "@/components/blog/PaginationWrapper";
 import { formatDate } from "date-fns";
 import CategoryAnalytics from "@/components/analytics/CategoryAnalytics";
 import { MAIN } from "@/lib/constants";
-import { getRevalidateTime } from "@/lib/cache/revalidate-config";
+// getRevalidateTime import 제거됨
 
 type Props = {
   params: Promise<{
@@ -15,8 +15,8 @@ type Props = {
   }>;
 };
 
-// ISR 설정 - 중앙화된 설정 사용
-export const revalidate = getRevalidateTime("CATEGORY");
+// ISR 설정 - 5분 캐시
+export const revalidate = 300;
 
 // 카테고리 메타데이터 생성
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

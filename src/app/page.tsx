@@ -2,11 +2,10 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 import { fetchPaginatedPosts } from "@/lib/api";
 import { HomePageClient } from "@/components/layout";
-import { getRevalidateTime } from "@/lib/cache/revalidate-config";
 import type { PostsByYear } from "@/lib/types/post";
 
-// ISR 설정 - 중앙화된 설정 사용
-export const revalidate = getRevalidateTime("HOME");
+// ISR 설정 - 5분 캐시
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "MYKim",
