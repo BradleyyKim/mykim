@@ -5,3 +5,4 @@
 export { revalidateCache, revalidatePosts, revalidatePost, revalidateCategories, revalidatePath } from "./revalidate";
 
 export * from "./optimized-revalidate";
+export * from "./revalidate-config";

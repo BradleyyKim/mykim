@@ -2,52 +2,17 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 import { fetchPaginatedPosts } from "@/lib/api";
 import { HomePageClient } from "@/components/layout";
+import type { PostsByYear } from "@/lib/types/post";
+
+// ISR 설정 - 5분 캐시
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "MYKim",
   description: "프로그래밍, 웹 개발, 그리고 더 많은 주제에 대한 블로그"
 };
 
-type PostsByYear = {
-  [year: string]: {
-    posts: Array<{
-      id: number;
-      title: string;
-      slug: string;
-      publishedDate: string;
-      createdAt: string;
-      category:
-        | string
-        | {
-            id?: number | string;
-            name?: string;
-            slug?: string;
-            attributes?: {
-              name?: string;
-              slug?: string;
-              [key: string]: unknown;
-            };
-            data?: {
-              id?: number | string;
-              attributes?: {
-                name?: string;
-                slug?: string;
-                [key: string]: unknown;
-              };
-              [key: string]: unknown;
-            };
-            [key: string]: unknown;
-          }
-        | null;
-      tags?: Array<{
-        id: number;
-        name?: string;
-        slug?: string;
-      }>;
-    }>;
-    totalCount: number;
-  };
-};
+// PostsByYear 타입은 이제 통합 타입 파일에서 import
 
 // 메인 페이지 컴포넌트 (서버 컴포넌트)
 export default function HomePage() {
@@ -100,7 +65,8 @@ async function HomePageContentWrapper() {
         slug: post.slug,
         publishedDate: post.publishedDate || post.publishedAt || post.createdAt,
         createdAt: post.createdAt,
-        category: post.category
+        category: post.category,
+        tags: post.tags || []
       });
 
       return acc;
@@ -133,7 +99,6 @@ async function HomePageContentWrapper() {
   }
 }
 
-// Next.js에게 정적 생성 페이지로 설정하고 주기적으로 재검증하도록 설정
-export const revalidate = 300; // 5분
+// 중복된 revalidate 선언 제거됨 - 상단에서 중앙화된 설정 사용
 
-export type { PostsByYear };
+// PostsByYear 타입은 이제 @/lib/types/post에서 export

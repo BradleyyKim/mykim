@@ -5,17 +5,14 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
-import { Post } from "@/lib/api";
+// Post 타입은 PostDetailProps에서 import됨
 import { getCategorySlug, getCategoryName } from "@/lib/utils";
 import { renderTiptapContent } from "@/lib/content";
 import { PostDetailActions } from "./PostDetailActions";
 import { usePostAnalytics } from "@/hooks/analytics";
-
-interface PostDetailProps {
-  post: Post;
-  categoryName?: string | null;
-  categorySlug?: string | null;
-}
+import { trackPostView } from "@/lib/analytics/vercel-analytics";
+import { useEffect } from "react";
+import type { PostDetailProps } from "@/lib/types/post";
 
 export default function PostDetail({
   post,
@@ -35,6 +32,11 @@ export default function PostDetail({
 
   // Google Analytics 포스트 분석 (자동으로 포스트 조회, 스크롤, 읽기 시간 추적)
   usePostAnalytics(post.slug, categoryName, post.title);
+
+  // Vercel Analytics 포스트 조회 추적
+  useEffect(() => {
+    trackPostView(post.slug, post.title);
+  }, [post.slug, post.title]);
 
   return (
     <article className="container mx-auto px-4 py-8 max-w-3xl">
@@ -60,7 +62,7 @@ export default function PostDetail({
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
             {post.tags.map(tag => (
-              <Link key={tag.id} href={`/tags/${tag.slug}`}>
+              <Link key={tag.id} href={`/tags/${encodeURIComponent(tag.name || "")}`}>
                 <Badge
                   variant="secondary"
                   className="hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer transition-colors duration-200"

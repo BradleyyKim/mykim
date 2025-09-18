@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { PenTool } from "lucide-react";
-import { getCategoryName, getFirstEmojiOrString } from "@/lib/utils";
+import { formatDate } from "date-fns";
 import { useAuth } from "@/lib/auth";
-import { useState, useEffect } from "react";
-import type { PostsByYear } from "@/app/page";
+import type { PostsByYear } from "@/lib/types/post";
 
 interface HomePageClientProps {
   postsByYear: PostsByYear;
@@ -14,12 +13,6 @@ interface HomePageClientProps {
 
 export default function HomePageClient({ postsByYear, filteredYears }: HomePageClientProps) {
   const { isLoggedIn } = useAuth();
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  // Hydration 완료 확인
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
 
   return (
     <>
@@ -45,42 +38,21 @@ export default function HomePageClient({ postsByYear, filteredYears }: HomePageC
                   <div className="w-full md:w-3/4">
                     <div className="space-y-6">
                       {postsByYear[year].posts.map(post => {
-                        const categoryName = getCategoryName(post.category);
                         return (
                           <article
                             key={post.id}
                             className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 last:border-0 transition-all hover:translate-x-1"
                           >
+                            {/* 게시글 제목과 날짜 */}
                             <Link href={`/posts/${post.slug}`} className="block group">
-                              <div className="flex justify-between items-start">
+                              <div className="flex justify-between items-center">
                                 <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300">
                                   {post.title}
                                 </h2>
-                                {categoryName && (
-                                  <div className="ml-4 flex-shrink-0 dark:bg-gray-800 rounded-full px-3 py-1 text-sm text-gray-800 dark:text-gray-200">
-                                    {isHydrated ? getFirstEmojiOrString(categoryName) : categoryName}
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* 태그 목록 */}
-                              {post.tags && post.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-2">
-                                  {post.tags.slice(0, 3).map(tag => (
-                                    <span
-                                      key={tag.id}
-                                      className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full"
-                                    >
-                                      #{tag.name}
-                                    </span>
-                                  ))}
-                                  {post.tags.length > 3 && (
-                                    <span className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full">
-                                      +{post.tags.length - 3}
-                                    </span>
-                                  )}
+                                <div className="ml-4 flex-shrink-0 text-sm text-gray-500 dark:text-gray-400">
+                                  {formatDate(new Date(post.publishedDate), "yyyy.MM.dd HH:mm")}
                                 </div>
-                              )}
+                              </div>
                             </Link>
                           </article>
                         );

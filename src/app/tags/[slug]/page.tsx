@@ -1,7 +1,9 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { fetchTagBySlug, fetchPostsByTag } from "@/lib/api";
+import { fetchTagByName, fetchPostsByTag } from "@/lib/api";
 import TagDetailPageClient from "@/components/layout/TagDetailPageClient";
+// ISR 설정 - 5분 캐시
+export const revalidate = 300;
 
 interface TagPageProps {
   params: Promise<{
@@ -11,7 +13,7 @@ interface TagPageProps {
 
 export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const tag = await fetchTagBySlug(slug);
+  const tag = await fetchTagByName(slug);
 
   if (!tag) {
     return {
@@ -33,7 +35,7 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
 
 export default async function TagPage({ params }: TagPageProps) {
   const { slug } = await params;
-  const [tag, postsResult] = await Promise.all([fetchTagBySlug(slug), fetchPostsByTag(slug, 1)]);
+  const [tag, postsResult] = await Promise.all([fetchTagByName(slug), fetchPostsByTag(slug, 1)]);
 
   if (!tag) {
     notFound();

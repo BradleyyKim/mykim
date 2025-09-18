@@ -12,14 +12,9 @@ export {
   fetchPostsByCategory,
   fetchCategoryBySlug,
   fetchTags,
-  fetchTagBySlug,
-  fetchPostsByTag,
-  type Post,
-  type Category,
-  type Tag,
-  type FeaturedImage,
-  type PaginationResult
+  fetchTagByName,
+  fetchPostsByTag
 } from "./api";
 
-// StrapiResponse는 internal 타입이므로 별도로 export
-export type { StrapiResponse } from "./api";
+// 타입들은 통합 타입 파일에서 re-export
+export type { Post, Category, Tag, FeaturedImage, PaginationResult, StrapiResponse } from "../../types/post";

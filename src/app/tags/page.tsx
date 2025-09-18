@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import { fetchTags } from "@/lib/api";
 import TagsPageClient from "@/components/layout/TagsPageClient";
+// ISR 설정 - 5분 캐시
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Tags | MyKim",

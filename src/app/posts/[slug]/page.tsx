@@ -4,9 +4,8 @@ import { NotFound as PostNotFound } from "@/components/ui";
 import { getPostBySlug } from "@/lib/cms";
 import { extractPlainText, extractFirstImageFromTiptapContent } from "@/lib/content";
 import { MAIN } from "@/lib/constants";
-
-// ISR 설정
-export const revalidate = 300; // 5분
+// ISR 설정 - 5분 캐시
+export const revalidate = 300;
 
 type Props = {
   params: Promise<{
