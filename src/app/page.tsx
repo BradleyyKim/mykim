@@ -39,6 +39,11 @@ type PostsByYear = {
             [key: string]: unknown;
           }
         | null;
+      tags?: Array<{
+        id: number;
+        name?: string;
+        slug?: string;
+      }>;
     }>;
     totalCount: number;
   };

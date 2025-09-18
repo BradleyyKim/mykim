@@ -100,8 +100,9 @@ export function useCreatePost() {
       alternativeText?: string;
     } | null;
     publishedDate?: string;
+    tags?: string[];
   }) => {
-    // 제목, 내용, 설명, 카테고리, slug, 발행날짜 처리
+    // 제목, 내용, 설명, 카테고리, slug, 발행날짜, 태그 처리
     return apiClient.createPost({
       title: data.title,
       content: data.content,
@@ -109,7 +110,8 @@ export function useCreatePost() {
       category: data.category,
       slug: data.slug,
       featuredImage: data.featuredImage,
-      publishedDate: data.publishedDate
+      publishedDate: data.publishedDate,
+      tags: data.tags
     });
   };
 
@@ -187,6 +189,7 @@ export function useUpdatePostBySlug() {
         slug?: string;
         featuredImage?: { url: string; alternativeText?: string } | null;
         publishedDate?: string;
+        tags?: string[];
       };
     }) => apiClient.updatePostBySlug(slug, data),
     onSuccess: (data, variables) => {

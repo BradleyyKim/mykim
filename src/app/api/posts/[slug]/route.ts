@@ -12,6 +12,7 @@ interface PostUpdateData {
     url: string;
     alternativeText?: string;
   };
+  tags?: number[];
 }
 
 // 포스트 수정 (PUT) - slug 기반
@@ -122,6 +123,75 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     // featuredImage가 있으면 추가
     if (body.featuredImage) {
       requestBody.data.featuredImage = body.featuredImage;
+    }
+
+    // 태그가 있으면 처리
+    if (body.tags && Array.isArray(body.tags) && body.tags.length > 0) {
+      console.log("태그 처리 시작:", body.tags);
+
+      // 태그들을 Strapi에 생성하거나 기존 태그와 연결
+      const tagPromises = body.tags.map(async (tagName: string) => {
+        try {
+          // 기존 태그 검색
+          const existingTagResponse = await fetch(
+            `${STRAPI_API_URL}/tags?filters[name][$eq]=${encodeURIComponent(tagName)}`,
+            {
+              method: "GET",
+              headers
+            }
+          );
+
+          if (existingTagResponse.ok) {
+            const existingTagData = await existingTagResponse.json();
+            if (existingTagData.data && existingTagData.data.length > 0) {
+              console.log(`기존 태그 발견: ${tagName} (ID: ${existingTagData.data[0].id})`);
+              return existingTagData.data[0].id;
+            }
+          }
+
+          // 새 태그 생성
+          const newTagResponse = await fetch(`${STRAPI_API_URL}/tags`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              data: {
+                name: tagName,
+                slug: tagName
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^\w-]/g, "")
+              }
+            })
+          });
+
+          if (newTagResponse.ok) {
+            const newTagData = await newTagResponse.json();
+            console.log(`새 태그 생성: ${tagName} (ID: ${newTagData.data.id})`);
+            return newTagData.data.id;
+          } else {
+            console.error(`태그 생성 실패: ${tagName}`, await newTagResponse.text());
+            return null;
+          }
+        } catch (error) {
+          console.error(`태그 처리 오류: ${tagName}`, error);
+          return null;
+        }
+      });
+
+      // 모든 태그 처리 완료 대기
+      const tagIds = await Promise.all(tagPromises);
+      const validTagIds = tagIds.filter(id => id !== null);
+
+      if (validTagIds.length > 0) {
+        requestBody.data.tags = validTagIds;
+        console.log("연결할 태그 IDs:", validTagIds);
+      } else {
+        console.log("유효한 태그가 없습니다.");
+        requestBody.data.tags = [];
+      }
+    } else {
+      console.log("태그가 없거나 빈 배열입니다.");
+      requestBody.data.tags = [];
     }
 
     console.log(`[PUT] Request Body:`, requestBody);

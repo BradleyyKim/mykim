@@ -105,6 +105,7 @@ export const apiClient = {
       alternativeText?: string;
     } | null;
     publishedDate?: string;
+    tags?: string[];
   }) {
     console.log("[apiClient] 새 포스트 생성 시도");
 
@@ -260,6 +261,7 @@ export const apiClient = {
       slug?: string;
       featuredImage?: { url: string; alternativeText?: string } | null;
       publishedDate?: string;
+      tags?: string[];
     }
   ) {
     console.log(`[apiClient] 포스트 수정 시도: slug=${slug}`);

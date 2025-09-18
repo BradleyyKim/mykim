@@ -106,7 +106,7 @@ export async function fetchPosts(): Promise<Post[]> {
   }
 
   try {
-    const response = await fetch(`${API_ENDPOINTS.POSTS}?populate=category`, {
+    const response = await fetch(`${API_ENDPOINTS.POSTS}?populate[0]=category&populate[1]=tags`, {
       cache: "no-store",
       next: {
         tags: ["posts"]
@@ -139,7 +139,7 @@ export async function fetchPaginatedPosts(page = 1, pageSize = POSTS_PER_PAGE): 
   }
 
   try {
-    const url = `${API_ENDPOINTS.POSTS}?pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate=category`;
+    const url = `${API_ENDPOINTS.POSTS}?pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate[0]=category&populate[1]=tags`;
 
     const response = await fetch(url, {
       next: {
@@ -172,7 +172,7 @@ export async function fetchPaginatedPosts(page = 1, pageSize = POSTS_PER_PAGE): 
 // 클라이언트 컴포넌트에서 사용할 함수
 export async function fetchPostsClient(): Promise<Post[]> {
   try {
-    const response = await fetch(`${API_ENDPOINTS.POSTS}?populate=category`, {
+    const response = await fetch(`${API_ENDPOINTS.POSTS}?populate[0]=category&populate[1]=tags`, {
       cache: "no-store"
     });
 
@@ -197,7 +197,7 @@ export async function fetchPostsClient(): Promise<Post[]> {
 // 서버 컴포넌트에서 사용할 함수
 export async function fetchPostById(id: string): Promise<Post | null> {
   try {
-    const response = await fetch(`${API_ENDPOINTS.POSTS}/${id}`, {
+    const response = await fetch(`${API_ENDPOINTS.POSTS}/${id}?populate[0]=category&populate[1]=tags`, {
       cache: "no-store",
       next: {
         tags: [`post-${id}`]
@@ -225,7 +225,7 @@ export async function fetchPostById(id: string): Promise<Post | null> {
 // 클라이언트 컴포넌트에서 사용할 함수
 export async function fetchPostByIdClient(id: string): Promise<Post | null> {
   try {
-    const response = await fetch(`${API_ENDPOINTS.POSTS}/${id}`, {
+    const response = await fetch(`${API_ENDPOINTS.POSTS}/${id}?populate[0]=category&populate[1]=tags`, {
       cache: "no-store"
     });
 
@@ -282,7 +282,7 @@ export async function fetchPostsByCategory(categorySlug: string, page = 1): Prom
   }
 
   try {
-    const url = `${API_ENDPOINTS.POSTS}?filters[category][slug][$eq]=${categorySlug}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate=category`;
+    const url = `${API_ENDPOINTS.POSTS}?filters[category][slug][$eq]=${categorySlug}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate[0]=category&populate[1]=tags`;
 
     const response = await fetch(url, {
       next: {
@@ -340,5 +340,120 @@ export async function fetchCategoryBySlug(slug: string): Promise<Category | null
   } catch (error) {
     console.error("Error fetching category:", error);
     return null;
+  }
+}
+
+// 모든 태그 가져오기
+export async function fetchTags(): Promise<Tag[]> {
+  if (!isSafeToCallAPI()) {
+    return [];
+  }
+
+  try {
+    const response = await fetch(`${API_ENDPOINTS.TAGS || "/api/tags"}?sort[0]=name:asc`, {
+      next: {
+        tags: ["tags"],
+        revalidate: REVALIDATE_TIME
+      }
+    });
+
+    if (!response.ok) {
+      // 태그 API가 아직 설정되지 않은 경우 빈 배열 반환
+      if (response.status === 404 || response.status === 400) {
+        console.warn("Tags API not available yet, returning empty array");
+        return [];
+      }
+      throw new Error(`Failed to fetch tags: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.data || !Array.isArray(data.data)) {
+      console.error("Unexpected API response structure:", data);
+      return [];
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching tags:", error);
+    return [];
+  }
+}
+
+// slug로 특정 태그 정보 가져오기
+export async function fetchTagBySlug(slug: string): Promise<Tag | null> {
+  if (!isSafeToCallAPI()) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(`${API_ENDPOINTS.TAGS || "/api/tags"}?filters[slug][$eq]=${slug}`, {
+      next: {
+        tags: [`tag-${slug}`],
+        revalidate: REVALIDATE_TIME
+      }
+    });
+
+    if (!response.ok) {
+      // 태그 API가 아직 설정되지 않은 경우 null 반환
+      if (response.status === 404 || response.status === 400) {
+        console.warn("Tags API not available yet, returning null");
+        return null;
+      }
+      throw new Error(`Failed to fetch tag: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      return null;
+    }
+
+    return data.data[0];
+  } catch (error) {
+    console.error("Error fetching tag:", error);
+    return null;
+  }
+}
+
+// 태그별 게시물 가져오기
+export async function fetchPostsByTag(tagSlug: string, page = 1): Promise<PaginationResult<Post>> {
+  if (!isSafeToCallAPI()) {
+    return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
+  }
+
+  try {
+    const url = `${API_ENDPOINTS.POSTS}?filters[tags][slug][$eq]=${tagSlug}&pagination[page]=${page}&pagination[pageSize]=${POSTS_PER_PAGE}&sort[0]=publishedDate:desc&sort[1]=publishedAt:desc&populate[0]=category&populate[1]=tags`;
+
+    const response = await fetch(url, {
+      next: {
+        tags: ["posts", `tag-${tagSlug}`],
+        revalidate: REVALIDATE_TIME
+      }
+    });
+
+    if (!response.ok) {
+      // 태그 관계가 아직 설정되지 않은 경우 빈 결과 반환
+      if (response.status === 400) {
+        console.warn("Tags relationship not configured yet, returning empty results");
+        return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
+      }
+      throw new Error(`Failed to fetch posts for tag ${tagSlug}: ${response.status}`);
+    }
+
+    const data = (await response.json()) as StrapiResponse<Post[]>;
+
+    if (!data.data || !Array.isArray(data.data)) {
+      console.error("Unexpected API response structure:", data);
+      return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
+    }
+
+    return {
+      data: data.data,
+      pagination: data.meta?.pagination || { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 }
+    };
+  } catch (error) {
+    console.error("Error fetching posts by tag:", error);
+    return { data: [], pagination: { page, pageSize: POSTS_PER_PAGE, pageCount: 0, total: 0 } };
   }
 }

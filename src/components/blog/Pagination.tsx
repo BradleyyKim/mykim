@@ -7,9 +7,10 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  isLoading?: boolean;
 }
 
-export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+export default function Pagination({ currentPage, totalPages, onPageChange, isLoading = false }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   return (
@@ -19,7 +20,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
           variant="outline"
           size="sm"
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-          disabled={currentPage === 1}
+          disabled={currentPage === 1 || isLoading}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -29,6 +30,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
             variant={currentPage === page ? "default" : "outline"}
             size="sm"
             onClick={() => onPageChange(page)}
+            disabled={isLoading}
           >
             {page}
           </Button>
@@ -37,7 +39,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
           variant="outline"
           size="sm"
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages || isLoading}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>

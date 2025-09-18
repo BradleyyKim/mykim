@@ -62,6 +62,25 @@ export default function HomePageClient({ postsByYear, filteredYears }: HomePageC
                                   </div>
                                 )}
                               </div>
+
+                              {/* 태그 목록 */}
+                              {post.tags && post.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {post.tags.slice(0, 3).map(tag => (
+                                    <span
+                                      key={tag.id}
+                                      className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full"
+                                    >
+                                      #{tag.name}
+                                    </span>
+                                  ))}
+                                  {post.tags.length > 3 && (
+                                    <span className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full">
+                                      +{post.tags.length - 3}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
                             </Link>
                           </article>
                         );
