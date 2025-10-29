@@ -1,193 +1,188 @@
-# MyKim Blog Frontend
+# MY Kim Blog
 
-This is a personal blog frontend built with Next.js 15, TypeScript, and Tailwind CSS.
+> 개인 기술 블로그 및 포트폴리오 웹사이트
+> Next.js 15 + React 19로 구축한 블로그 플랫폼
 
-## Features
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 
-- 📝 Blog posts with categories and tags
-- 🌓 Time-based background images (day/night mode)
-- 👤 Daily avatar rotation
-- 🎨 Responsive design with dark mode support
-- 🔍 Search functionality
-- 📱 Mobile-first design
-- 📊 Google Analytics 4 integration with advanced tracking
+🔗 **Live**: [https://mykim.in](https://mykim.in)
 
-## Time-based Background Images
+---
 
-The application features dynamic background images that change based on the time of day:
+## 📖 소개
 
-- **Day time (6:00 AM - 6:00 PM)**: Shows random day images from `public/images/background/day[number].webp`
-- **Night time (6:00 PM - 6:00 AM)**: Shows random night images from `public/images/background/night[number].webp`
+개발하면서 배운 내용과 경험을 기록하는 개인 블로그입니다.
+Strapi Cloud를 Headless CMS로 활용하여 컨텐츠를 관리하며, Next.js의 SSR/ISR 기능으로 SEO를 개선했습니다.
 
-### Adding New Background Images
+## ✨ 주요 기능
 
-1. Place your images in `public/images/background/`
-2. Follow the naming convention: `day[number].webp` or `night[number].webp`
-3. Update the image arrays in `src/hooks/useTimeBasedBackground.ts`
+### 컨텐츠 작성 및 관리
+- 📝 TipTap 에디터 기반 WYSIWYG 문서 편집
+- 🏷️ 카테고리 & 태그 시스템
+- 🔍 포스트 검색 기능
+- 📊 Vercel Analytics 통합
 
-### Performance Optimization ✅
+### 사용자 경험
+- 🌓 시간대별 배경 이미지 변경 (낮/밤)
+- 👤 매일 바뀌는 아바타
+- 🎨 다크모드 지원
+- 📱 모바일 반응형 디자인
 
-#### Image Format and Size
+## 🛠️ 기술 스택
 
-- **Current format**: WebP (optimized for web performance)
-- **File size reduction**: 50-90% smaller than original JPEG files
-- **Browser support**: Excellent (all modern browsers)
-
-#### File Size Comparison
-
-| File   | Original JPEG | WebP  | Reduction |
-| ------ | ------------- | ----- | --------- |
-| day1   | 659KB         | 285KB | 56%       |
-| day2   | 417KB         | 137KB | 67%       |
-| day3   | 876KB         | 410KB | 53%       |
-| night1 | 185KB         | 18KB  | 90%       |
-
-#### Converting Additional Images to WebP
-
-```bash
-# Using cwebp (install via: brew install webp)
-cwebp -q 80 input.jpeg -o output.webp
-
-# Batch conversion
-for file in *.jpeg; do
-  cwebp -q 80 "$file" -o "${file%.jpeg}.webp"
-done
-```
-
-#### CDN Usage
-
-For production, consider using a CDN service like:
-
-- Cloudinary
-- ImageKit
-- Vercel Image Optimization (automatic)
-
-## Google Analytics Setup
-
-This project includes comprehensive Google Analytics 4 (GA4) integration with blog-specific event tracking.
-
-### 1. Environment Variables
-
-Create a `.env.local` file in the root directory:
-
-```bash
-# Google Analytics 설정
-# 운영 환경용 GA4 측정 ID (G-XXXXXXXXXX 형식)
-NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-
-# 개발 환경용 GA4 측정 ID (선택사항)
-NEXT_PUBLIC_GA_MEASUREMENT_ID_DEV=G-YYYYYYYYYY
-
-# 환경 설정
-NODE_ENV=development
-```
-
-### 2. Google Analytics 4 Setup
-
-1. Visit [Google Analytics](https://analytics.google.com/) and create a new property
-2. Choose "Web" as the platform
-3. Copy your Measurement ID (format: `G-XXXXXXXXXX`)
-4. Add the ID to your `.env.local` file
-
-### 3. Tracked Events
-
-The application automatically tracks the following events:
-
-#### Basic Events
-
-- **Page Views**: Automatic tracking on all page navigation
-- **Session Duration**: User engagement metrics
-
-#### Blog-Specific Events
-
-- **Post Views**: When users view a blog post
-- **Reading Progress**: Scroll depth tracking (25%, 50%, 75%, 90%, 100%)
-- **Reading Time**: Time spent on posts (30s, 1m, 2m, 5m milestones)
-- **Category Views**: When users browse categories
-- **Search Queries**: Internal search tracking
-- **Theme Changes**: Dark/light mode switching
-- **External Link Clicks**: Clicks on external links
-
-#### User Interaction Events
-
-- **Complete Reading**: When users finish reading a post
-- **Share Events**: Social media sharing (when implemented)
-
-### 4. Development vs Production
-
-- **Development**: GA events are logged to console (unless dev GA ID is provided)
-- **Production**: Full GA tracking with real data collection
-
-### 5. Privacy Considerations
-
-The implementation includes:
-
-- IP anonymization
-- GDPR-compliant tracking
-- Minimal personal data collection
-- User consent management ready
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm install
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Tech Stack
-
-- **Framework**: Next.js 15
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
+### Frontend
+- **Framework**: Next.js 15 (App Router)
+- **Language**: React 19, TypeScript 5
+- **Styling**: Tailwind CSS 4.0
 - **UI Components**: shadcn/ui
-- **Image Optimization**: Next.js Image component with WebP/AVIF support
+- **Editor**: TipTap (ProseMirror 기반)
+- **State Management**: Tanstack/react-query
+- **Form**: React Hook Form + Zod
 
-## Project Structure
+### Backend & Infrastructure
+- **CMS**: Strapi Cloud (Headless CMS)
+- **Deployment**: Vercel
+- **Analytics**: Vercel Analytics
+- **Image Optimization**: Next.js Image + WebP
+
+### Development
+- **Code Quality**: ESLint, Prettier
+- **Git Hooks**: Husky
+- **Package Manager**: npm
+
+---
+
+## 🏗️ 주요 기술적 특징
+
+### Headless CMS 아키텍처
+```
+Client (Next.js) ←→ Strapi Cloud API ←→ Database
+```
+컨텐츠 관리와 프론트엔드를 분리하여 각각 독립적으로 확장 가능
+
+### SSR/ISR 하이브리드 렌더링
+- **SSR**: 동적 페이지 서버 사이드 렌더링
+- **ISR**: 정적 페이지 점진적 재생성 (Revalidate: 5분)
+- SEO 개선 및 빠른 초기 로딩
+
+### 이미지 최적화
+- WebP 포맷 자동 변환
+- Next.js Image 컴포넌트 활용
+- 파일 크기 50-90% 감소
+
+### 캐싱 전략
+- React Query로 서버 상태 관리
+- Stale-while-revalidate 패턴 적용
+- API 호출 최소화
+
+## 📁 프로젝트 구조
 
 ```
 src/
+├── app/                    # Next.js App Router
+│   ├── (posts)/           # 포스트 관련 페이지
+│   ├── about/             # 소개 페이지
+│   ├── career/            # 경력 페이지
+│   ├── category/          # 카테고리별 포스트
+│   ├── tags/              # 태그별 포스트
+│   └── api/               # API Routes
 ├── components/
-│   ├── ui/
-│   │   ├── Avatar.tsx
-│   │   └── TimeBasedBackground.tsx
-│   └── blog/
-├── hooks/
-│   ├── useDailyAvatar.ts
-│   └── useTimeBasedBackground.ts
-├── app/
-│   ├── about/
-│   └── ...
-└── lib/
-    └── constants.ts
+│   ├── ui/                # shadcn/ui 컴포넌트
+│   ├── layout/            # 레이아웃 컴포넌트
+│   └── editor/            # TipTap 에디터
+├── hooks/                 # Custom React Hooks
+├── lib/                   # 유틸리티 함수
+└── styles/                # 전역 스타일
 ```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 시작하기
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 설치
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm install
+```
 
-## Deploy on Vercel
+### 환경 변수 설정
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`.env.local` 파일을 생성하고 다음 내용을 추가:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Strapi CMS
+NEXT_PUBLIC_API_URL=your-strapi-url
+STRAPI_API_TOKEN=your-api-token
 
-수정
+# Vercel Analytics (선택)
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+### 개발 서버 실행
+
+```bash
+npm run dev
+```
+
+브라우저에서 [http://localhost:3000](http://localhost:3000) 접속
+
+### 빌드
+
+```bash
+npm run build
+npm start
+```
+
+## 📝 개발 과정에서 고민한 부분
+
+### 1. 에디터 선택
+- 마크다운 작성의 편의성과 WYSIWYG 편집의 직관성을 모두 원함
+- TipTap을 선택하여 두 가지 방식을 모두 지원
+
+### 2. 상태 관리
+- 서버 데이터는 React Query로 캐싱 및 관리
+- 클라이언트 상태는 React의 useState/useContext 활용
+- 전역 상태를 최소화하여 복잡도 감소
+
+### 3. 성능 개선
+- 이미지 자동 WebP 변환으로 파일 크기 50-90% 감소
+- ISR로 정적 페이지 생성 (5분 주기 재검증)
+- React Query 캐싱으로 불필요한 API 호출 제거
+
+### 4. SEO
+- App Router의 metadata API 활용
+- 동적 OG 이미지 생성
+- sitemap.xml 및 rss.xml 자동 생성
+
+---
+
+## 🔧 주요 구현 사항
+
+### 시간대별 배경 이미지
+- 6:00 AM - 6:00 PM: 낮 이미지
+- 6:00 PM - 6:00 AM: 밤 이미지
+- 새로고침 시 랜덤 이미지 선택
+
+### 타입 안전성
+- TypeScript Strict Mode 활성화
+- Zod 스키마로 런타임 검증
+- API 응답 타입 정의
+
+### 코드 품질
+- ESLint + Prettier로 코드 스타일 통일
+- Husky로 커밋 전 자동 검증
+- 컴포넌트 재사용성 고려한 설계
+
+---
+
+## 📚 참고
+
+- **Live**: [https://mykim.in](https://mykim.in)
+- **GitHub**: [https://github.com/BradleyyKim](https://github.com/BradleyyKim)
+
+---
+
+**Built with ❤️ by MYKim**
