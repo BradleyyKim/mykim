@@ -1,6 +1,72 @@
 import type { Company } from "@/app/career/page";
 
 /**
+ * PDF 프로필 정보 (학력, 강점 등)
+ */
+const PDF_PROFILE = {
+  ko: {
+    education: ["경상대학교 반도체공학과 학사 졸업 (2018)"],
+    strengths: [
+      {
+        title: "성능 최적화 전문성",
+        description:
+          "Lighthouse를 활용해 성능을 최적화하고, React DevTools를 활용해 리렌더링과 같은 성능 이슈를 효과적으로 분석 및 해결하는 능력"
+      },
+      {
+        title: "사용자 중심 UI/UX 구현 및 문제 해결",
+        description:
+          "사용자 관점에서 인터페이스를 설계하고, 요구사항에 맞춰 Canvas, SVG, CSS 등 다양한 기술을 활용해 최적의 UI 솔루션 도출. 복잡한 기술적 제약 속에서도 사용자 경험을 우선시하는 구현 능력"
+      },
+      {
+        title: "크로스 펑셔널 협업 및 기술적 문제 해결",
+        description:
+          "백엔드, 디자이너, PM 등 다양한 직군과의 협업을 통해 복잡한 기술적 문제를 해결. 다국적 팀원들과의 협업 경험을 바탕으로 원활한 커뮤니케이션과 신뢰 관계 구축 능력"
+      },
+      {
+        title: "AI 도구 활용 및 최신 기술 트렌드 파악",
+        description:
+          "Claude Code, Codex 등 터미널 기반 AI 도구를 실무에 적극 활용하여 개발 생산성 향상. 기술 커뮤니티와 공식 문서를 통해 지속적으로 업계 동향 파악하는 능력"
+      },
+      {
+        title: "빠른 학습 및 적용 능력",
+        description:
+          "현재까지 모든 프로젝트를 성공적으로 완성 및 릴리즈했으며, 새로운 기술을 빠르게 학습하고 적용하는 능력"
+      }
+    ]
+  },
+  en: {
+    education: ["B.S. in Semiconductor Engineering, Gyeongsang National University (2018)"],
+    strengths: [
+      {
+        title: "Performance Optimization Expertise",
+        description:
+          "Effectively analyze and resolve performance issues such as re-rendering using Lighthouse for optimization and React DevTools"
+      },
+      {
+        title: "User-Centric UI/UX Implementation & Problem Solving",
+        description:
+          "Design interfaces from user perspective and deliver optimal UI solutions utilizing various technologies like Canvas, SVG, and CSS to meet requirements. Prioritize user experience even under complex technical constraints"
+      },
+      {
+        title: "Cross-Functional Collaboration & Technical Problem Solving",
+        description:
+          "Resolve complex technical problems through collaboration with diverse roles including backend engineers, designers, and PMs. Build smooth communication and trust relationships based on experience working with multinational team members"
+      },
+      {
+        title: "AI Tools Utilization & Latest Technology Trends Awareness",
+        description:
+          "Actively utilize terminal-based AI tools such as Claude Code and Codex in actual work to improve development productivity. Continuously monitor industry trends through tech communities and official documentation"
+      },
+      {
+        title: "Fast Learning & Application Ability",
+        description:
+          "Successfully completed and released all projects to date, demonstrating ability to rapidly learn and apply new technologies"
+      }
+    ]
+  }
+};
+
+/**
  * CSS Print Media 방식으로 PDF 생성
  * Pozafly의 아티클을 참고하여 최적화된 구현
  */
@@ -72,62 +138,133 @@ export class CSSPDFGenerator {
           }
           
           /* 제목 스타일 */
-          .pdf-title { 
-            font-size: 20px; 
-            font-weight: 600; 
-            text-align: center; 
-            margin-bottom: 30px; 
+          .pdf-title {
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 30px;
             color: #1a1a1a;
             border-bottom: 1px solid #333;
             padding-bottom: 15px;
             page-break-after: avoid;
             break-after: avoid;
           }
-          
-          /* 회사 섹션 - 페이지 분할 제어 */
-          .pdf-company { 
-            margin-bottom: 25px; 
+
+          /* 학력 섹션 */
+          .pdf-education {
+            margin-top: 40px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
             page-break-inside: avoid;
             break-inside: avoid;
-            border: 1px solid #ddd;
-            border-radius: 0;
-            overflow: hidden;
-            box-shadow: none;
+          }
+
+          .pdf-education-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+          }
+
+          .pdf-education-item {
+            font-size: 12px;
+            color: #333;
+            line-height: 1.6;
+            padding-left: 15px;
+            margin-top: 10px;
+          }
+
+          /* 강점 섹션 */
+          .pdf-strengths {
+            margin-top: 40px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+
+          .pdf-strengths-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+          }
+
+          .pdf-strength-item {
+            margin-bottom: 12px;
+          }
+
+          .pdf-strength-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+          }
+
+          .pdf-strength-description {
+            font-size: 11px;
+            color: #333;
+            line-height: 1.6;
+            padding-left: 15px;
           }
           
+          /* 회사 섹션 - 페이지 분할 제어 */
+          .pdf-company {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            border: none;
+            border-radius: 0;
+            overflow: visible;
+            box-shadow: none;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 20px;
+          }
+
           /* 회사 헤더 */
           .pdf-company-header {
-            background: #1a1a1a;
-            color: white;
-            padding: 15px 20px;
+            background: white;
+            color: #1a1a1a;
+            padding: 0 0 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 15px;
           }
-          
-          .pdf-company-name { 
-            font-size: 16px; 
-            font-weight: 600; 
-            margin-bottom: 5px; 
+
+          .pdf-company-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
             margin: 0;
+            color: #1a1a1a;
           }
-          
-          .pdf-position { 
-            font-size: 12px; 
-            opacity: 0.8; 
+
+          .pdf-position {
+            font-size: 12px;
+            opacity: 0.6;
             margin: 0;
             font-weight: 400;
+            color: #666;
           }
           
           /* 프로젝트 컨테이너 */
           .pdf-projects-container {
-            padding: 20px;
+            padding: 0;
             background: white;
           }
-          
+
           /* 프로젝트 스타일 - 페이지 분할 제어 */
-          .pdf-project { 
-            margin-bottom: 20px; 
-            padding: 15px;
-            border-left: 2px solid #333;
-            background: #fafafa;
+          .pdf-project {
+            margin-bottom: 20px;
+            padding: 15px 0;
+            border-left: 3px solid #1a1a1a;
+            background: white;
+            padding-left: 15px;
             page-break-inside: avoid;
             break-inside: avoid;
           }
@@ -145,43 +282,54 @@ export class CSSPDFGenerator {
             margin-bottom: 12px; 
           }
           
-          .pdf-overview { 
-            margin-bottom: 12px; 
-            line-height: 1.5; 
+          .pdf-overview {
+            margin-bottom: 15px;
+            line-height: 1.5;
             font-size: 11px;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+          }
+
+          /* PDF 섹션 스타일 */
+          .pdf-section {
+            margin-bottom: 12px;
+          }
+
+          .pdf-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1a1a1a;
+          }
+
+          .pdf-section ul {
+            margin: 0;
+            padding-left: 15px;
+          }
+
+          .pdf-section li {
+            margin-bottom: 5px;
+            line-height: 1.4;
+            font-size: 10px;
             color: #333;
           }
           
-          .pdf-achievements { 
-            margin-bottom: 12px; 
-          }
-          
-          .pdf-achievements ul { 
-            margin: 0; 
-            padding-left: 15px; 
-          }
-          
-          .pdf-achievements li { 
-            margin-bottom: 6px; 
-            line-height: 1.4; 
-            font-size: 11px;
-            color: #333;
-          }
-          
-          .pdf-tech-stack { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 6px; 
+          .pdf-tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
             margin: 12px 0;
           }
-          
-          .pdf-tech-tag { 
-            background: #333; 
-            color: white; 
-            padding: 3px 8px; 
-            border-radius: 0; 
-            font-size: 10px; 
-            font-weight: 500; 
+
+          .pdf-tech-tag {
+            background: white;
+            color: #1a1a1a;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 500;
+            border: 1px solid #d0d0d0;
           }
           
           /* 참고 자료 스타일 */
@@ -290,20 +438,47 @@ export class CSSPDFGenerator {
                             <h3 class="pdf-project-name">${project.name}</h3>
                             <div class="pdf-project-period">${project.period}</div>
                             <div class="pdf-overview">${project.overview}</div>
-                            <div class="pdf-achievements">
+
+                            <div class="pdf-section">
+                              <h4 class="pdf-section-title">${language === "ko" ? "주요 업무" : "Responsibilities"}</h4>
+                              <ul>
+                                ${project.responsibilities.map(resp => `<li>${resp}</li>`).join("")}
+                              </ul>
+                            </div>
+
+                            <div class="pdf-section">
+                              <h4 class="pdf-section-title">${language === "ko" ? "성과" : "Achievements"}</h4>
                               <ul>
                                 ${project.achievements.map(achievement => `<li>${achievement}</li>`).join("")}
                               </ul>
                             </div>
+
                             ${
-                              project.techStack && project.techStack.length > 0
+                              project.metrics && project.metrics.length > 0
                                 ? `
-                            <div class="pdf-tech-stack">
-                              ${project.techStack.map(tech => `<span class="pdf-tech-tag">${tech}</span>`).join("")}
+                            <div class="pdf-section">
+                              <h4 class="pdf-section-title">${language === "ko" ? "성과 지표" : "Metrics & Impact"}</h4>
+                              <ul>
+                                ${project.metrics.map(metric => `<li>${metric}</li>`).join("")}
+                              </ul>
                             </div>
                             `
                                 : ""
                             }
+
+                            ${
+                              project.techStack && project.techStack.length > 0
+                                ? `
+                            <div class="pdf-section">
+                              <h4 class="pdf-section-title">${language === "ko" ? "기술 스택" : "Tech Stack"}</h4>
+                              <div class="pdf-tech-stack">
+                                ${project.techStack.map(tech => `<span class="pdf-tech-tag">${tech}</span>`).join("")}
+                              </div>
+                            </div>
+                            `
+                                : ""
+                            }
+
                             ${
                               project.references && project.references.length > 0
                                 ? `
@@ -323,6 +498,27 @@ export class CSSPDFGenerator {
                   `
                     )
                     .join("")}
+
+                  <!-- 학력 섹션 -->
+                  <div class="pdf-education">
+                    <h2 class="pdf-education-title">${language === "ko" ? "학력" : "Education"}</h2>
+                    ${PDF_PROFILE[language].education.map(edu => `<div class="pdf-education-item">${edu}</div>`).join("")}
+                  </div>
+
+                  <!-- 강점 및 특징 섹션 -->
+                  <div class="pdf-strengths">
+                    <h2 class="pdf-strengths-section-title">${language === "ko" ? "강점 및 특징" : "Key Strengths"}</h2>
+                    ${PDF_PROFILE[language].strengths
+                      .map(
+                        strength => `
+                    <div class="pdf-strength-item">
+                      <div class="pdf-strength-title">${strength.title}</div>
+                      <div class="pdf-strength-description">· ${strength.description}</div>
+                    </div>
+                    `
+                      )
+                      .join("")}
+                  </div>
                 </div>
               </td>
             </tr>

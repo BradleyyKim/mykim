@@ -231,16 +231,66 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
                           {/* 프로젝트 개요 */}
                           <div className="mb-6">
                             <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                              Project Overview
+                              📋 Project Overview
                             </h4>
                             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{project.overview}</p>
                           </div>
+
+                          {/* 주요 업무 */}
+                          <div className="mb-6">
+                            <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
+                              💼 Responsibilities
+                            </h4>
+                            <ul className="space-y-2">
+                              {project.responsibilities.map((responsibility, index) => (
+                                <li key={index} className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
+                                  <span className="text-blue-500 dark:text-blue-400 mt-1">▸</span>
+                                  <span className="leading-relaxed">{responsibility}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {/* 성과 */}
+                          <div className="mb-6">
+                            <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
+                              ✨ Achievements
+                            </h4>
+                            <ul className="space-y-2">
+                              {project.achievements.map((achievement, index) => (
+                                <li key={index} className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
+                                  <span className="text-green-500 dark:text-green-400 mt-1">✓</span>
+                                  <span className="leading-relaxed">{achievement}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {/* 성과 지표 */}
+                          {project.metrics && project.metrics.length > 0 && (
+                            <div className="mb-6">
+                              <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
+                                📊 Metrics & Impact
+                              </h4>
+                              <ul className="space-y-2">
+                                {project.metrics.map((metric, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex items-start gap-3 text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg"
+                                  >
+                                    <span className="text-orange-500 dark:text-orange-400 mt-1">📈</span>
+                                    <span className="leading-relaxed font-medium">{metric}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
 
                           {/* 기술 스택 */}
                           {project.techStack && project.techStack.length > 0 && (
                             <div className="mb-6">
                               <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                                Tech Stack
+                                🛠️ Tech Stack
                               </h4>
                               <div className="flex flex-wrap gap-2">
                                 {project.techStack.map((tech, index) => (
@@ -255,26 +305,11 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
                             </div>
                           )}
 
-                          {/* 주요 성과 */}
-                          <div className="mb-6">
-                            <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                              Key Achievements
-                            </h4>
-                            <ul className="space-y-2">
-                              {project.achievements.map((achievement, index) => (
-                                <li key={index} className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
-                                  <span className="text-green-500 dark:text-green-400 mt-1">•</span>
-                                  <span className="leading-relaxed">{achievement}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
                           {/* 레퍼런스 링크 */}
                           {project.references && project.references.length > 0 && (
                             <div>
                               <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                                References
+                                🔗 References
                               </h4>
                               <div className="space-y-2">
                                 {project.references.map((reference, index) => (
