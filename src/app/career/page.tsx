@@ -83,7 +83,6 @@ const careerData: Company[] = [
           "Recoil 기반 전역 상태 관리 및 필터링 시스템 구축"
         ],
         achievements: [
-          "좌표계 변환 알고리즘으로 실시간 차량 위치 추적 정확도 향상",
           "자동화된 모니터링 시스템으로 관리자의 업무 효율성 증대",
           "직관적인 데이터 시각화로 의사결정 지원 강화"
         ],
@@ -321,7 +320,6 @@ const careerDataEn: Company[] = [
           "Built global state management and filtering system based on Recoil"
         ],
         achievements: [
-          "Enhanced real-time vehicle location tracking accuracy through coordinate conversion algorithm",
           "Increased administrator operational efficiency through automated monitoring system",
           "Strengthened decision-making support through intuitive data visualization"
         ],
