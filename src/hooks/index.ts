@@ -6,8 +6,5 @@
 // Analytics hooks
 export * from "./analytics";
 
-// Editor hooks
-export * from "./editor";
-
 // UI hooks
 export * from "./ui";

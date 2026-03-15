@@ -9,5 +9,3 @@ export * from "./editor";
 // Text utilities
 export { stripHtml } from "./text-utils";
 
-// Slug utilities
-export { containsKorean, generateSlugFromText, suggestSlugFromTitle } from "./slug-utils";

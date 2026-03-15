@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Tag, Post, PaginationResult } from "@/lib/api";
+import type { Tag, Post, PaginationResult } from "@/lib/types/post";
 import { Pagination } from "@/components/blog";
-import { fetchPostsByTag } from "@/lib/api";
 import { formatDate } from "date-fns";
 
 interface TagDetailPageClientProps {
@@ -19,14 +18,12 @@ export default function TagDetailPageClient({ tag, initialPosts }: TagDetailPage
 
   const handlePageChange = async (page: number) => {
     if (isLoading) return;
-
     setIsLoading(true);
     try {
-      const newPosts = await fetchPostsByTag(tag.name || "", page);
+      const response = await fetch(`/api/tags/posts?name=${encodeURIComponent(tag.name || "")}&page=${page}`);
+      const newPosts = await response.json();
       setPosts(newPosts);
       setCurrentPage(page);
-
-      // 페이지 상단으로 스크롤
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       console.error("Failed to fetch posts:", error);

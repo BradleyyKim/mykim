@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Tag } from "@/lib/api";
+import type { Tag } from "@/lib/types/post";
 
 interface TagsPageClientProps {
   tags: Tag[];

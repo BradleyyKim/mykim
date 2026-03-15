@@ -1,7 +1,3 @@
-/**
- * Server API exports
- * 서버 사이드에서 사용하는 API 호출 함수들
- */
 export {
   fetchPosts,
   fetchPaginatedPosts,
@@ -13,8 +9,7 @@ export {
   fetchCategoryBySlug,
   fetchTags,
   fetchTagByName,
-  fetchPostsByTag
+  fetchPostsByTag,
 } from "./api";
 
-// 타입들은 통합 타입 파일에서 re-export
-export type { Post, Category, Tag, FeaturedImage, PaginationResult, StrapiResponse } from "../../types/post";
+export type { Post, Category, Tag, FeaturedImage, PaginationResult } from "../../types/post";

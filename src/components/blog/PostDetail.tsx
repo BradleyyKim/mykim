@@ -4,11 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import rehypeHighlight from "rehype-highlight";
 import { Badge } from "@/components/ui/badge";
-// Post 타입은 PostDetailProps에서 import됨
-import { getCategorySlug, getCategoryName } from "@/lib/utils";
-import { renderTiptapContent } from "@/lib/content";
-import { PostDetailActions } from "./PostDetailActions";
 import { usePostAnalytics } from "@/hooks/analytics";
 import { trackPostView } from "@/lib/analytics/vercel-analytics";
 import { useEffect } from "react";
@@ -17,23 +17,18 @@ import type { PostDetailProps } from "@/lib/types/post";
 export default function PostDetail({
   post,
   categoryName: propCategoryName,
-  categorySlug: propCategorySlug
+  categorySlug: propCategorySlug,
 }: PostDetailProps) {
-  // 상위 컴포넌트에서 카테고리 정보를 받지 않은 경우 직접 추출
-  const categoryName = propCategoryName || getCategoryName(post.category) || "카테고리";
-  const categorySlug = propCategorySlug || getCategorySlug(post.category);
+  const categoryName = propCategoryName || post.category?.name || "카테고리";
+  const categorySlug = propCategorySlug || post.category?.slug;
 
-  // publishedDate가 있으면 우선 사용하고, 없으면 createdAt을 fallback으로 사용
   const displayDate = post.publishedDate || post.createdAt;
-  const formattedDate = format(new Date(displayDate), "yyyy.MM.dd HH:mm", { locale: ko });
+  const formattedDate = format(new Date(displayDate), "yyyy.MM.dd HH:mm", {
+    locale: ko,
+  });
 
-  // Tiptap JSON 콘텐츠를 HTML로 렌더링
-  const renderedContent = renderTiptapContent(post.content);
-
-  // Google Analytics 포스트 분석 (자동으로 포스트 조회, 스크롤, 읽기 시간 추적)
   usePostAnalytics(post.slug, categoryName, post.title);
 
-  // Vercel Analytics 포스트 조회 추적
   useEffect(() => {
     trackPostView(post.slug, post.title);
   }, [post.slug, post.title]);
@@ -50,7 +45,10 @@ export default function PostDetail({
           <div className="flex items-center gap-2">
             {categoryName && categorySlug && (
               <Link href={`/category/${categorySlug}`}>
-                <Badge variant="outline" className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                <Badge
+                  variant="outline"
+                  className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                >
                   {categoryName}
                 </Badge>
               </Link>
@@ -58,11 +56,13 @@ export default function PostDetail({
           </div>
         </div>
 
-        {/* 태그 목록 */}
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
-            {post.tags.map(tag => (
-              <Link key={tag.id} href={`/tags/${encodeURIComponent(tag.name || "")}`}>
+            {post.tags.map((tag) => (
+              <Link
+                key={tag.id}
+                href={`/tags/${encodeURIComponent(tag.name || "")}`}
+              >
                 <Badge
                   variant="secondary"
                   className="hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer transition-colors duration-200"
@@ -73,9 +73,6 @@ export default function PostDetail({
             ))}
           </div>
         )}
-
-        {/* 관리자용 액션 버튼들 */}
-        <PostDetailActions postSlug={post.slug} />
       </header>
 
       {post.featuredImage && post.featuredImage.url && (
@@ -91,7 +88,47 @@ export default function PostDetail({
         </div>
       )}
 
-      <div className="prose prose-lg max-w-none post-content" dangerouslySetInnerHTML={{ __html: renderedContent }} />
+      <div className="prose prose-lg max-w-none post-content dark:prose-invert">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw, rehypeHighlight]}
+          components={{
+            img: ({ src, alt }) => {
+              if (!src || typeof src !== "string") return null;
+              return (
+                <span className="block my-4">
+                  <Image
+                    src={src}
+                    alt={alt || ""}
+                    width={800}
+                    height={450}
+                    className="rounded-lg shadow-md max-w-full h-auto"
+                    style={{ width: "100%", height: "auto" }}
+                  />
+                </span>
+              );
+            },
+            a: ({ href, children, ...props }) => (
+              <a
+                href={href}
+                className="text-blue-600 hover:text-blue-800 underline"
+                target={href?.startsWith("http") ? "_blank" : undefined}
+                rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
+                {...props}
+              >
+                {children}
+              </a>
+            ),
+            pre: ({ children, ...props }) => (
+              <pre className="code-block-container" {...props}>
+                {children}
+              </pre>
+            ),
+          }}
+        >
+          {post.content}
+        </ReactMarkdown>
+      </div>
     </article>
   );
 }

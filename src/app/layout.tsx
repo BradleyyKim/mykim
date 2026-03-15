@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-// Vercel Analytics는 VercelAnalyticsProvider에서 처리
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Suspense } from "react";
 import "./globals.css";
-import { TanstackProvider } from "@/lib/query";
-import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Header } from "@/components/layout";
 import { InfoCopyRight } from "@/components/layout";
@@ -18,7 +15,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(MAIN.url),
   title: {
     default: MAIN.title,
-    template: `%s | ${MAIN.title}`
+    template: `%s | ${MAIN.title}`,
   },
   description: MAIN.description,
   keywords: MAIN.keywords,
@@ -37,16 +34,16 @@ export const metadata: Metadata = {
         url: MAIN.image,
         width: 1200,
         height: 630,
-        alt: MAIN.title
-      }
-    ]
+        alt: MAIN.title,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: MAIN.title,
     description: MAIN.description,
     images: [MAIN.image],
-    creator: MAIN.twitter
+    creator: MAIN.twitter,
   },
   robots: {
     index: true,
@@ -56,26 +53,31 @@ export const metadata: Metadata = {
       follow: true,
       "max-video-preview": -1,
       "max-image-preview": "large",
-      "max-snippet": -1
-    }
+      "max-snippet": -1,
+    },
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
   other: {
-    "application/rss+xml": "/rss.xml"
-  }
+    "application/rss+xml": "/rss.xml",
+  },
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
-        <link rel="alternate" type="application/rss+xml" title="MYKim Blog RSS Feed" href="/rss.xml" />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="MYKim Blog RSS Feed"
+          href="/rss.xml"
+        />
         <link
           rel="stylesheet"
           as="style"
@@ -84,26 +86,32 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <TanstackProvider>
-            <AuthProvider>
-              <AnalyticsProvider>
-                <VercelAnalyticsProvider>
-                  <Suspense fallback={<div className="h-14 border-b bg-background/95"></div>}>
-                    <Header />
-                  </Suspense>
-                  <main className="min-h-screen flex flex-col">
-                    <div className="flex-1">{children}</div>
-                    <InfoCopyRight />
-                  </main>
-                </VercelAnalyticsProvider>
-              </AnalyticsProvider>
-            </AuthProvider>
-          </TanstackProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AnalyticsProvider>
+            <VercelAnalyticsProvider>
+              <Suspense
+                fallback={
+                  <div className="h-14 border-b bg-background/95"></div>
+                }
+              >
+                <Header />
+              </Suspense>
+              <main className="min-h-screen flex flex-col">
+                <div className="flex-1">{children}</div>
+                <InfoCopyRight />
+              </main>
+            </VercelAnalyticsProvider>
+          </AnalyticsProvider>
         </ThemeProvider>
         <Toaster position="top-center" richColors />
-        {/* Google Analytics */}
-        {isGAEnabled() && getGAMeasurementId() && <GoogleAnalytics gaId={getGAMeasurementId()!} />}
+        {isGAEnabled() && getGAMeasurementId() && (
+          <GoogleAnalytics gaId={getGAMeasurementId()!} />
+        )}
       </body>
     </html>
   );

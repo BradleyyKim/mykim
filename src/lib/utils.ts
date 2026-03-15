@@ -6,6 +6,3 @@ export { cn, getFirstEmojiOrString } from "./ui";
 
 // 텍스트 처리 유틸리티
 export { stripHtml } from "./content";
-
-// Strapi 관련 유틸리티
-export { getCategorySlug, getCategoryName } from "./cms";

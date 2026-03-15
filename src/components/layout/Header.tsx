@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ThemeMode } from "@/components/ui";
 import { MAIN } from "@/lib/constants";
-import { Category, fetchCategories } from "@/lib/api";
+import type { Category } from "@/lib/types/post";
 import { useBlogAnalytics } from "@/hooks/analytics";
 
 /**
@@ -45,7 +45,9 @@ export default function Header() {
     const loadCategories = async () => {
       try {
         setIsLoadingCategories(true);
-        const categoryData = await fetchCategories();
+        const response = await fetch("/api/categories");
+        const data = await response.json();
+        const categoryData = data.data || [];
 
         if (categoryData.length > 0) {
           setCategories(categoryData);

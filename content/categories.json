@@ -1,0 +1,22 @@
+[
+  {
+    "name": "마음을 로깅합니다",
+    "slug": "logging-mind",
+    "description": "생각과 감정을 기록합니다"
+  },
+  {
+    "name": "지식을 디벨롭합니다",
+    "slug": "develop-knowledge",
+    "description": "개발 지식과 기술을 공유합니다"
+  },
+  {
+    "name": "삶을 디플로이합니다",
+    "slug": "deploy-life",
+    "description": "삶의 경험을 배포합니다"
+  },
+  {
+    "name": "루틴을 디버그합니다",
+    "slug": "debug-routine",
+    "description": "일상의 루틴을 점검합니다"
+  }
+]

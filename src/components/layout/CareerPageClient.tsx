@@ -13,9 +13,7 @@ import {
 } from "lucide-react";
 import type { Company } from "@/app/career/page";
 import Link from "next/link";
-import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
-import AdminToolbarUniversal from "@/components/AdminToolbarUniversal";
 import { generateClientPDF, previewPDF } from "@/lib/media";
 
 interface CareerPageClientProps {
@@ -27,7 +25,6 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { isLoading } = useAuth();
 
   const toggleProject = (companyIndex: number, projectIndex: number) => {
     const projectKey = `${companyIndex}-${projectIndex}`;
@@ -87,15 +84,8 @@ export default function CareerPageClient({ careerData, careerDataEn }: CareerPag
     }
   };
 
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">로딩 중...</div>;
-  }
-
   return (
     <div className="container mx-auto px-4 py-12" id="career-content">
-      {/* 관리자 도구 */}
-      <AdminToolbarUniversal actions={[]} showVersionInfo={true} position="bottom-right" />
-
       <div className="mb-12 text-center">
         {/* 제목 */}
         <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-6">Career</h1>
