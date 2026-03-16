@@ -1,12 +1,17 @@
 name: 🚀 Auto Version Update
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "README.md"
-      - "docs/**"
-      - ".gitignore"
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: "Version bump type"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   auto-version-update:
@@ -50,9 +55,19 @@ jobs:
           MINOR=${VERSION_PARTS[1]}
           PATCH=${VERSION_PARTS[2]}
 
-          # 패치 버전 증가
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          # 입력된 bump type에 따라 버전 증가
+          BUMP_TYPE="${{ github.event.inputs.version_bump }}"
+          case "$BUMP_TYPE" in
+            major)
+              NEW_VERSION="$((MAJOR + 1)).0.0"
+              ;;
+            minor)
+              NEW_VERSION="$MAJOR.$((MINOR + 1)).0"
+              ;;
+            *)
+              NEW_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+              ;;
+          esac
 
           echo "new-version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "New version: $NEW_VERSION"
