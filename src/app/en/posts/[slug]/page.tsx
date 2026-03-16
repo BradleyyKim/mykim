@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import PostPage from "@/components/pages/PostPage";
 import { generatePostMetadata } from "@/components/pages/PostPage";
+import { getAllPosts } from "@/lib/mdx";
 
 export const revalidate = 300;
 
@@ -11,7 +12,8 @@ type Props = {
 };
 
 export async function generateStaticParams() {
-  return [];
+  const posts = getAllPosts("en");
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

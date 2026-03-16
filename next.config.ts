@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
     // 타입 체크를 무시하고 빌드 진행
     ignoreBuildErrors: true
   },
+  outputFileTracingIncludes: {
+    "/**": ["./content/**/*"],
+  },
   images: {
     // 이미지 최적화 설정
     formats: ["image/webp", "image/avif"],
