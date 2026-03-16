@@ -31,8 +31,8 @@ export default function PostDetail({
 
   const displayDate = post.publishedDate || post.createdAt;
   const formattedDate = locale === "en"
-    ? format(new Date(displayDate), "MMM dd, yyyy HH:mm")
-    : format(new Date(displayDate), "yyyy.MM.dd HH:mm", { locale: koLocale });
+    ? format(new Date(displayDate), "MMM dd, yyyy")
+    : format(new Date(displayDate), "yyyy.MM.dd", { locale: koLocale });
 
   usePostAnalytics(post.slug, categoryName, post.title);
 

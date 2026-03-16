@@ -13,7 +13,7 @@ interface HomePageClientProps {
 }
 
 export default function HomePageClient({ postsByYear, filteredYears, locale = "ko" }: HomePageClientProps) {
-  const dateFormat = locale === "en" ? "MMM dd, yyyy HH:mm" : "yyyy.MM.dd HH:mm";
+  const dateFormat = locale === "en" ? "MMM dd, yyyy" : "yyyy.MM.dd";
 
   return (
     <div className="container mx-auto px-4 py-12">
