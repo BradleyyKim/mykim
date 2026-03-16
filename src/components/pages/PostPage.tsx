@@ -66,13 +66,6 @@ function generateStructuredData(post: {
 
 // Metadata generation helper
 export async function generatePostMetadata(slug: string, locale: Locale): Promise<Metadata> {
-  if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_API_URL?.startsWith("http")) {
-    return {
-      title: `Post: ${slug}`,
-      description: "Blog post content"
-    };
-  }
-
   try {
     const post = await getPostBySlug(slug, locale);
 
