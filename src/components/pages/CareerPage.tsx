@@ -157,29 +157,30 @@ const careerData: Company[] = [
         name: "MY Kim Blog - 개인 블로그 플랫폼",
         period: "2025.01 - 현재",
         overview:
-          "Next.js 15 + React 19 기반의 현대적인 블로그 플랫폼. Strapi Cloud를 백엔드로 활용한 Headless CMS 아키텍처 구현",
+          "Next.js 15 App Router + React 19 기반의 MDX 파일 기반 정적 블로그 플랫폼. 한국어/영어 i18n 지원, Cloudinary 이미지 호스팅, Vercel 배포",
         responsibilities: [
-          "Next.js 15 App Router + React 19를 활용한 SSR/ISR 하이브리드 렌더링 시스템 구현",
-          "TipTap(ProseMirror 기반) 리치텍스트 에디터로 GUI 문서 편집 시스템(WYSIWYG) 구현",
-          "Tanstack/react-query 기반 서버 상태 관리 및 캐싱 전략 수립",
-          "WebP 이미지 자동 변환 및 Next.js Image 최적화 시스템 구현",
+          "Next.js 15 App Router + React 19를 활용한 SSG/ISR 하이브리드 렌더링 시스템 구현",
+          "MDX 파일 기반 콘텐츠 관리 시스템 설계 및 구현 (gray-matter + react-markdown)",
+          "Route Group 기반 한국어/영어 i18n 아키텍처 설계 및 구현 (커스텀 경량 i18n)",
+          "Accept-Language 감지 미들웨어 및 쿠키 기반 locale 유지 시스템 구축",
+          "hreflang alternates, locale별 sitemap, OG locale 등 다국어 SEO 최적화",
+          "Cloudinary 기반 이미지 호스팅 및 Next.js Image 최적화 시스템 구현",
           "shadcn/ui + Tailwind CSS 4.0 기반 다크모드 지원 반응형 디자인 시스템 구축",
-          "Vercel 자동 배포 파이프라인 구축 및 ISR 기반 SEO 최적화",
-          "React Hook Form + Zod를 활용한 타입 안전 폼 검증 시스템 구축",
-          "Strapi Cloud Headless CMS 연동 및 RESTful API 구현",
+          "JSON-LD 구조화 데이터, OpenGraph, Twitter Card 등 SEO 메타데이터 자동 생성",
+          "Vercel 자동 배포 파이프라인 및 GitHub Actions 버전 관리 워크플로우 구축",
           "ESLint + Prettier + Husky 기반 코드 품질 관리 자동화 시스템 구축"
         ],
         achievements: [
-          "하이브리드 편집 시스템으로 유연한 콘텐츠 작성 환경 제공",
-          "캐싱 최적화 및 이미지 최적화로 페이지 로딩 속도 대폭 개선",
-          "ISR 전략으로 SEO 최적화 및 검색 엔진 노출 향상",
-          "Headless CMS 아키텍처로 콘텐츠 관리 효율성 증대"
+          "Strapi Cloud CMS에서 로컬 MDX 파일 기반으로 전환하여 월 $15 운영비용 절감 및 데이터 자주성 확보",
+          "한국어/영어 이중 언어 지원으로 글로벌 독자 접근성 확보",
+          "SSG 기반 정적 생성으로 페이지 로딩 속도 및 SEO 성능 극대화",
+          "Google 검색 노출 최적화로 구조화된 데이터 기반 검색 결과 표시"
         ],
         metrics: ["개인 블로그 플랫폼 https://mykim.in 운영 중", "GitHub 오픈소스 프로젝트로 공개"],
         techStack: [
-          "Next.js 15", "React 19", "TypeScript 5", "Tailwind CSS 4", "Tanstack/react-query",
-          "TipTap", "React Hook Form", "Zod", "shadcn/ui", "Strapi Cloud", "Vercel",
-          "WebP Optimization", "next-themes", "Lucide React", "Husky"
+          "Next.js 15", "React 19", "TypeScript 5", "Tailwind CSS 4", "MDX",
+          "react-markdown", "gray-matter", "Cloudinary", "shadcn/ui", "Vercel",
+          "next-themes", "Lucide React", "Husky", "GitHub Actions"
         ],
         references: ["https://mykim.in", "https://github.com/BradleyyKim"]
       }
@@ -350,29 +351,30 @@ const careerDataEn: Company[] = [
         name: "MY Kim Blog - Personal Blog Platform",
         period: "Jan 2025 - Present",
         overview:
-          "Modern blog platform based on Next.js 15 + React 19. Implemented Headless CMS architecture using Strapi Cloud as backend",
+          "MDX file-based static blog platform built with Next.js 15 App Router + React 19. Supports Korean/English i18n, Cloudinary image hosting, and Vercel deployment",
         responsibilities: [
-          "Implemented SSR/ISR hybrid rendering system using Next.js 15 App Router + React 19",
-          "Implemented GUI document editing system (WYSIWYG) using TipTap (ProseMirror-based) rich text editor",
-          "Established server state management and caching strategies based on Tanstack/react-query",
-          "Implemented automatic WebP image conversion and Next.js Image optimization system",
+          "Implemented SSG/ISR hybrid rendering system using Next.js 15 App Router + React 19",
+          "Designed and implemented MDX file-based content management system (gray-matter + react-markdown)",
+          "Designed and implemented Korean/English i18n architecture based on Route Groups (lightweight custom i18n)",
+          "Built Accept-Language detection middleware and cookie-based locale persistence system",
+          "Implemented multilingual SEO optimization with hreflang alternates, locale-specific sitemap, and OG locale",
+          "Implemented Cloudinary-based image hosting and Next.js Image optimization system",
           "Built dark mode supporting responsive design system based on shadcn/ui + Tailwind CSS 4.0",
-          "Built Vercel automatic deployment pipeline and ISR-based SEO optimization",
-          "Built type-safe form validation system using React Hook Form + Zod",
-          "Implemented Strapi Cloud Headless CMS integration and RESTful API",
+          "Automated SEO metadata generation with JSON-LD structured data, OpenGraph, and Twitter Cards",
+          "Built Vercel automatic deployment pipeline and GitHub Actions version management workflow",
           "Built automated code quality management system based on ESLint + Prettier + Husky"
         ],
         achievements: [
-          "Provided flexible content creation environment through hybrid editing system",
-          "Significantly improved page loading speed through caching and image optimization",
-          "Enhanced SEO optimization and search engine visibility through ISR strategy",
-          "Increased content management efficiency through Headless CMS architecture"
+          "Migrated from Strapi Cloud CMS to local MDX files, saving $15/month and securing data ownership",
+          "Enabled global reader accessibility through Korean/English bilingual support",
+          "Maximized page loading speed and SEO performance through SSG-based static generation",
+          "Optimized Google search visibility with structured data-driven search result display"
         ],
         metrics: ["Operating personal blog platform at https://mykim.in", "Published as open-source project on GitHub"],
         techStack: [
-          "Next.js 15", "React 19", "TypeScript 5", "Tailwind CSS 4", "Tanstack/react-query",
-          "TipTap", "React Hook Form", "Zod", "shadcn/ui", "Strapi Cloud", "Vercel",
-          "WebP Optimization", "next-themes", "Lucide React", "Husky"
+          "Next.js 15", "React 19", "TypeScript 5", "Tailwind CSS 4", "MDX",
+          "react-markdown", "gray-matter", "Cloudinary", "shadcn/ui", "Vercel",
+          "next-themes", "Lucide React", "Husky", "GitHub Actions"
         ],
         references: ["https://mykim.in", "https://github.com/BradleyyKim"]
       }

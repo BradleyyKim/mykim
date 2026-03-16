@@ -1,20 +1,6 @@
 /**
  * Content utilities for MDX-based blog
- * Replaces TipTap JSON rendering with markdown text extraction
  */
-
-/**
- * For MDX posts, content is raw markdown.
- * Rendering is done by react-markdown in PostDetail component.
- * This function is kept for backward compatibility but is no longer
- * the primary rendering path.
- */
-export function renderTiptapContent(content: string | object): string {
-  if (typeof content === "string") {
-    return content;
-  }
-  return String(content);
-}
 
 /**
  * Extract plain text from markdown content for SEO descriptions
@@ -55,7 +41,7 @@ export function extractPlainText(content: string | object, maxLength: number = 1
 /**
  * Extract first image URL from markdown content
  */
-export function extractFirstImageFromTiptapContent(content: string | object): string | null {
+export function extractFirstImageFromContent(content: string | object): string | null {
   try {
     const text = typeof content === "string" ? content : String(content);
 
@@ -74,3 +60,6 @@ export function extractFirstImageFromTiptapContent(content: string | object): st
     return null;
   }
 }
+
+// Backward-compatible alias
+export const extractFirstImageFromTiptapContent = extractFirstImageFromContent;
