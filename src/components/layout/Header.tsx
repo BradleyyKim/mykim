@@ -20,6 +20,8 @@ import { ThemeMode } from "@/components/ui";
 import { MAIN } from "@/lib/constants";
 import type { Category } from "@/lib/types/post";
 import { useBlogAnalytics } from "@/hooks/analytics";
+import { getLocalePath, removeLocaleFromPath, t } from "@/i18n";
+import type { Locale } from "@/i18n";
 
 /**
  * Header 컴포넌트
@@ -37,15 +39,25 @@ export default function Header() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
+  // 현재 locale 감지
+  const locale: Locale = pathname.startsWith("/en") ? "en" : "ko";
+
   // 현재 홈페이지인지 확인
-  const isHomePage = pathname === "/";
+  const isHomePage = pathname === "/" || pathname === "/en" || pathname === "/en/";
+
+  // 언어 전환 핸들러
+  const handleLocaleToggle = () => {
+    const newLocale = locale === "ko" ? "en" : "ko";
+    const pathWithoutLocale = removeLocaleFromPath(pathname);
+    router.push(getLocalePath(newLocale, pathWithoutLocale));
+  };
 
   // 카테고리 데이터 로드
   useEffect(() => {
     const loadCategories = async () => {
       try {
         setIsLoadingCategories(true);
-        const response = await fetch("/api/categories");
+        const response = await fetch(`/api/categories?locale=${locale}`);
         const data = await response.json();
         const categoryData = data.data || [];
 
@@ -62,17 +74,16 @@ export default function Header() {
     };
 
     loadCategories();
-  }, []);
+  }, [locale]);
 
   // 카테고리 선택 핸들러
   const handleCategorySelect = (slug: string) => {
-    // 카테고리 페이지로 이동
-    router.push(`/category/${slug}`);
+    router.push(getLocalePath(locale, `/category/${slug}`));
   };
 
   // 모든 포스트 보기
   const handleViewAllPosts = () => {
-    router.push("/");
+    router.push(getLocalePath(locale, "/"));
   };
 
   return (
@@ -80,7 +91,7 @@ export default function Header() {
       <div className="container mx-auto flex h-14 items-center px-4">
         {/* 좌측: 블로그 타이틀 */}
         <div className="mr-4 flex items-center">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href={getLocalePath(locale, "/")} className="flex items-center space-x-2">
             <span className="text-xl font-bold italic">{isHomePage ? MAIN.title : "Home"}</span>
           </Link>
         </div>
@@ -99,7 +110,7 @@ export default function Header() {
                 <>
                   <DropdownMenuItem onSelect={handleViewAllPosts}>
                     <HomeIcon className="mr-2 h-4 w-4" />
-                    <span>모든 포스트 보기</span>
+                    <span>{t(locale, "nav.allPosts")}</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                 </>
@@ -108,11 +119,11 @@ export default function Header() {
                 <DropdownMenuItem disabled>
                   <span className="flex items-center">
                     <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent mr-2"></span>
-                    로딩 중...
+                    {t(locale, "nav.loading")}
                   </span>
                 </DropdownMenuItem>
               ) : categories.length === 0 ? (
-                <DropdownMenuItem disabled>카테고리가 없습니다</DropdownMenuItem>
+                <DropdownMenuItem disabled>{t(locale, "nav.noCategories")}</DropdownMenuItem>
               ) : (
                 categories.map(category => (
                   <DropdownMenuItem
@@ -129,36 +140,30 @@ export default function Header() {
           </DropdownMenu>
 
           {/* Tags 버튼 */}
-          <Button variant="ghost" onClick={() => router.push("/tags")}>
+          <Button variant="ghost" onClick={() => router.push(getLocalePath(locale, "/tags"))}>
             Tags
           </Button>
 
           {/* About 버튼 */}
-          <Button variant="ghost" onClick={() => router.push("/about")}>
+          <Button variant="ghost" onClick={() => router.push(getLocalePath(locale, "/about"))}>
             About
           </Button>
         </div>
 
         {/* 우측: 기능 버튼들 */}
         <div className="ml-auto flex items-center space-x-2">
+          {/* KO | EN 언어 토글 (모든 화면 크기에서 표시) */}
+          <button
+            onClick={handleLocaleToggle}
+            className="px-2 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+          >
+            {locale === "ko" ? "EN" : "KO"}
+          </button>
+
           {/* 다크모드 토글 (태블릿/데스크탑에서만 표시) */}
           <div className="hidden md:block">
             <ThemeMode />
           </div>
-
-          {/* 언어 설정 버튼 (모든 화면 크기에서 표시) */}
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" title="언어 설정">
-                <GlobeIcon className="h-5 w-5" />
-                <span className="sr-only">Language</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => null}>한국어</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => null}>English</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
 
           {/* 모바일 메뉴 (모바일에서만 표시) */}
           <div className="md:hidden">
@@ -176,18 +181,18 @@ export default function Header() {
                 {currentCategory && (
                   <DropdownMenuItem onSelect={handleViewAllPosts}>
                     <HomeIcon className="mr-2 h-4 w-4" />
-                    <span>모든 포스트 보기</span>
+                    <span>{t(locale, "nav.allPosts")}</span>
                   </DropdownMenuItem>
                 )}
                 {isLoadingCategories ? (
                   <DropdownMenuItem disabled>
                     <span className="flex items-center">
                       <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent mr-2"></span>
-                      로딩 중...
+                      {t(locale, "nav.loading")}
                     </span>
                   </DropdownMenuItem>
                 ) : categories.length === 0 ? (
-                  <DropdownMenuItem disabled>카테고리가 없습니다</DropdownMenuItem>
+                  <DropdownMenuItem disabled>{t(locale, "nav.noCategories")}</DropdownMenuItem>
                 ) : (
                   categories.map(category => (
                     <DropdownMenuItem
@@ -204,12 +209,12 @@ export default function Header() {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   {/* Tags 버튼 */}
-                  <DropdownMenuItem onSelect={() => router.push("/tags")}>
+                  <DropdownMenuItem onSelect={() => router.push(getLocalePath(locale, "/tags"))}>
                     <Tag className="mr-2 h-4 w-4" />
                     <span>Tags</span>
                   </DropdownMenuItem>
                   {/* About 버튼 */}
-                  <DropdownMenuItem onSelect={() => router.push("/about")}>
+                  <DropdownMenuItem onSelect={() => router.push(getLocalePath(locale, "/about"))}>
                     <LayoutIcon className="mr-2 h-4 w-4" />
                     <span>About</span>
                   </DropdownMenuItem>
@@ -218,7 +223,6 @@ export default function Header() {
                     onClick={() => {
                       const newTheme = theme === "dark" ? "light" : "dark";
                       setTheme(newTheme);
-                      // Google Analytics에 테마 변경 이벤트 추적
                       trackThemeChange(newTheme);
                     }}
                   >

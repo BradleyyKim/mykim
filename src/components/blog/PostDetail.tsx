@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
-import { ko } from "date-fns/locale";
+import { ko as koLocale } from "date-fns/locale";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -13,19 +13,26 @@ import { usePostAnalytics } from "@/hooks/analytics";
 import { trackPostView } from "@/lib/analytics/vercel-analytics";
 import { useEffect } from "react";
 import type { PostDetailProps } from "@/lib/types/post";
+import { getLocalePath } from "@/i18n";
+import type { Locale } from "@/i18n";
+
+interface PostDetailWithLocaleProps extends PostDetailProps {
+  locale?: Locale;
+}
 
 export default function PostDetail({
   post,
   categoryName: propCategoryName,
   categorySlug: propCategorySlug,
-}: PostDetailProps) {
+  locale = "ko",
+}: PostDetailWithLocaleProps) {
   const categoryName = propCategoryName || post.category?.name || "카테고리";
   const categorySlug = propCategorySlug || post.category?.slug;
 
   const displayDate = post.publishedDate || post.createdAt;
-  const formattedDate = format(new Date(displayDate), "yyyy.MM.dd HH:mm", {
-    locale: ko,
-  });
+  const formattedDate = locale === "en"
+    ? format(new Date(displayDate), "MMM dd, yyyy HH:mm")
+    : format(new Date(displayDate), "yyyy.MM.dd HH:mm", { locale: koLocale });
 
   usePostAnalytics(post.slug, categoryName, post.title);
 
@@ -44,7 +51,7 @@ export default function PostDetail({
 
           <div className="flex items-center gap-2">
             {categoryName && categorySlug && (
-              <Link href={`/category/${categorySlug}`}>
+              <Link href={getLocalePath(locale, `/category/${categorySlug}`)}>
                 <Badge
                   variant="outline"
                   className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
@@ -61,7 +68,7 @@ export default function PostDetail({
             {post.tags.map((tag) => (
               <Link
                 key={tag.id}
-                href={`/tags/${encodeURIComponent(tag.name || "")}`}
+                href={getLocalePath(locale, `/tags/${encodeURIComponent(tag.name || "")}`)}
               >
                 <Badge
                   variant="secondary"

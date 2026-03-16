@@ -5,16 +5,25 @@ import Link from "next/link";
 import type { Tag, Post, PaginationResult } from "@/lib/types/post";
 import { Pagination } from "@/components/blog";
 import { formatDate } from "date-fns";
+import { getLocalePath } from "@/i18n";
+import type { Locale } from "@/i18n";
 
 interface TagDetailPageClientProps {
   tag: Tag;
   initialPosts: PaginationResult<Post>;
+  locale?: Locale;
 }
 
-export default function TagDetailPageClient({ tag, initialPosts }: TagDetailPageClientProps) {
+export default function TagDetailPageClient({ tag, initialPosts, locale = "ko" }: TagDetailPageClientProps) {
   const [posts, setPosts] = useState<PaginationResult<Post>>(initialPosts);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+
+  const dateFormat = locale === "en" ? "MMM dd, yyyy HH:mm" : "yyyy.MM.dd HH:mm";
+  const noPostsTitle = locale === "en" ? "No posts" : "포스트가 없습니다";
+  const noPostsDesc = locale === "en"
+    ? `There are no posts related to the "${tag.name}" tag yet.`
+    : `"${tag.name}" 태그와 관련된 포스트가 아직 없습니다.`;
 
   const handlePageChange = async (page: number) => {
     if (isLoading) return;
@@ -71,14 +80,14 @@ export default function TagDetailPageClient({ tag, initialPosts }: TagDetailPage
                 <>
                   <div className="space-y-6">
                     {posts.data.map(post => {
-                      const formattedDate = formatDate(new Date(post.createdAt), "yyyy.MM.dd HH:mm");
+                      const formattedDate = formatDate(new Date(post.createdAt), dateFormat);
 
                       return (
                         <article
                           key={post.id}
                           className="group border-b border-gray-200 dark:border-gray-700 pb-6 last:border-b-0"
                         >
-                          <Link href={`/posts/${post.slug}`} className="block">
+                          <Link href={getLocalePath(locale, `/posts/${post.slug}`)} className="block">
                             <div className="flex justify-between items-center gap-4">
                               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 flex-1">
                                 {post.title}
@@ -105,9 +114,9 @@ export default function TagDetailPageClient({ tag, initialPosts }: TagDetailPage
                 </>
               ) : (
                 <div className="text-center py-12">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">포스트가 없습니다</h3>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{noPostsTitle}</h3>
                   <p className="text-gray-500 dark:text-gray-400">
-                    &ldquo;{tag.name}&rdquo; 태그와 관련된 포스트가 아직 없습니다.
+                    {noPostsDesc}
                   </p>
                 </div>
               )}

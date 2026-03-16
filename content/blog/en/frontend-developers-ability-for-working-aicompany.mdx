@@ -1,0 +1,29 @@
+---
+title: "Frontend Development Skills for Working at an AI Company"
+slug: "frontend-developers-ability-for-working-aicompany"
+description: "In the rapidly advancing AI era, I find myself asking both myself and AI what skills a frontend developer should possess. While vague anxiety is something everyone feels, we ultimately need to keep moving forward, one step at a time. We now live in an age where consumers naturally subscribe to and pay for LLM models."
+publishedDate: "2025-08-07"
+category: "logging-mind"
+tags: ["Frontend"]
+featuredImage: ""
+---
+
+In the rapidly advancing AI era, I find myself asking both myself and AI what skills a frontend developer should possess. While vague anxiety is something everyone feels, we ultimately need to keep moving forward, one step at a time.
+
+We now live in an age where consumers naturally subscribe to and pay for LLM models. Accordingly, it's becoming increasingly standard for companies providing web services to integrate AI models. However, developing and operating an LLM model directly requires enormous time and investment, and competing with existing services that have already established themselves in the market is no easy feat. This is why platform services that connect LLM models as intermediaries are rapidly emerging. Going forward, these model utilization platforms are likely to play a crucial role in the AI ecosystem.
+
+I recently discovered FriendliAI and tried calling models in their Playground after logging in. When I entered a prompt, the inference speed was noticeably faster than what I was used to with ChatGPT's GPT-4o or Cursor AI's Claude-Sonnet. Results started streaming in real-time the moment I hit enter. I got the impression that their proprietary engine maintained extremely fast inference speeds while delivering accurate responses. Thinking that this kind of speed would soon become the industry standard gave me both excitement and considerable shock.
+
+In the midst of these changes, frontend developers will naturally take on the core role of directly implementing AI service performance, usability, and business goals. Simply building UI will no longer be enough to stay competitive—you need to understand the data flow of AI services and be capable of building real-time, streaming-based UIs.
+
+I actually opened the network tab to see what calls were being made during prompt composition. In the background, GraphQL requests were being sent at regular intervals to poll model status, queue status, and statistics. When a prompt was entered, it called the completions API to trigger the LLM inference endpoint, and the client was receiving streamed responses to render them on the UI in real-time.
+
+When users perceive that responses arrive "in real-time," the psychological burden of waiting decreases and satisfaction with the experience increases. To achieve this, you need to be comfortable with streaming protocols like SSE, WebSocket, and Fetch Stream, as well as processing chunk-level data with TextDecoder.
+
+You also need to be able to control parameters based on user conditions to limit results or processes.
+
+Output control, response token limits, and model restrictions aren't just features—they can become part of the business strategy.
+
+Of course, modern UI/UX design can't be overlooked either. It should be simple yet pleasant, with excellent accessibility as a baseline. Especially when targeting developers rather than general users, minimizing unnecessary procedures to reduce DX (Developer Experience) fatigue is crucial. Visualization elements that allow data to be understood intuitively also deserve attention. The ability to implement AI-specialized UI/UX is likely to become a significant differentiator in the future.
+
+Ultimately, frontend developers need to go beyond simply "leveling up" from existing skills and acquire capabilities at a higher dimension. Just as LLM models are evolving rapidly, we too must grow as quickly and accurately as possible. As always, differentiation that reflects the times will be a crucial key to improving our own circumstances.

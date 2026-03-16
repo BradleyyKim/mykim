@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "series": "Series",
+    "tags": "Tags",
+    "about": "About",
+    "home": "Home",
+    "allPosts": "View all posts",
+    "loading": "Loading...",
+    "noCategories": "No categories",
+    "theme": "Theme"
+  },
+  "home": {
+    "title": "MYKim",
+    "description": "A blog about programming, web development, and more",
+    "posts": "posts"
+  },
+  "post": {
+    "notFound": "Post not found",
+    "notFoundDesc": "The requested post could not be found."
+  },
+  "category": {
+    "notFound": "Category not found",
+    "noPosts": "No posts yet",
+    "noPostsDesc": "There are no posts in this category yet.",
+    "description": "Category description",
+    "viewOther": "Browse other posts"
+  },
+  "tags": {
+    "title": "Tags",
+    "description": "Explore all tags and find related posts.",
+    "notFound": "Tag not found",
+    "notFoundDesc": "The requested tag could not be found."
+  },
+  "about": {
+    "title": "About",
+    "careerDetail": "Career Detail",
+    "content": [
+      "I tend to reflect deeply on the **purpose** and **underlying reason** behind everything I do.",
+      "Rather than simply executing tasks, I value the process of asking myself **why this work matters** and **what kind of value it can create**—both for users and for the team.",
+      "As a team, we believe that in order to carefully design and experiment with **truly user-centered interfaces**, it's essential to have a **stable and trustworthy foundation in place**.",
+      "The same applies to life. When our **inner foundation** is solid, we can move forward with **greater clarity and resilience**."
+    ]
+  },
+  "career": {
+    "title": "Career",
+    "description": "Career and project experience"
+  },
+  "footer": {
+    "copyright": "© {year} {title}. All rights reserved."
+  }
+}

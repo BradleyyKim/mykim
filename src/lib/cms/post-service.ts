@@ -1,10 +1,12 @@
 import { fetchPaginatedPosts, fetchPostsByCategory, fetchCategoryBySlug } from "@/lib/api";
 import { getPostBySlugLocal } from "@/lib/mdx";
 import type { Post, PaginationResult } from "@/lib/types/post";
+import type { Locale } from "@/i18n";
 
 export async function getHomePageData(
   page: number = 1,
-  categorySlug?: string
+  categorySlug?: string,
+  locale: Locale = "ko"
 ): Promise<{
   posts: Post[];
   pagination: PaginationResult<Post>["pagination"];
@@ -14,15 +16,15 @@ export async function getHomePageData(
   let categoryName = "";
 
   if (categorySlug) {
-    const categoryInfo = await fetchCategoryBySlug(categorySlug);
+    const categoryInfo = await fetchCategoryBySlug(categorySlug, locale);
     if (categoryInfo) {
       categoryName = categoryInfo.name;
     }
   }
 
   const postsData = categorySlug
-    ? await fetchPostsByCategory(categorySlug, page)
-    : await fetchPaginatedPosts(page);
+    ? await fetchPostsByCategory(categorySlug, page, locale)
+    : await fetchPaginatedPosts(page, undefined, locale);
 
   const pageTitle = categoryName
     ? categoryName
@@ -38,16 +40,16 @@ export async function getHomePageData(
   };
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
-  return getPostBySlugLocal(slug);
+export async function getPostBySlug(slug: string, locale: Locale = "ko"): Promise<Post | null> {
+  return getPostBySlugLocal(slug, locale);
 }
 
-export async function getCategoryData(slug: string) {
+export async function getCategoryData(slug: string, locale: Locale = "ko") {
   try {
-    const category = await fetchCategoryBySlug(slug);
+    const category = await fetchCategoryBySlug(slug, locale);
     if (!category) return null;
 
-    const postsData = await fetchPostsByCategory(slug);
+    const postsData = await fetchPostsByCategory(slug, undefined, locale);
 
     return {
       category,

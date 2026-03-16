@@ -2,18 +2,30 @@
 
 import Link from "next/link";
 import type { Tag } from "@/lib/types/post";
+import { getLocalePath, t } from "@/i18n";
+import type { Locale } from "@/i18n";
 
 interface TagsPageClientProps {
   tags: Tag[];
+  locale?: Locale;
 }
 
-export default function TagsPageClient({ tags }: TagsPageClientProps) {
+export default function TagsPageClient({ tags, locale = "ko" }: TagsPageClientProps) {
   // 디버깅을 위한 로그
   console.log("TagsPageClient - tags:", tags);
   console.log(
     "TagsPageClient - filtered tags:",
     tags.filter(tag => tag.slug && tag.slug.trim() !== "")
   );
+
+  const descriptionText = locale === "en"
+    ? "Click a tag to explore related posts."
+    : "태그를 클릭하여 관련 포스트를 탐색해보세요.";
+
+  const noTagsTitle = locale === "en" ? "No tags yet" : "아직 태그가 없습니다";
+  const noTagsDesc = locale === "en"
+    ? "Add tags to your posts. Tags help organize and discover content."
+    : "포스트를 작성하면서 태그를 추가해보세요. 태그는 콘텐츠를 분류하고 찾기 쉽게 만들어줍니다.";
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -35,11 +47,10 @@ export default function TagsPageClient({ tags }: TagsPageClientProps) {
                 d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
               />
             </svg>
-            Tags
+            {t(locale, "tags.title")}
           </div>
-          {/* <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">모든 태그</h1> */}
           <p className="text-lg text-gray-900 dark:text-gray-100 max-w-2xl mx-auto">
-            태그를 클릭하여 관련 포스트를 탐색해보세요.
+            {descriptionText}
           </p>
         </div>
 
@@ -49,7 +60,7 @@ export default function TagsPageClient({ tags }: TagsPageClientProps) {
             {tags.map(tag => (
               <Link
                 key={tag.id}
-                href={`/tags/${encodeURIComponent(tag.name || "")}`}
+                href={getLocalePath(locale, `/tags/${encodeURIComponent(tag.name || "")}`)}
                 className="group relative inline-flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 hover:scale-105 hover:shadow-sm"
               >
                 {/* 태그 아이콘 */}
@@ -106,9 +117,9 @@ export default function TagsPageClient({ tags }: TagsPageClientProps) {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">아직 태그가 없습니다</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">{noTagsTitle}</h3>
             <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-              포스트를 작성하면서 태그를 추가해보세요. 태그는 콘텐츠를 분류하고 찾기 쉽게 만들어줍니다.
+              {noTagsDesc}
             </p>
           </div>
         )}

@@ -1,4 +1,4 @@
-import type { Company } from "@/app/career/page";
+import type { Company } from "@/components/pages/CareerPage";
 
 /**
  * PDF 프로필 정보 (학력, 강점 등)

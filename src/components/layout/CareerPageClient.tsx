@@ -11,7 +11,7 @@ import {
   Download,
   ChevronUp
 } from "lucide-react";
-import type { Company } from "@/app/career/page";
+import type { Company } from "@/components/pages/CareerPage";
 import Link from "next/link";
 import { toast } from "sonner";
 import { generateClientPDF, previewPDF } from "@/lib/media";

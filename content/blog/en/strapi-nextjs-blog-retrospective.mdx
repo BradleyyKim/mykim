@@ -1,0 +1,220 @@
+---
+title: "Lessons Learned Running a Blog with Strapi Cloud + Next.js"
+slug: "strapi-nextjs-blog-retrospective"
+description: "A compilation of experiences and lessons learned from running a personal blog with the combination of Strapi Cloud and Next.js 15. From the advantages of Headless CMS, ISR caching strategies, API proxy patterns, to SEO optimization—an honest account of what I learned through hands-on experience."
+publishedDate: "2026-03-16"
+category: "develop-knowledge"
+tags: ["Frontend", "blog"]
+featuredImage: ""
+---
+
+## Why I Wrote This
+
+As I mentioned in a previous post, I had been managing my blog data using Strapi Cloud.
+
+While paying about $15 per month and questioning "Is this really worth it?",
+
+I eventually decided to migrate to local MDX files.
+
+But looking back, I realized I learned a tremendous amount from running a blog with the Strapi Cloud + Next.js combination.
+
+It wasn't simply "I built a blog"—it was an experience of personally designing and operating a full-stack architecture.
+
+So I wanted to document it all before I forget.
+
+## Headless CMS: What It's Actually Like in Practice
+
+### Complete Separation of Frontend and Backend
+
+Strapi provides only the content API, while Next.js handles the UI.
+
+At first, I thought, "Why not just use one full-stack framework?"
+
+But once I separated them, being able to deploy and update each independently turned out to be quite convenient.
+
+I could completely overhaul the frontend design without touching the backend,
+
+and changes to Strapi settings didn't affect the frontend as long as the API response format remained consistent.
+
+### Freedom in Content Modeling
+
+I designed three collection types: Post, Category, and Tag.
+
+Category was built with self-referencing to support hierarchical structures,
+
+and Tag was connected to Post through a many-to-many relationship.
+
+I also freely added custom fields to Post, like featuredImage and a postStatus enum.
+
+Through this process, I gained hands-on experience with relational data modeling,
+
+and as a frontend developer, my perspective on understanding backend data structures broadened significantly.
+
+## The Conveniences Strapi Cloud Provided
+
+### Zero Infrastructure Worries
+
+No Dockerfile, no CI/CD pipeline needed.
+
+One line—`npm run deploy`—and deployment was done.
+
+For a frontend developer working with a backend for the first time, this low barrier to entry was a massive advantage.
+
+### Built-in Admin Panel
+
+Without needing to build a separate admin page, Strapi Admin handled content CRUD, user permissions, and media management.
+
+Draft & Publish was built in too, so writing posts in advance and publishing them at the desired time felt natural.
+
+### Authentication Out of the Box
+
+With the `@strapi/plugin-users-permissions` plugin, JWT-based authentication and role-based permission management were immediately available.
+
+Building an authentication system from scratch is time-consuming and comes with security concerns,
+
+so having Strapi handle this allowed me to focus on content and frontend.
+
+## What I Learned from Next.js 15
+
+### ISR Was Perfect for Blogging
+
+I set up ISR (Incremental Static Regeneration) at 5-minute intervals.
+
+It maintained static-site-level loading speeds while automatically reflecting content changes.
+
+Since it processes pages on-demand rather than generating all pages at build time, deployment times were short too.
+
+I implemented tag-based cache invalidation with tags like `posts`, `post-${slug}`, `categories`, and `tags`,
+
+selectively revalidating only changed content.
+
+This experience was incredibly helpful in developing an intuition for caching strategies.
+
+### Using API Routes as a Proxy
+
+I configured Next.js API Routes (`/api/auth`, `/api/posts`, etc.) to serve as proxies for the Strapi API.
+
+Not directly exposing Strapi endpoints to the client gave me security peace of mind,
+
+and it had the added benefit of minimizing frontend changes if the backend were ever replaced.
+
+In fact, when migrating from Strapi Cloud to local MDX, this architecture made the transition much smoother.
+
+### Separating Server Components and Client Components
+
+Data fetching was handled in Server Components, while interactions (editor, theme toggle) were in Client Components.
+
+This separation taught me the habit of reducing client bundle size and processing what can be done on the server, on the server.
+
+## SEO: More Work Than Expected When Done Hands-On
+
+### Dynamic Metadata
+
+Using the Next.js Metadata API, I auto-generated OpenGraph and Twitter Card metadata for each post.
+
+I set up 1200x630 OG images and added BlogPosting schema via JSON-LD.
+
+Providing structured information to search engines—like author, publication date, and modification date—was something I did for the first time,
+
+and I realized that SEO is much more than just inserting keywords.
+
+### Sitemap and RSS
+
+I implemented a dynamic sitemap supporting 1000+ posts
+
+and set up automatic RSS 2.0 feed generation.
+
+Converting Tiptap JSON to plain text for RSS descriptions was surprisingly tricky,
+
+but I came to understand that these accumulated details are what drive search visibility.
+
+## The Joy of Building an Editor
+
+I built a Tiptap (ProseMirror-based) WYSIWYG editor directly in the frontend.
+
+Code block syntax highlighting supported 9 languages including JS, TS, and Python via Lowlight,
+
+and images were compressed client-side with `browser-image-compression` before upload.
+
+Storing content in JSON format also had the advantage of enabling rendering in various formats.
+
+Building utilities for HTML conversion, plain text conversion, and automatic first-image extraction
+
+gave me a sense for treating content as data.
+
+## Analytics Tools Should Be Added From Day One
+
+I integrated both Google Analytics 4 and Vercel Analytics.
+
+Beyond simple pageviews, I set up blog-specific custom event tracking for events like
+
+`view_post`, `complete_reading`, `search`, and `change_theme`.
+
+Measuring scroll depth and reading time revealed data on which posts were read to completion.
+
+I felt this should be set up from the start, as adding it later becomes cumbersome.
+
+## State Management and Data Fetching
+
+I adopted TanStack React Query v5.
+
+Setting staleTime to 5 minutes and gcTime to 10 minutes minimized unnecessary API calls,
+
+and I configured automatic cache invalidation on post creation, update, and deletion.
+
+Authentication state was managed globally with Context API, and routes were protected with a ProtectedRoute component.
+
+Designing these client state management patterns firsthand
+
+helped me establish criteria for "what counts as server state vs. client state."
+
+## Security: Even for Personal Projects, Pay Attention
+
+I restricted CORS to only allow `localhost:3000` and the `mykim.in` domain,
+
+stored auth tokens in HttpOnly cookies to protect against XSS attacks,
+
+and separated environment variables across `.env`, `.env.local`, and `.env.production`.
+
+Though the temptation exists to cut corners on a personal project,
+
+I thought of these security habits as practice that directly applies to work projects.
+
+## Tools That Boosted Development Productivity
+
+- **shadcn/ui + Radix UI**: Quickly assembled accessibility-guaranteed UI components. Consistent UI without a design system
+- **Turbopack**: Next.js 15's dev server. HMR was noticeably faster
+- **Jest + Testing Library + MSW**: Stability through API mocking-based tests
+- **ESLint + Prettier + Husky**: Automated code quality with pre-commit hooks
+- **TypeScript across the board**: Both frontend and backend. Maintained consistency between Strapi's auto-generated types and frontend types
+
+## Deployment: Unbelievably Convenient
+
+The Strapi Cloud + Vercel combo delivered an excellent deployment experience.
+
+Backend: `npm run deploy`. Frontend: git push for automatic deployment.
+
+Both platforms offered free tiers, keeping costs low.
+
+(Strapi Cloud was about $15/month, but considering the convenience, it was justifiable)
+
+Being able to instantly refresh specific pages via `/api/revalidate` on content changes
+
+was a huge operational convenience.
+
+## Looking Back
+
+The biggest lessons I learned through this project were:
+
+1. **Content modeling is the core of Headless CMS.** Well-designed relational data makes frontend development much smoother.
+2. **ISR + tag-based cache invalidation is optimal for blogs.** You get the speed of a static site and the flexibility of a dynamic one simultaneously.
+3. **The API proxy pattern secures both safety and flexibility.** It minimized frontend changes when replacing the backend.
+4. **Analytics tools should be added from day one.** Adding them later is tedious, and you miss early data.
+5. **Security habits from personal projects carry over to work.** Resist the temptation to cut corners.
+6. **Frontend developers should experience the backend too.** Hands-on data modeling, authentication, and API design fundamentally changes how you collaborate.
+
+Ultimately, building a blog isn't simply about creating a space to post writing—
+
+it's about experiencing the entire full-stack development process in a compressed form.
+
+And I feel that experience is undeniably making a difference in my work.

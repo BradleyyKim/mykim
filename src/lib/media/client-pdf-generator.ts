@@ -1,4 +1,4 @@
-import type { Company } from "@/app/career/page";
+import type { Company } from "@/components/pages/CareerPage";
 import { cssPDFGenerator } from "./css-pdf-generator";
 
 /**

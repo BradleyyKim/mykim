@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import Script from "next/script";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Header } from "@/components/layout";
@@ -65,13 +65,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const locale = cookieStore.get("locale")?.value || "ko";
+
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <link
           rel="alternate"
@@ -79,17 +82,14 @@ export default function RootLayout({
           title="MYKim Blog RSS Feed"
           href="/rss.xml"
         />
+        <link rel="alternate" hrefLang="ko" href={MAIN.url} />
+        <link rel="alternate" hrefLang="en" href={`${MAIN.url}/en`} />
+        <link rel="alternate" hrefLang="x-default" href={MAIN.url} />
         <link
           rel="stylesheet"
           as="style"
           crossOrigin=""
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
-        />
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4167293101080286"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
       </head>
       <body className="antialiased">
