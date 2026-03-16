@@ -75,19 +75,6 @@ export default function PostDetail({
         )}
       </header>
 
-      {post.featuredImage && post.featuredImage.url && (
-        <div className="mb-8 relative aspect-video w-full overflow-hidden rounded-lg shadow-md">
-          <Image
-            src={post.featuredImage.url}
-            alt={post.featuredImage.alternativeText || post.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover"
-            priority
-          />
-        </div>
-      )}
-
       <div className="prose prose-lg max-w-none post-content dark:prose-invert">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
