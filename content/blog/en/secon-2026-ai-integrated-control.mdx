@@ -1,0 +1,258 @@
+---
+title: "After Visiting SECON 2026 — The Present and Future of AI-Integrated Control Systems"
+slug: "secon-2026-ai-integrated-control"
+description: "A personal review after attending SECON 2026 (World Security Expo) and the CCTV Integrated Control Conference. Covering the convergence trend of integrated control platforms, VLM and LLM Agent integration, and where South Korea's integrated control systems stand today and where they're heading."
+publishedDate: "2026-03-19"
+category: "develop-knowledge"
+tags: ["AI"]
+featuredImage: ""
+---
+
+## Why I Went to the Expo
+
+I'm currently developing an illegal parking enforcement platform at my company.
+
+Our company occupies a large booth at SECON every year and places high importance on the event.
+
+I attended to analyze competitors' products and the current state of integrated control platforms.
+
+This year, I came away with quite a few thoughts, so I'm writing them down before I forget.
+
+Below is footage I personally recorded at the expo.
+
+[SECON 2026 World Security Expo Footage](https://youtu.be/E6_qIQJe8NA)
+
+## CCTV Integrated Control Conference
+
+In addition to the expo floor, a separate conference was held, which I attended.
+
+1. **Amendment announcement** for the installation and operation notice of local government video surveillance integrated control centers
+2. **Strengthening the use** of CCTV and video information in disaster and safety management (Disaster and Safety Management Basic Act amendments)
+3. Current status and direction of **AI-based CCTV control support systems** for local governments
+4. **Dongjak-gu** CCTV integrated control center case study
+5. **AI-based illegal motorcycle enforcement** service / Hanam Smart City integrated platform reference
+6. **Jeju drone integrated control platform** and drone service cases
+
+What impressed me was that legal and regulatory groundwork (sessions 1, 2) was happening simultaneously with AI-based control system pilots (sessions 3-6).
+
+It felt like a signal that the legal foundation is being built alongside the technology, not just the tech racing ahead alone.
+
+## What I Felt at the Expo
+
+### Integrated Control Platforms Are Converging
+
+After looking at solutions from various vendors, I noticed that most integrated control platforms are converging on three core capabilities.
+
+1. **Open API-based CCTV integration** — Display CCTV location markers on a map, click to show camera info and stream video
+2. **VLM (Vision Language Model) image analysis** — Recognize situations from video and recommend next steps
+3. **LLM Agent integration** — Respond to queries and interact with the map
+
+These three are becoming the industry standard.
+
+Ultimately, differentiation will come down to "how deep and accurate the contextual analysis is" and "how smooth the UX is."
+
+### AI Adoption Attempts Were Everywhere
+
+Nearly every vendor building integrated control platforms was trying to incorporate AI.
+
+They were integrating Agents for interaction, combining cameras with VLM for person analysis and tracking, and using LLMs for data filtering and analysis.
+
+Camera companies focused on hardware capabilities like thermal cameras,
+
+while access control systems featured facial recognition and card-based authentication.
+
+### What Was Missing — Voice Interface
+
+If you could control an agent within the integrated control platform by voice and display the screens you want, it would have been much more impactful.
+
+Imagine an operator giving voice commands like "zoom in on camera 47" or "play the last hour of footage from Zone A" while their hands are busy with other tasks.
+
+That would significantly improve practical efficiency.
+
+## What Is VLM?
+
+Let me briefly explain VLM, which was frequently mentioned at the expo.
+
+VLM (Vision Language Model) is **an AI model that can understand images and video, then explain and make judgments in natural language.**
+
+While traditional computer vision (like YOLO) only performs pre-trained specific tasks such as "person detected" or "vehicle detected,"
+
+VLM can look at footage, understand the context, and describe the situation in natural language.
+
+For example, traditional CV (Computer Vision) outputs "person 95%, car 87%,"
+
+while VLM says "A pedestrian is standing in the middle of the road, and a vehicle is approaching from the left. There is a risk of an accident."
+
+This difference is enormous for control systems — operators can understand the situation without personally reviewing the footage.
+
+## My Idea — Voice + VLM Control
+
+Here's a future control scenario I envisioned while walking through the expo.
+
+**Voice-based camera interaction**: Control camera functions (zoom, angle, capture, recording) by voice from the control platform, and deliver the captured information to the control system in real-time.
+
+**Multi-agent task delegation**: By separating agent roles by function, multiple agents can handle tasks simultaneously, freeing up operators' hands and enabling multitasking.
+
+**VLM-based automated response process**: VLM analyzes video to identify problems and automatically lists solutions. Each item is executed step by step.
+
+Initial Detection → Initial Response → Progress/Completion → Situation Closure → Post-Review
+
+When this entire flow is automated, with AI performing analysis and feedback at each stage, and using that feedback to improve the process itself —
+
+that's what I believe is the ultimate blueprint for national integrated control.
+
+## Where Is South Korea's Integrated Control Right Now?
+
+To answer this question, I mapped out the evolution of integrated control systems into levels.
+
+The bottom line: South Korea's integrated control is **in a transitional period from Level 2 to Level 3.**
+
+## Integrated Control System Evolution Roadmap
+
+### Level 1 — Manual Control
+
+> "Humans watch, humans decide, humans record"
+
+Operators directly monitor CCTV screens, call relevant agencies by phone or radio when they spot something, and write situation logs by hand or in Excel.
+
+Post-incident analysis is rare. With dozens of monitors per operator, blind spots are inevitable.
+
+### Level 2 — Rule-Based Auto Detection (Current Mainstream)
+
+> "Sensors and rules serve as the first filter"
+
+IoT sensors like water level gauges and smoke detectors trigger alerts when thresholds are exceeded.
+
+CV models like YOLO detect objects: "person detected," "vehicle detected."
+
+But judgment and response still fall on humans.
+
+High false positive rates cause alert fatigue, and detection without context isn't enough.
+
+Most local governments operate at this level.
+
+### Level 3 — AI Contextual Analysis + Full Process Automation (Currently Entering)
+
+> "AI understands and explains situations; the entire process is data-connected"
+
+This is where VLM and LLM are seriously deployed.
+
+- **Initial Detection**: CV detects anomaly → VLM provides contextual analysis like "River water level has exceeded the warning stage, and 5 vehicles are traveling on the adjacent road"
+- **Initial Response**: Auto-suggest response manuals by situation type, auto-notify relevant agencies
+- **Progress/Completion**: AI monitors in real-time, auto-judges deterioration or improvement
+- **Situation Closure**: Auto-generate situation reports, auto-calculate response KPIs
+- **Analysis/Feedback**: Compare with past similar cases, AI suggests process improvements
+
+Most AI control solutions at the expo were targeting this level.
+
+Leading municipalities like Dongjak-gu and Hanam are running pilots, with regulatory frameworks being developed in parallel.
+
+### Level 4 — Predictive Preemptive Response
+
+> "Knowing before it happens"
+
+Disaster prediction models combining historical data, weather data, and real-time sensors.
+
+"Heavy rain expected in Area A around 3 PM tomorrow. River B flooded in 3 similar past conditions. Preemptive traffic control recommended."
+
+This is the point where control shifts from "response" to "prevention."
+
+### Level 5 — Multimodal Integrated Perception
+
+> "AI with eyes (video), ears (audio), and skin (sensors)"
+
+A single AI integrates CCTV footage, audio sensors (screams, explosions), IoT (vibration, temperature, gas), real-time social media, and 911 call audio.
+
+"Smoke on CCTV + explosion sound from audio sensor + 3 'explosion' keywords on social media → Judged as an explosion, not a simple fire."
+
+Cross-validation dramatically reduces false positives. The voice interface I missed at the expo would be fully deployed at this level.
+
+### Level 6 — Autonomous Response Systems
+
+> "AI acts directly"
+
+AI decisions can be executed immediately without human approval in expanding areas.
+
+Auto-changing traffic signals, auto-displaying guidance on electronic signs, auto-dispatching drones, auto-sending emergency alerts.
+
+Humans only intervene for exceptions and high-risk decisions.
+
+However, legal and ethical frameworks must be established first.
+
+### Level 7 — Digital Twin Simulation
+
+> "Experiencing disasters on a replica of the entire city"
+
+Build a 3D digital twin of the entire city (buildings, roads, underground infrastructure, population distribution).
+
+"If a gas explosion occurs at this point, 3 buildings within 200m would be affected. Route A is 30 seconds faster, but Route B is recommended considering elderly mobility."
+
+Overlay real-time situations on the digital twin during actual disasters, and replay past disasters for training.
+
+### Level 8 — Full Inter-Agency Integration + Citizen Participation
+
+> "Fire, police, municipality, hospitals, and citizens as one network"
+
+All agencies — fire, police, municipality, hospitals, military, utilities — connected in real-time.
+
+"Hospital A ER at capacity → Reroute patient to Hospital B, auto-adjust traffic signals along the route."
+
+Citizens' smartphones act as sensors: earthquake detection, scene video uploads, personalized evacuation guidance.
+
+When a disaster occurs, the entire city responds like a single organism.
+
+### Level 9 — Self-Evolving Systems
+
+> "The system learns and improves on its own"
+
+After each disaster response, AI automatically analyzes and improves processes, updating its own models.
+
+It learns from other cities and countries: "City XX in Japan reduced evacuation time by 40% in a similar earthquake response. Simulation suggests 35% reduction if applied here."
+
+Auto-updates response plans when city infrastructure changes, and auto-switches control modes by season, time of day, and events.
+
+### Level 10 — Zero Disaster Environment
+
+> "A city where disasters don't happen"
+
+AI incorporates disaster simulations from the city design stage.
+
+"Building at this location would increase fire spread risk by 37% due to wind tunnel effects. Moving 20m away reduces risk to 4%."
+
+Infrastructure self-diagnoses. Structural sensors, underground road sensors, and pipe sensors detect cracks and aging, enabling repairs before collapse or rupture.
+
+Autonomous vehicles auto-reroute in emergencies. Personal wearables detect cardiac arrest or falls, instantly connecting to emergency systems.
+
+No longer a disaster "response" system — a disaster "prevention" system. An environment where damage approaches zero.
+
+## Key Transition Points Between Levels
+
+In summary:
+
+- **L1→L2**: Human eyes → Sensors/CV handle first detection (most municipalities completed)
+- **L2→L3**: Simple detection → AI understands and explains context **(current transition, expo trend)**
+- **L3→L4**: Post-incident response → Predictive prevention
+- **L4→L5**: Single source → Multimodal integrated perception (voice interface fully deployed)
+- **L5→L6**: AI suggests → AI acts directly (legal framework required first)
+- **L6→L7**: Real-world control → Digital twin simulation
+- **L7→L8**: Single agency → City-wide integration
+- **L8→L9**: Manual improvement → Self-evolution
+- **L9→L10**: Disaster response → Disaster prevention
+
+## Final Thoughts
+
+What I confirmed at SECON 2026 is that the entire industry is focused on the transition from L2 to L3.
+
+Integrating VLM and LLM Agents into control systems is no longer experimental — it's entering the product stage.
+
+However, with most solutions converging on similar feature sets (maps + CCTV + AI analysis), differentiation will become crucial.
+
+Personally, I believe **voice interfaces** and the **depth of automated response processes** (completeness from initial detection to post-review) could be the key differentiators.
+
+Looking at the illegal parking enforcement platform project I'm currently working on in this context,
+
+it's the process of introducing L3 elements (data-driven analysis, category systematization, feedback after pilot operations) into an L2-level enforcement system.
+
+I believe the experience gained here will serve as a foundation for expanding into broader disaster control domains.
+
+Coming back from the expo, I feel like my perspective has broadened considerably.
