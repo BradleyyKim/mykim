@@ -1,0 +1,189 @@
+---
+title: "Point It at a Folder of Expo Photos and a Report Comes Out"
+slug: "expo-report-automation"
+description: "After visiting a trade expo for work, you write a visit report. The internal template is fixed, and the cover-contents-section-photo grid structure is the same every time. Only the photos and the content differ. Writing my second report, I thought: if the format is the same every time, that isn't a human's job."
+publishedDate: "2026-06-23"
+category: "develop-knowledge"
+tags: ["Backend", "Productivity"]
+featuredImage: ""
+---
+
+After visiting a trade expo for work, you write a visit report.
+
+The internal template is fixed. Cover, table of contents, section dividers, overview table, narrative pages, photo grids.
+
+The structure is the same every time. Only the photos and the content differ.
+
+Writing my second report, I thought:
+
+**If the format is the same every time, that isn't a human's job.**
+
+# **I Drew the Automation Boundary First**
+
+Before starting, I decided one thing: what to automate and what not to.
+
+- **Automate: the format.** Logo placement, colors, font sizes, table column widths, photo layout, page numbers, watermark
+- **Don't automate: the content.** What I saw and why it matters
+
+This distinction mattered. If you try to generate the content too, reviewing it ends up taking longer than writing it yourself.
+
+What's valuable in a report is observation and judgment, and only the person who went can write that.
+
+**What repeats is the format, not the content.**
+
+So I split the structure into an engine and drivers.
+
+```
+pptxProductionSystem/
+├─ rexgen_report.py      ← reusable engine (slide builders)
+├─ build_inlex2026.py    ← per-expo driver (content only)
+├─ build_stk2026.py
+├─ assets/               ← logo, watermark
+└─ expos/<expo>/img/     ← per-expo photos
+```
+
+Build the engine once; write a new driver whenever an expo happens.
+
+# **A Driver Looks Like This**
+
+The actual code in use is about this simple.
+
+```python
+r = Report()
+
+# cover
+r.cover("InLEX 2026 Visit Report", ["Lab Platform Team"], "June 9–11, 2026")
+
+# table of contents
+r.contents(["Expo Overview", "Key Technologies", "Company Analysis"])
+
+# section divider
+r.section_divider(1, "Expo Overview", "Info & Summary")
+
+# overview table
+r.info_table("1. Expo Overview", "Info", [
+    ("Official name", "2026 Korea Defense Industry Development Expo"),
+    ("Dates", "Tue June 9 – Thu June 11, 2026 (3 days)"),
+    ("Venue", "Daejeon Convention Center (DCC)"),
+])
+```
+
+There isn't a single coordinate or color anywhere in here.
+
+There's only "make a cover" and "make a table of contents" — what those look like is the engine's business.
+
+The person writing the report **only has to think about what goes in.**
+
+# **Korean Fonts Were the Hardest Part**
+
+There was an unexpected obstacle.
+
+In `python-pptx`, setting `run.font.name = "Malgun Gothic"` does not apply to Korean text.
+
+That's because PowerPoint's font setting isn't one field but **three.**
+
+- `a:latin` — Latin script
+- `a:ea` — East Asian characters (Hangul, Hanja, Kana)
+- `a:cs` — complex script
+
+The library's `font.name` only touches `a:latin`. So you end up in the odd state where English changes and Korean doesn't.
+
+I ended up editing the XML directly.
+
+```python
+def _kfont(run, name):
+    run.font.name = name
+    rPr = run._r.get_or_add_rPr()
+    for tag in ('a:latin', 'a:ea', 'a:cs'):
+        el = rPr.find(qn(tag))
+        if el is None:
+            el = rPr.makeelement(qn(tag), {})
+            rPr.append(el)
+        el.set('typeface', name)
+```
+
+Find all three tags, create them if missing, and stamp the same typeface into each.
+
+Once wrapped in a helper applied to every text run, it stopped being something to think about.
+
+I learned that **sometimes you have to look underneath what a library abstracted for you.**
+
+# **Photos Are Always Trouble**
+
+The second obstacle was image formats.
+
+Phone photos are HEIC, and PowerPoint can't embed HEIC.
+
+And portrait photos come in sideways, because PowerPoint ignores the EXIF rotation flag.
+
+That became a preprocessing step too.
+
+```python
+def _safe_image(path):
+    try:
+        im = Image.open(path)
+        if im.format in _PPTX_OK:
+            return path
+        out = os.path.splitext(path)[0] + ".conv.jpg"
+        im.convert("RGB").save(out, "JPEG", quality=90)
+        return out
+    except Exception:
+        return path
+```
+
+If the format is supported, use it as-is; otherwise convert to JPG and return that path.
+
+And the last line matters — **on failure, return the original path.**
+
+One image failing to convert must not stop the entire report from being generated.
+
+Better to produce the deck and let a human spot and fix the odd photo.
+
+It's the same thinking as "always exit successfully" for the format hook in an earlier post.
+
+**Tools should let you through, not block you.**
+
+# **Design Tokens Live Here Too**
+
+Rather than scattering colors through the code, I collected them at the top.
+
+```python
+TITLE_NAVY = RGBColor(0x1C, 0x47, 0x85)
+FILL_NAVY  = RGBColor(0x1C, 0x48, 0x85)
+INK        = RGBColor(0x1A, 0x1A, 0x1A)
+BODY       = RGBColor(0x26, 0x26, 0x26)
+CAPGRAY    = RGBColor(0x59, 0x59, 0x59)
+FOOTGRAY   = RGBColor(0xA6, 0xA6, 0xA6)
+```
+
+Exactly what CSS variables do on the web.
+
+If the internal template's colors change, one line here changes.
+
+Whether the format is PPTX or HTML, it was interesting that **hardcoded values cause the same problem everywhere.**
+
+# **What I Got**
+
+Producing one report went from half a day to a bit over an hour.
+
+But two things were better than the time saved.
+
+**① The format never drifts.** Done by hand, the second report's font sizes are subtly off from the first. Now they're always identical.
+
+**② I focus on writing.** With the time spent nudging coordinates and table widths gone, I spend it on what I saw and what it means for our products.
+
+I thought the point of automation was saving time. What I actually got was **time freed for the part that matters.**
+
+---
+
+To sum up:
+
+- **Draw the format/content boundary first.** What repeats is format, not content
+- **Split engine from driver.** New cases only write content
+- **Sometimes you have to look under the library.** Korean fonts required going down to XML
+- **Preprocessing should pass through on failure.** A tool must not block the work
+- **Design tokens apply to PPTX too**
+
+It's a small tool, but the benefit compounds with every expo from here on.
+
+Code you build once and keep getting paid back by is the most satisfying kind.

@@ -1,0 +1,197 @@
+---
+title: "Making It Not Matter Whether the Map Is Kakao or Naver"
+slug: "map-provider-adapter"
+description: "We decided to supply an enforcement platform originally built for one city to other municipalities as well. But every municipality uses a different map. Some use Naver, some Kakao, overseas deals use Google, and closed networks can't reach an external map at all. Swapping the map could not be allowed to mean rebuilding every screen."
+publishedDate: "2026-07-05"
+category: "develop-knowledge"
+tags: ["Frontend"]
+featuredImage: ""
+---
+
+We decided to supply an illegal-parking enforcement platform, originally built for a single city, to other municipalities as well.
+
+But every municipality uses a different map.
+
+Some use Naver, some Kakao, overseas deals use Google, and closed-network environments can't reach an external map at all.
+
+Swapping the map could not be allowed to mean **rebuilding every screen.**
+
+# **What Happens If You Wire It Directly**
+
+If you just use the map SDK directly, map code bleeds across the entire application.
+
+You call `new naver.maps.Marker(...)` wherever you drop a marker.
+
+You call `map.getZoom()` where you read the zoom level — except Kakao calls it `map.getLevel()` and the value runs in the opposite direction.
+
+Events differ too. How you attach a listener, and how you detach it, are both different.
+
+In that state, "please switch to Kakao" means changing dozens of files.
+
+And you will miss one of them.
+
+So I **hid the map behind an interface.**
+
+# **MapAdapter — Only What We Need**
+
+This one interface is the core.
+
+```ts
+export interface MapAdapter {
+  // map instance identifier
+  readonly type: "kakao" | "naver" | "google" | "leaflet";
+
+  // === basic map manipulation ===
+  getZoom(): number;
+  setZoom(zoom: number): void;
+  getCenter(): LatLng;
+  setCenter(center: LatLng): void;
+  getBounds(): Bounds;
+  fitBounds(bounds: Bounds, padding?: number): void;
+
+  // === events ===
+  on<K extends keyof MapEventCallbacks>(
+    event: K,
+    handler: NonNullable<MapEventCallbacks[K]>
+  ): () => void;
+
+  // === map controls ===
+  setDragging(enabled: boolean): void;
+  setScrollZoom(enabled: boolean): void;
+  setCursor(cursor: string): void;
+
+  // === teardown ===
+  destroy(): void;
+}
+```
+
+The thing I agonized over longest while writing this interface was **how much to include.**
+
+At first I tried comparing all four map SDKs to find the common denominator.
+
+I quickly realized that direction was wrong.
+
+Draw the line at the intersection and **too much becomes impossible on every map**; draw it at the union and every adapter fills up with empty implementations.
+
+So I changed the criterion.
+
+**Include only what our screens actually demand from a map.**
+
+What we needed was zoom, center, bounds, events, drag locking, cursor, and teardown.
+
+Everything else the SDKs offer isn't in the interface. If we need it later, we add it then.
+
+That's when I learned that abstraction isn't about imitating an SDK — it's about **declaring your own requirements.**
+
+# **Why `on()` Returns a Function**
+
+There's one small but important decision here.
+
+`on()` **returns an unsubscribe function.**
+
+```ts
+on<K extends keyof MapEventCallbacks>(event, handler): () => void;
+```
+
+Every map SDK detaches listeners differently.
+
+Some want the handle you got at registration, like `removeListener(listener)`. Some want you to pass the event name and function again.
+
+If the calling side has to know that difference, the abstraction is pointless.
+
+So I made registration **hand back the way to unregister.**
+
+```ts
+useEffect(() => {
+  const off = adapter.on("onZoomEnd", handleZoom);
+  return off;          // works for any map
+}, [adapter]);
+```
+
+It lines up exactly with React's `useEffect` cleanup, so listener leaks stopped being something to worry about.
+
+# **Geocoding Was Pulled Out Separately**
+
+Converting an address to coordinates, and coordinates to an address, is a different kind of thing from manipulating a map.
+
+You sometimes need it without a map instance, and the map provider doesn't have to be the geocoding provider.
+
+So I split the interface.
+
+```ts
+export interface GeocoderAdapter {
+  reverseGeocode(latlng: LatLng): Promise<string | null>;
+  geocode?(address: string): Promise<LatLng | null>;
+}
+```
+
+`geocode` is optional (`?`) because environments that support only reverse geocoding genuinely exist.
+
+**Distinguishing required from optional in the type** means calling a missing capability gets blocked at compile time.
+
+# **Layers Shared, Editors Separate**
+
+This is the most interesting part of the structure.
+
+Marker, cluster, and heatmap layers became **single shared components.**
+
+```
+adapters/
+├── CommonMarkerLayer.tsx
+├── CommonClusterLayer.tsx
+└── CommonHeatmapLayer.tsx
+```
+
+Taking coordinates, computing a screen position, and drawing a marker is ultimately the same job regardless of which map you're on.
+
+The **area editor** — drawing and modifying shapes — was built **per map instead.**
+
+```
+adapters/
+├── naver/NaverMapEditorAdapter.ts
+├── kakao/KakaoMapEditorAdapter.ts
+├── google/GoogleMapEditorAdapter.ts
+└── leaflet/LeafletEditorAdapter.ts
+```
+
+The drawing tools each SDK provides differ far too much.
+
+Handle behavior, snapping, and event timing during editing are all different.
+
+Forcing those into one shape produces **an editor that feels wrong on all four maps.**
+
+So I settled on a rule.
+
+> If the difference is small, unify. If the difference is essential, split.
+> An abstraction forced into false unity is worse than no abstraction.
+
+# **Why Leaflet Is in There**
+
+Naver, Kakao, and Google are predictable picks. Leaflet is there **because of closed networks.**
+
+Some municipal environments block outbound internet entirely, so commercial map APIs can't be called at all.
+
+Leaflet works offline as long as the tile server lives inside the network.
+
+I didn't plan for this from the start. It happened after the adapter structure existed, as a "wait, Leaflet would work too."
+
+**The real payoff of abstraction turned out to be options I hadn't anticipated.**
+
+The original goal was "make the map swappable." What I actually got was "closed-network delivery is now possible."
+
+# **To Sum Up**
+
+- The scope of the abstraction was drawn from **our requirements, not SDK features**
+- Event registration **returns its own teardown**, hiding per-SDK differences
+- A different kind of capability (geocoding) got **its own interface**
+- Small differences (layers) were unified; **essential differences (editors) were split**
+
+Now, adding a municipality never means rebuilding screens because of the map.
+
+You pick which adapter to use in configuration.
+
+And the biggest lesson from this work was that you **don't have to design an abstraction perfectly up front.**
+
+Starting narrow with what you need, and widening as demands appear, turned out more accurate in the end.
+
+If I'd tried to predict everything from the beginning, I probably would never have gotten Leaflet in there.

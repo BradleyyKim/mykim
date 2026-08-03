@@ -1,0 +1,134 @@
+---
+title: "I Presented With a Web Page Instead of a Slide Deck"
+slug: "deck-as-evidence"
+description: "Our lab decided to run a weekly AI seminar, and my team took the presentation. While preparing, one worry kept nagging at me. What if 'we develop with AI' gets read as 'we build sloppily'? No amount of good writing on a slide seemed likely to change that. So I decided to build the presentation itself."
+publishedDate: "2026-07-13"
+category: "develop-knowledge"
+tags: ["Frontend", "AI"]
+featuredImage: ""
+---
+
+Our lab decided to run a weekly AI seminar, and my team took the presentation.
+
+While preparing, one worry kept nagging at me.
+
+**What if "we develop with AI" gets read as "we build sloppily"?**
+
+There's a bit of that atmosphere everywhere — where "built fast" is taken to mean "built carelessly."
+
+And no amount of good writing on a slide seemed likely to change that perception.
+
+Putting "quality stays high even when developing with AI" on a slide is just an assertion.
+
+So I changed the approach.
+
+**I decided to make the presentation itself the evidence.**
+
+# **The Medium Is the Message**
+
+Instead of building a slide deck, I built a web slide deck and presented from a browser.
+
+Arrow keys and space to advance, touch swipe on mobile, animated slide transitions, charts that appear while their numbers count up.
+
+Opening the talk, I got to say this:
+
+> "What you're looking at right now was also built with AI. It took a few days."
+
+That landed harder than ten slides would have.
+
+There was no need to explain "fast doesn't mean low quality." **It was running right in front of them.**
+
+That was the most important decision in this project — choosing **to prove it through form** rather than to argue it well in content.
+
+# **Why I Didn't Use a Slide Library**
+
+There are already several good tools for building web slides.
+
+I didn't use them. I built the slide engine myself.
+
+Two reasons.
+
+**① Building it *was* the message.** Using a library makes the story "they chose a good library." Building it makes the story "they can build this." When the topic of the talk is engineering capability and speed, presenting on someone else's engine undercuts you.
+
+**② I didn't need much.** Keyboard navigation, touch swipe, bottom dots, a progress bar. Four things. There was no reason to take on a general-purpose framework's configuration and constraints for that.
+
+**When you need little, building it yourself is cheaper** — a fact that's easy to forget.
+
+The only dependency I used was one animation library.
+
+Charts were hand-drawn SVG with motion on top, rather than a chart library. Chart libraries produce graphs you've seen somewhere before; hand-drawn ones produce a picture that exists only in this talk.
+
+In a presentation, that difference matters more than you'd expect.
+
+# **I Pinned the Core Messages First**
+
+Before building any slides, I wrote a document listing "what this talk must never lose."
+
+**1. Not "fast and sloppy with AI" but "the fundamentals, fast"**
+
+There were things I used to skip for lack of time. Tests, docs, design systems, CI. Now all of it is on by default and it's still fast.
+
+**2. AI raises the ceiling, it doesn't lower the floor**
+
+The human job moves from typing to design, verification, and quality gates. It isn't that low-quality output got easier — it's that high-quality output became possible.
+
+**3. Leverage**
+
+The range one person can cover widens, and that raises the maturity of the whole team.
+
+**4. Generate from contracts**
+
+From plans to design tokens, from specs to types. Higher consistency and fewer human errors than transcribing by hand.
+
+**5. Don't take it on faith**
+
+Show the limits honestly. Humans verify and put up the guardrails.
+
+Writing these five down first gave me something to return to whenever a slide started wandering off course.
+
+**Deciding what *not* to say, before building the deck, turned out to help.**
+
+Number 5 mattered most. After adding a slide that honestly stated the limits, the credibility of every other claim went up.
+
+A talk that only lists upsides doesn't get believed.
+
+# **The Audience Had Two Layers**
+
+This was the hardest part of the preparation.
+
+Both leadership and hands-on engineers attend the seminar. The two groups want different things.
+
+- **Leadership**: why do this, what's the return, what's the risk, does it scale
+- **Engineers**: how do you do it, which tools, used how
+
+Putting both into one talk makes it boring for both.
+
+So I **separated the layers by sequence.**
+
+The opening speaks leadership's language — why, what improved, what guardrails exist.
+
+From the middle onward it's the practitioner flow — planning to design to implementation to verification to deployment, and which tool does what at each step.
+
+And deeper material got **pushed into popups**, opened by whoever is interested.
+
+The presentation flow stays short while depth opens optionally.
+
+This was only possible because it's a web deck. With slides I would have stapled twenty appendix pages on the back and said "have a look later if you're curious."
+
+**Changing the format expanded my structural options.**
+
+# **What Stayed With Me**
+
+What I learned in the process outlasted how the talk itself went.
+
+**Sometimes the form *is* the argument.** If you want to claim you can build something quickly, the shortest path is to quickly build the artifact that makes the claim.
+
+**State the limits and the rest becomes believable.** This seems to apply to documents, reviews, and reports too — not just talks.
+
+**When you need little, building it is cheaper.** Far more often than expected, you finish building in the time you'd have spent choosing a tool.
+
+And one more.
+
+The deck became an asset that keeps being useful. Built as static files, it opens anywhere.
+
+**I ended up with material that outlives the presentation** — an unexpected upside.
