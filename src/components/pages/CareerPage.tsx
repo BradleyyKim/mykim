@@ -44,6 +44,101 @@ const careerData: Company[] = [
     position: "프론트엔드 개발",
     projects: [
       {
+        name: "REXGEN TOPA - 멀티로봇 통합관제(C2) 플랫폼",
+        period: "2026.02 - 현재",
+        overview:
+          "지구본에서 시설, 구역, 개별 로봇까지 내려가는 계층 내비게이션 위에 멀티로봇 플릿 상태·3D 시설 트윈·라이브 영상을 통합 표출하고, 이벤트 감지 → 출동 요청 → 배차·이동·완료를 한 화면에서 지휘하는 관제 콘솔. 외부 4족로봇 운영사와의 연동을 전제로 설계했으며, 음성 LLM 에이전트를 운영자 보조 레이어로 얹음",
+        responsibilities: [
+          "로봇을 직접 조종하는 디지털 트윈에서 감지·지휘(C2) 중심 관제 콘솔로 아키텍처 피벗 주도 — 조종 대상이 아니라 감독 대상으로 로봇을 재정의",
+          "FleetSource 어댑터 인터페이스 설계 — 자체 시뮬레이터/목업/외부 실연동을 드롭인 교체 가능하게 분리해, 협력사 API 확정 전에도 개발과 시연을 진행할 수 있는 구조 확보",
+          "운영 상태 SSOT 설계 — 형식이 서로 다른 두 데이터 출처를 어댑터 경계에서 9개 정규 상태로 한 번만 변환하고, 마커 색·배지·요약 카운트가 모두 단일 정의에서 파생되도록 통일",
+          "Mapbox GL 지구본과 Three.js/React Three Fiber 3D 시설 뷰를 잇는 계층 내비게이션 구현",
+          "NestJS 백엔드에 로봇팔(6축 FK/IK)·AGV(웨이포인트 추종)·컨베이어·드론 시뮬레이터 구현 — 틱 루프 기반 상태 갱신과 WebSocket 텔레메트리 방출",
+          "WebRTC(ffmpeg + werift)와 HTTP Range 기반 라이브 영상월 구현, 시청용 경로와 분석용(이벤트 JSON 수신) 경로를 아키텍처 상 분리",
+          "Web Speech API(STT/TTS) + LLM 게이트웨이(SSE 스트리밍) 기반 음성 관제 에이전트 구현, API 키를 백엔드에 격리",
+          "위험 명령 2단계 확인 등 관제 안전장치 설계 및 시나리오별 시연 대본 작성",
+          "Jotai 기반 단방향 데이터 흐름(WS/목업 → 어댑터 → atom → 컴포넌트) 정착"
+        ],
+        achievements: [
+          "외부 협력사 로봇이 오프라인인 상황에서도 목업 소스로 전체 시나리오를 끊김 없이 시연할 수 있는 구조를 만들어, 실연동 지연이 개발과 전시 준비를 막지 않도록 함",
+          "상태 표현을 한 곳으로 모아 다운스트림의 raw 문자열 분기를 제거 — 신규 로봇 타입이나 상태를 추가할 때 변경 지점이 한 파일로 축소됨",
+          "산업 시설 이상 감지·경계 감시 등 관제 시나리오 4종을 구현해 전시 시연 대본으로 확정",
+          "프론트엔드 개발자에서 관제 도메인 설계자로 역할 확장 — 요구 명세·인터랙션 모델·외부 API 매핑 문서를 직접 작성해 협력사 협의 자료로 사용"
+        ],
+        metrics: [
+          "해외 방산·보안 전시 출품 목표 과제로 진행 중",
+          "테스트 133개 / 18개 스위트 (프론트엔드 77 · 백엔드 56)"
+        ],
+        techStack: [
+          "React 19",
+          "TypeScript",
+          "Vite",
+          "Three.js",
+          "React Three Fiber",
+          "Mapbox GL",
+          "Jotai",
+          "Mantine 8",
+          "framer-motion",
+          "NestJS 11",
+          "WebSocket",
+          "WebRTC (werift)",
+          "ffmpeg",
+          "Web Speech API",
+          "LLM (Groq)",
+          "Vitest",
+          "Jest",
+          "Playwright",
+          "Docker Compose"
+        ],
+        references: ["https://youtu.be/Z2xFxJ1zjZs", "https://www.mykim.in/posts/from-teleoperation-to-supervision"]
+      },
+      {
+        name: "공과장 - 공사현장 사진 자동분류 및 공정관리 플랫폼",
+        period: "2026.07 - 현재",
+        overview:
+          "TF팀 합류 후 첫 풀스택 프로젝트. 협력사가 현장에서 올린 사진을 GPS로 자동 분류하고, 렉스젠 PM 검수를 거쳐 발주처 주무관이 진행 현황을 실시간 조회하는 공정관리 플랫폼. 기획 참여부터 DB 설계, 프론트엔드, 서버 배포, 버전 운영까지 단독으로 담당하며 프로토타입에서 실서버 운영 단계까지 진행",
+        responsibilities: [
+          "Next.js App Router 기반 풀스택 아키텍처 설계 (화면과 서버 액션/API Routes를 단일 애플리케이션으로 구성)",
+          "협력사(모바일)·렉스젠 PM(PC)·발주처 주무관 3개 사용자군의 화면과 권한 체계 설계 — 현장 반장님 대상 화면은 앱 설치·회원가입 없이 문자 링크만으로 진입하도록 구성",
+          "사진 원본을 이동하지 않고 DB 메타데이터로만 배치를 관리하는 가상 폴더 구조 설계",
+          "사진·기록의 물리 삭제를 DB 제약으로 금지(교체·비활성만 허용)해 준공 증빙 유실을 스키마 레벨에서 차단",
+          "exifr 기반 EXIF GPS 추출과 VWorld 지오코딩 연동으로 개소 자동 매칭 구현, 좌표 보정용 핀 드래그 지도 제공",
+          "발주처 실양식(사진대지) 엑셀 자동 생성 — 지점별 시트, 필수 캡션 틀, 대표 사진 자동 배치",
+          "비파괴 사진 보정(회전·수평 미세조정·확대) 구현 — 원본 파일은 그대로 두고 모든 화면과 엑셀 출력에 일괄 반영",
+          "공정 프리셋 저장·병합 적용·대분류 사후 편집 등 공정 구성 재사용 체계 구현",
+          "오픈소스 CLIP 분류 서버를 stateless 외부 서비스로 연동 — 신뢰도 기준 자동 추정/미지정 분기와 사람 검수 워크플로 설계",
+          "Supabase 기반 프로토타입에서 온프레미스 PostgreSQL로 이전 (서버/클라이언트 스토리지 어댑터를 분리해둔 덕에 표시 레이어 변경 없이 전환)",
+          "pm2 + nginx + SSL 기반 사내 서버 배포 파이프라인 구축, DB 마이그레이션이 포함된 배포 절차를 런북으로 문서화",
+          "Web Push 알림, 웹 사용 매뉴얼, 버전별 업데이트 소식 등 운영 도구 구축"
+        ],
+        achievements: [
+          "업로드 → 자동 배치 → 검수 → 주무관 조회 → 엑셀 보고까지 전체 흐름을 단독 구현해 사내 운영 서버 실배포 및 버전 단위 운영 단계 진입",
+          "실제 현장 사진 77장으로 오픈소스 CLIP 자동분류 정확도(평균 신뢰도 0.85)를 검증해 외부 유료 AI 없이 자체 운영 가능함을 실데이터로 확인",
+          "사진 원본은 그대로 두고 메타데이터만 바꾸는 구조 덕에 클라우드에서 온프레미스로의 이전을 구조 변경 없이 완료",
+          "기능 간 의존 관계를 문서로 지도화해, 한 기능의 변경이 어떤 화면·데이터에 파급되는지 착수 전에 확인하는 규칙을 팀 규칙으로 정착",
+          "DB 마이그레이션 순서 오류로 발생한 운영 장애를 계기로 배포 절차에 신호 규칙을 추가해 재발 방지 체계 마련",
+          "프론트엔드 중심 경력에서 DB 스키마·인증·배포 인프라·장애 대응까지 전 영역을 단독 담당하는 풀스택 경험 확보"
+        ],
+        metrics: ["사내 운영 서버 실배포 후 버전 단위로 운영 중", "안양시 대상 파일럿 시연 완료 및 상급자 방향 승인"],
+        techStack: [
+          "Next.js",
+          "React 19",
+          "TypeScript",
+          "Mantine UI",
+          "PostgreSQL",
+          "Supabase",
+          "CLIP (오픈소스 VLM)",
+          "exceljs",
+          "exifr",
+          "VWorld API",
+          "Web Push",
+          "Docker Compose",
+          "pm2",
+          "nginx"
+        ],
+        references: ["https://www.mykim.in/posts/first-fullstack-operation"]
+      },
+      {
         name: "지능형 카메라 스마트 대시보드 & 모니터링 시스템",
         period: "2025.01 - 현재",
         overview:
@@ -65,8 +160,19 @@ const careerData: Company[] = [
         ],
         metrics: ["화성시 교통안전센터에서 실시간 교통 모니터링 시스템으로 운영 중"],
         techStack: [
-          "React", "TypeScript", "Tanstack/react-query", "Jotai", "socket.io-client",
-          "framer-motion", "Mantine UI", "CSS Modules", "dnd-kit", "echarts", "husky", "Vite", "i18next"
+          "React",
+          "TypeScript",
+          "Tanstack/react-query",
+          "Jotai",
+          "socket.io-client",
+          "framer-motion",
+          "Mantine UI",
+          "CSS Modules",
+          "dnd-kit",
+          "echarts",
+          "husky",
+          "Vite",
+          "i18next"
         ],
         references: ["https://www.youtube.com/watch?v=J5T5rq83yUo"]
       },
@@ -107,8 +213,16 @@ const careerData: Company[] = [
         ],
         metrics: ["수원시 교통 카메라에 설치되어 운영 중"],
         techStack: [
-          "React", "TypeScript", "WebRTC", "Janus Gateway", "Bootstrap", "Scss",
-          "recoil", "zod", "echarts", "swiper"
+          "React",
+          "TypeScript",
+          "WebRTC",
+          "Janus Gateway",
+          "Bootstrap",
+          "Scss",
+          "recoil",
+          "zod",
+          "echarts",
+          "swiper"
         ],
         references: ["https://www.youtube.com/watch?v=RuzbzvoUqwM"]
       },
@@ -140,9 +254,22 @@ const careerData: Company[] = [
           "베트남과 계약 체결 진행 중"
         ],
         techStack: [
-          "React", "TypeScript", "Vite", "Material UI", "Recoil", "Redux Toolkit",
-          "Socket.IO", "HLS", "H.264 Codec", "Video.js", "Google Maps API",
-          "ApexCharts", "ECharts", "Styled-Components", "Emotion", "i18next"
+          "React",
+          "TypeScript",
+          "Vite",
+          "Material UI",
+          "Recoil",
+          "Redux Toolkit",
+          "Socket.IO",
+          "HLS",
+          "H.264 Codec",
+          "Video.js",
+          "Google Maps API",
+          "ApexCharts",
+          "ECharts",
+          "Styled-Components",
+          "Emotion",
+          "i18next"
         ],
         references: ["https://youtu.be/VdZq5tIw20g"]
       }
@@ -178,9 +305,20 @@ const careerData: Company[] = [
         ],
         metrics: ["개인 블로그 플랫폼 https://mykim.in 운영 중", "GitHub 오픈소스 프로젝트로 공개"],
         techStack: [
-          "Next.js 15", "React 19", "TypeScript 5", "Tailwind CSS 4", "MDX",
-          "react-markdown", "gray-matter", "Cloudinary", "shadcn/ui", "Vercel",
-          "next-themes", "Lucide React", "Husky", "GitHub Actions"
+          "Next.js 15",
+          "React 19",
+          "TypeScript 5",
+          "Tailwind CSS 4",
+          "MDX",
+          "react-markdown",
+          "gray-matter",
+          "Cloudinary",
+          "shadcn/ui",
+          "Vercel",
+          "next-themes",
+          "Lucide React",
+          "Husky",
+          "GitHub Actions"
         ],
         references: ["https://mykim.in", "https://github.com/BradleyyKim"]
       }
@@ -237,6 +375,104 @@ const careerDataEn: Company[] = [
     position: "Frontend Developer",
     projects: [
       {
+        name: "REXGEN TOPA - Multi-Robot Command & Control (C2) Platform",
+        period: "Feb 2026 - Present",
+        overview:
+          "A command console that layers multi-robot fleet status, a 3D facility twin, and live video onto a hierarchical navigation flow — globe to facility to zone to individual robot — and directs the full loop from event detection to dispatch request, movement, and completion on a single screen. Designed around integration with an external quadruped-robot operator, with a voice LLM agent layered on as an operator assistance surface",
+        responsibilities: [
+          "Led the architectural pivot from a direct-teleoperation digital twin to a detection- and command-centric (C2) console — redefining robots as objects of supervision rather than objects of control",
+          "Designed the FleetSource adapter interface, isolating the in-house simulator, mock data, and live external integration as drop-in replacements — enabling development and demos to proceed before the partner API was finalized",
+          "Designed an operational-state SSOT that normalizes two differently-shaped data sources into nine canonical states exactly once at the adapter boundary, so marker colors, badges, and summary counts all derive from a single definition",
+          "Built hierarchical navigation bridging a Mapbox GL globe and a Three.js / React Three Fiber 3D facility view",
+          "Implemented robot arm (6-DOF FK/IK), AGV (waypoint following), conveyor, and drone simulators in the NestJS backend — tick-loop state updates with WebSocket telemetry emission",
+          "Built a live video wall over WebRTC (ffmpeg + werift) and HTTP Range streaming, architecturally separating the viewing path from the analysis path (which receives event JSON only)",
+          "Implemented a voice control agent using Web Speech API (STT/TTS) plus an LLM gateway with SSE streaming, isolating API keys on the backend",
+          "Designed control-room safety measures including two-step confirmation for high-risk commands, and authored scenario demo scripts",
+          "Established a unidirectional Jotai data flow (WS/mock → adapter → atom → component)"
+        ],
+        achievements: [
+          "Built a structure where the entire scenario can be demonstrated without interruption via the mock source even when partner robots are offline, so integration delays never block development or exhibition preparation",
+          "Consolidated state representation in one place and eliminated raw-string branching downstream — adding a new robot type or state now touches a single file",
+          "Implemented four control scenarios covering industrial facility anomaly detection and perimeter surveillance, finalized as the exhibition demo script",
+          "Expanded from frontend developer to control-domain designer — personally authoring the requirements specification, interaction model, and external API mapping documents used in partner negotiations"
+        ],
+        metrics: [
+          "In progress as a submission target for an international defense and security exhibition",
+          "133 tests across 18 suites (77 frontend · 56 backend)"
+        ],
+        techStack: [
+          "React 19",
+          "TypeScript",
+          "Vite",
+          "Three.js",
+          "React Three Fiber",
+          "Mapbox GL",
+          "Jotai",
+          "Mantine 8",
+          "framer-motion",
+          "NestJS 11",
+          "WebSocket",
+          "WebRTC (werift)",
+          "ffmpeg",
+          "Web Speech API",
+          "LLM (Groq)",
+          "Vitest",
+          "Jest",
+          "Playwright",
+          "Docker Compose"
+        ],
+        references: ["https://youtu.be/Z2xFxJ1zjZs", "https://www.mykim.in/en/posts/from-teleoperation-to-supervision"]
+      },
+      {
+        name: "Gongjang - Construction Site Photo Auto-Classification & Progress Management Platform",
+        period: "Jul 2026 - Present",
+        overview:
+          "First full-stack project after joining a task force team. A progress management platform where photos uploaded from the field by partner companies are auto-classified by GPS, reviewed by Rexgen PMs, and viewed in real time by client-side government officials. Solo-owned from planning participation through DB design, frontend, server deployment, and versioned operations — taking it from prototype to a live production server",
+        responsibilities: [
+          "Designed full-stack architecture based on Next.js App Router (screens and server actions/API Routes unified in a single application)",
+          "Designed the screens and permission model for three user groups — partner companies (mobile), Rexgen PMs (desktop), and client government officials — with the field-worker screen requiring no app install or signup, entered purely through an SMS link",
+          "Designed a virtual-folder structure that manages photo placement through DB metadata alone, never moving the original files",
+          "Blocked physical deletion of photos and records at the DB constraint level (allowing only replacement and deactivation), preventing loss of completion evidence at the schema layer",
+          "Implemented automatic site matching by extracting EXIF GPS with exifr and integrating VWorld geocoding, with a drag-to-correct pin map for coordinate adjustment",
+          "Built automatic Excel generation matching the client's actual reporting format — per-site sheets, required caption templates, and automatic placement of representative photos",
+          "Implemented non-destructive photo correction (rotation, fine leveling, zoom) — originals untouched, with corrections applied uniformly across every screen and the Excel output",
+          "Implemented reusable process composition: preset saving, merge-on-apply, and post-hoc category editing",
+          "Integrated an open-source CLIP classification server as a stateless external service — designed confidence-based auto-suggest/unassigned branching and the human review workflow",
+          "Migrated from a Supabase-based prototype to on-premise PostgreSQL (the pre-separated server/client storage adapter allowed the switch without touching the presentation layer)",
+          "Built an in-house server deployment pipeline based on pm2 + nginx + SSL, and documented the deployment procedure for DB-migration-inclusive releases as a runbook",
+          "Built operational tooling including Web Push notifications, a web user manual, and per-version release notes"
+        ],
+        achievements: [
+          "Solo-implemented the entire flow (upload → auto-placement → review → government viewer → Excel report), reaching live deployment on an in-house production server with versioned operations",
+          "Validated open-source CLIP auto-classification accuracy (0.85 average confidence) on 77 real site photos, confirming with real data that self-hosted AI could replace paid external APIs",
+          "Completed the cloud-to-on-premise migration without structural changes, thanks to the design where originals stay put and only metadata changes",
+          "Mapped inter-feature dependencies into a document, establishing a team rule of checking the blast radius of a change before starting work",
+          "Turned a production incident caused by a DB migration ordering mistake into a signal-based rule added to the deployment procedure, preventing recurrence",
+          "Gained full-stack experience owning DB schema, authentication, deployment infrastructure, and incident response end-to-end, beyond a frontend-centric career"
+        ],
+        metrics: [
+          "Live on an in-house production server, operating on a versioned release cycle",
+          "Completed pilot demo targeting Anyang City and secured direction approval from leadership"
+        ],
+        techStack: [
+          "Next.js",
+          "React 19",
+          "TypeScript",
+          "Mantine UI",
+          "PostgreSQL",
+          "Supabase",
+          "CLIP (Open-source VLM)",
+          "exceljs",
+          "exifr",
+          "VWorld API",
+          "Web Push",
+          "Docker Compose",
+          "pm2",
+          "nginx"
+        ],
+        references: ["https://www.mykim.in/en/posts/first-fullstack-operation"]
+      },
+      {
         name: "Intelligent Camera Smart Dashboard & Monitoring System",
         period: "Jan 2025 - Present",
         overview:
@@ -258,8 +494,19 @@ const careerDataEn: Company[] = [
         ],
         metrics: ["Operational as real-time traffic monitoring system at Hwaseong City Traffic Safety Center"],
         techStack: [
-          "React", "TypeScript", "Tanstack/react-query", "Jotai", "socket.io-client",
-          "framer-motion", "Mantine UI", "CSS Modules", "dnd-kit", "echarts", "husky", "Vite", "i18next"
+          "React",
+          "TypeScript",
+          "Tanstack/react-query",
+          "Jotai",
+          "socket.io-client",
+          "framer-motion",
+          "Mantine UI",
+          "CSS Modules",
+          "dnd-kit",
+          "echarts",
+          "husky",
+          "Vite",
+          "i18next"
         ],
         references: ["https://www.youtube.com/watch?v=J5T5rq83yUo"]
       },
@@ -301,8 +548,16 @@ const careerDataEn: Company[] = [
         ],
         metrics: ["Operational on Suwon City traffic cameras"],
         techStack: [
-          "React", "TypeScript", "WebRTC", "Janus Gateway", "Bootstrap", "Scss",
-          "recoil", "zod", "echarts", "swiper"
+          "React",
+          "TypeScript",
+          "WebRTC",
+          "Janus Gateway",
+          "Bootstrap",
+          "Scss",
+          "recoil",
+          "zod",
+          "echarts",
+          "swiper"
         ],
         references: ["https://www.youtube.com/watch?v=RuzbzvoUqwM"]
       },
@@ -334,9 +589,22 @@ const careerDataEn: Company[] = [
           "Contract finalization in progress with Vietnam"
         ],
         techStack: [
-          "React", "TypeScript", "Vite", "Material UI", "Recoil", "Redux Toolkit",
-          "Socket.IO", "HLS", "H.264 Codec", "Video.js", "Google Maps API",
-          "ApexCharts", "ECharts", "Styled-Components", "Emotion", "i18next"
+          "React",
+          "TypeScript",
+          "Vite",
+          "Material UI",
+          "Recoil",
+          "Redux Toolkit",
+          "Socket.IO",
+          "HLS",
+          "H.264 Codec",
+          "Video.js",
+          "Google Maps API",
+          "ApexCharts",
+          "ECharts",
+          "Styled-Components",
+          "Emotion",
+          "i18next"
         ],
         references: ["https://youtu.be/VdZq5tIw20g"]
       }
@@ -372,9 +640,20 @@ const careerDataEn: Company[] = [
         ],
         metrics: ["Operating personal blog platform at https://mykim.in", "Published as open-source project on GitHub"],
         techStack: [
-          "Next.js 15", "React 19", "TypeScript 5", "Tailwind CSS 4", "MDX",
-          "react-markdown", "gray-matter", "Cloudinary", "shadcn/ui", "Vercel",
-          "next-themes", "Lucide React", "Husky", "GitHub Actions"
+          "Next.js 15",
+          "React 19",
+          "TypeScript 5",
+          "Tailwind CSS 4",
+          "MDX",
+          "react-markdown",
+          "gray-matter",
+          "Cloudinary",
+          "shadcn/ui",
+          "Vercel",
+          "next-themes",
+          "Lucide React",
+          "Husky",
+          "GitHub Actions"
         ],
         references: ["https://mykim.in", "https://github.com/BradleyyKim"]
       }
