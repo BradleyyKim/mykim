@@ -139,6 +139,58 @@ const careerData: Company[] = [
         references: ["https://www.mykim.in/posts/first-fullstack-operation"]
       },
       {
+        name: "불법주정차 단속 통합 관제 플랫폼",
+        period: "2026.01 - 현재",
+        overview:
+          "단속 구역·장비·위반 차량·민원을 한 화면에서 관리하는 지자체 단속 통합 플랫폼. 4인 팀에서 단속 관리와 대시보드 등 핵심 기능을 담당하며, 특정 지자체 전용으로 시작한 제품을 여러 지자체에 공급 가능한 구조로 일반화하는 작업을 함께 진행",
+        responsibilities: [
+          "지도 제공자 추상화 계층 설계 — 네이버·카카오·구글·Leaflet을 동일한 MapAdapter 인터페이스 뒤로 숨겨, 지자체별로 다른 지도를 설정만으로 교체 가능하게 구성",
+          "이벤트 구독이 해제 함수를 반환하는 형태로 어댑터를 설계해 SDK별 리스너 해제 방식 차이를 호출부에서 제거",
+          "마커·클러스터·히트맵 레이어는 공통 컴포넌트로, 도형 편집기는 SDK 차이가 본질적이라 제공자별로 분리 구현",
+          "지자체 설정 서버 주입 구조 구축 — 로고·지도 중심좌표·bbox·행정동/법정동/외곽선 GeoJSON을 앱 부트스트랩 시 1회 로드해, 코드 수정 없이 신규 지자체를 온보딩 가능하게 함",
+          "API 레이어 3단 구조 정립 (HTTP 래퍼 → TanStack Query 훅 → converter) — 화면은 도메인 모델만 사용하고 raw API 응답 형태에 의존하지 않도록 경계 설정",
+          "낙관적 업데이트 컨벤션 수립 (onMutate 스냅샷 → onError 롤백 → onSettled 무효화) 및 queryKey 네이밍 규칙 정의",
+          "디자인 토큰 3단계 체계 구축 (원시 팔레트 → 시멘틱 토큰 → CSS 변수 자동 생성) — 라이트/다크 자동 전환 및 색상 하드코딩 제거",
+          "Turf 기반 지오메트리 연산으로 도로 기준 단속 구역 편집 구현 (buffer·union·line-slice·최근접점 계산)",
+          "실시간 모니터링 지도 구현 — 마커 클러스터링, 히트맵, 컨텍스트 메뉴 기반 등록, 관할구역 접근 가드",
+          "리스트 상태를 Jotai atom으로 관리하며 검색 입력값과 적용값을 분리해 불필요한 리페치 차단",
+          "MSW 기반 목 서버 구성으로 백엔드 미완성 구간과 병행 개발",
+          "알려진 중복·불일치를 정리한 리팩터링 가이드 문서화 및 공통 모듈 추출 시 '선반영' 원칙 수립"
+        ],
+        achievements: [
+          "4인 팀 전체 638개 커밋 중 219개(약 34%)를 담당하며 단속 관리·대시보드 등 핵심 도메인을 맡음",
+          "지도 추상화로 상용 지도 API를 쓸 수 없는 폐쇄망 환경에서도 Leaflet으로 동일하게 동작 — 처음 목표했던 '지도 교체 가능'을 넘어 납품 가능 범위 자체를 확장",
+          "지자체 설정을 서버에서 주입받는 구조로 전환해, 신규 지자체 추가 시 화면 코드 변경 없이 대응 가능하도록 함",
+          "API 응답과 화면 사이에 converter 경계를 세워 백엔드 스펙 변경의 영향 범위를 변환 계층으로 한정",
+          "디자인 토큰 체계로 색상 하드코딩을 걷어내고 라이트/다크 테마를 단일 정의에서 파생",
+          "피처별로 흩어져 있던 패턴 차이를 문서화해 팀 내 신규 코드의 기준을 명확히 함"
+        ],
+        metrics: ["익산시 불법주정차 단속 통합 플랫폼으로 운영 중", "타 지자체 확대 공급을 위한 일반화 작업 진행 중"],
+        techStack: [
+          "React 19",
+          "TypeScript",
+          "Vite",
+          "Mantine 8",
+          "TanStack Query v5",
+          "TanStack Table",
+          "Jotai",
+          "ECharts",
+          "Naver Maps",
+          "Google Maps",
+          "Kakao Maps",
+          "Leaflet",
+          "Turf.js",
+          "proj4",
+          "MSW",
+          "react-hook-form",
+          "zod",
+          "exceljs",
+          "react-i18next",
+          "axios"
+        ],
+        references: ["https://www.mykim.in/posts/map-provider-adapter"]
+      },
+      {
         name: "지능형 카메라 스마트 대시보드 & 모니터링 시스템",
         period: "2025.01 - 현재",
         overview:
@@ -471,6 +523,61 @@ const careerDataEn: Company[] = [
           "nginx"
         ],
         references: ["https://www.mykim.in/en/posts/first-fullstack-operation"]
+      },
+      {
+        name: "Illegal Parking Enforcement Integrated Control Platform",
+        period: "Jan 2026 - Present",
+        overview:
+          "A municipal enforcement platform managing enforcement zones, devices, violating vehicles, and civil complaints on a single screen. Owned core domains including enforcement management and the dashboard within a four-person team, while helping generalize a product originally built for a single municipality into one deliverable to many",
+        responsibilities: [
+          "Designed the map provider abstraction layer — hiding Naver, Kakao, Google, and Leaflet behind one MapAdapter interface so each municipality's map can be swapped through configuration alone",
+          "Designed event subscription to return its own unsubscribe function, removing per-SDK listener teardown differences from every call site",
+          "Unified marker, cluster, and heatmap layers into shared components while splitting shape editors per provider, where SDK differences are essential rather than incidental",
+          "Built server-injected municipality configuration — logo, map center, bbox, and administrative/legal/outline boundary GeoJSON loaded once at app bootstrap, enabling new municipality onboarding without code changes",
+          "Established a three-tier API layer (HTTP wrapper → TanStack Query hook → converter), drawing a boundary so screens consume only domain models and never depend on raw API response shapes",
+          "Defined optimistic update conventions (onMutate snapshot → onError rollback → onSettled invalidation) and queryKey naming rules",
+          "Built a three-stage design token system (raw palette → semantic tokens → auto-generated CSS variables) with automatic light/dark switching and no hardcoded colors",
+          "Implemented road-based enforcement zone editing with Turf geometry operations (buffer, union, line-slice, nearest-point-on-line)",
+          "Implemented the real-time monitoring map — marker clustering, heatmaps, context-menu registration, and jurisdiction access guards",
+          "Managed list state as Jotai atoms, separating search input from applied search term to prevent unnecessary refetches",
+          "Set up MSW-based mocking to develop in parallel with unfinished backend endpoints",
+          "Documented a refactoring guide cataloging known duplication and inconsistencies, and established a 'land it together' principle for extracting shared modules"
+        ],
+        achievements: [
+          "Authored 219 of the team's 638 commits (about 34%) while owning core domains including enforcement management and the dashboard",
+          "Map abstraction meant closed-network environments that cannot reach commercial map APIs work identically via Leaflet — expanding not just swappability but the range of deliverable environments",
+          "Moved municipality configuration to server injection, so adding a new municipality requires no changes to screen code",
+          "Placed a converter boundary between API responses and screens, confining the blast radius of backend spec changes to the transformation layer",
+          "Stripped hardcoded colors via the design token system, deriving both light and dark themes from a single definition",
+          "Documented pattern divergence scattered across features, giving the team a clear standard for new code"
+        ],
+        metrics: [
+          "Operating as the illegal parking enforcement platform for Iksan City",
+          "Generalization in progress for expanded delivery to additional municipalities"
+        ],
+        techStack: [
+          "React 19",
+          "TypeScript",
+          "Vite",
+          "Mantine 8",
+          "TanStack Query v5",
+          "TanStack Table",
+          "Jotai",
+          "ECharts",
+          "Naver Maps",
+          "Google Maps",
+          "Kakao Maps",
+          "Leaflet",
+          "Turf.js",
+          "proj4",
+          "MSW",
+          "react-hook-form",
+          "zod",
+          "exceljs",
+          "react-i18next",
+          "axios"
+        ],
+        references: ["https://www.mykim.in/en/posts/map-provider-adapter"]
       },
       {
         name: "Intelligent Camera Smart Dashboard & Monitoring System",
