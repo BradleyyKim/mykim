@@ -1,0 +1,223 @@
+---
+title: "I Was Building a Cockpit for Robots, Then I Stopped Piloting Them"
+slug: "from-teleoperation-to-supervision"
+description: "What started as a personal project became a company assignment. I built a drone simulator first, then added a 6-axis robot arm, an AGV, and a conveyor to grow it into a multi-platform digital twin. Move a joint slider and the 3D robot follows. I was pretty proud of it. Then something started to bother me. How would I handle twenty robots with this screen?"
+publishedDate: "2026-07-27"
+category: "develop-knowledge"
+tags: ["Frontend", "Robotics"]
+featuredImage: ""
+---
+
+What started as a personal project became a company assignment.
+
+I built a drone simulator first, then added a 6-axis robot arm, an AGV, and a conveyor to grow it into a multi-platform digital twin.
+
+Move a joint slider and the 3D robot follows.
+
+I was pretty proud of it.
+
+Then something started to bother me.
+
+How would I handle twenty robots with this screen?
+
+# **What I Built First Was a Cockpit**
+
+What I built first was, unmistakably, a cockpit.
+
+A slider for each of the six joints, with an IK solver so that setting an end-effector coordinate would back-solve the joint angles.
+
+I drew the arm in Three.js and layered bloom and vignette on top.
+
+The AGV followed waypoints you dropped, and the conveyor belt spun when you adjusted speed and direction.
+
+On the backend I wrote a tick loop running every 33ms to update physical state, streaming telemetry out over WebSocket.
+
+It was technically fun.
+
+The problem was that this is **an interface for handling one unit**.
+
+# **You Can Pilot One Robot. You Cannot Pilot Twenty**
+
+When there's one robot, a slider is the answer.
+
+With two, you can split it into tabs.
+
+But the moment there are twenty, the concept of piloting stops making sense.
+
+A human cannot pilot twenty things at once.
+
+And there was something more decisive.
+
+The companies actually operating robots in the field already have autonomy.
+
+Dispatch, path planning, obstacle avoidance — they do all of it far better than I could.
+
+The cockpit I built was a screen clumsily imitating something they already did better.
+
+So I changed direction.
+
+**I redefined robots as objects of supervision rather than objects of control.**
+
+The job of our screen isn't to send joint angles. It's to detect an event, show the situation to a person, request "go over there and check," and then track that process.
+
+From teleoperation to supervisory control.
+
+It was a decision to remove capability rather than add it, and I think it's the best decision I've made on this project.
+
+# **Problem 1. There Was Nobody to Integrate With Yet**
+
+The direction was set, but there was a practical problem.
+
+The API from the partner company that would supply robot data wasn't finalized.
+
+At one point during negotiations, two of their robots went offline and real verification became impossible altogether.
+
+The exhibition schedule was fixed, but there was no data.
+
+So I introduced an interface called `FleetSource`.
+
+```
+interface FleetSource {
+  id: string;
+  start(handlers): void;
+  stop(): void;
+}
+// handlers: onFleet(robots) · onAlert(alert) · onMission(mission)
+```
+
+As long as something satisfies this interface, the screen doesn't care where the data comes from.
+
+I wrote three implementations.
+
+- `SelfSimSource` — reads from the backend simulator I built
+- `DispectorMockSource` — a mock that moves according to the scenario script
+- `DispectorSource` — the slot for live integration (still empty)
+
+An environment variable picks which one to use.
+
+As a result, the full demo runs without interruption even when the partner's robots are powered off.
+
+When live integration is finalized, I only need to fill in the third implementation. Not a single line of screen code changes.
+
+The old me would probably have said "let's wire it up once the API is ready" and waited.
+
+I learned that **if you draw the boundary first, you don't have to wait**.
+
+# **Problem 2. The Same State Had Two Names**
+
+This one is a little embarrassing.
+
+Robot state arrived from two places.
+
+One was a string riding on live telemetry (`"moving"`, `"idle"`, and so on).
+
+The other was an enum statically embedded in the facility tree.
+
+Same "moving," different shape.
+
+At first I just added a branch wherever I needed one.
+
+Once where map marker colors are decided, once in the status badge, once in the summary count.
+
+Then I had to add a new state, and I spent a long time hunting down every place I needed to change.
+
+I missed some. Markers would change color while the summary count didn't register it.
+
+So I built a module called `operationalState` and pulled every state definition into one place.
+
+`IDLE · DISPATCHED · MOVING · ARRIVED · INSPECTING · RETURNING · CHARGING · ERROR · OFFLINE`
+
+These nine are the canonical states, and each carries its Korean and English label, color, and severity.
+
+Then I set one rule.
+
+**Conversion happens exactly once, at the adapter boundary. Below that line, never branch on a raw string.**
+
+`fromLiveState()` and `fromRefStatus()` normalize the two sources, and everything downstream looks only at that value.
+
+Marker colors, badges, summary counts — all derived from here.
+
+Now adding a state means opening one file.
+
+The lesson was simple.
+
+**When the same concept exists in two shapes, you must decide on exactly one place where they merge.**
+
+If you don't decide, the conversion scatters across the codebase, and scattered conversions will always disagree somewhere.
+
+# **Problem 3. There Are Two Kinds of Video**
+
+When I built the live video wall, I initially thought of it as one pipeline.
+
+Take camera feeds, render them on screen, detect anomalies from them.
+
+But those two have completely different requirements.
+
+**Viewing** is for humans. A little latency is fine, image quality matters, and many streams need to show at once.
+
+**Analysis** is for machines. It needs frame-level accuracy, it needs a GPU, and it doesn't need to be displayed at all.
+
+Putting both in one pipeline breaks both.
+
+So I split them entirely.
+
+Viewing is served from the backend as HTTP Range file streaming, or over WebRTC.
+(ffmpeg encodes to VP8 RTP → werift track → browser `video` element)
+
+Analysis is **something our backend does not do at all.**
+
+An analysis server or edge device handles it, and we receive only the resulting "event JSON."
+
+Drawing that responsibility boundary made the backend far simpler.
+
+That's when I understood that explicitly deciding "what we don't do" is also architecture.
+
+# **Voice Came Last**
+
+I layered on a voice agent to assist the control room operator.
+
+Call out "Rex" and it wakes up, gives a site briefing, switches CCTV feeds, and requests robot dispatch.
+
+Speech comes in through the Web Speech API, and the answer is generated by streaming the backend LLM gateway over SSE.
+
+The API key lives only on the backend; the frontend only calls the gateway.
+
+What I cared about here wasn't performance but **safety interlocks**.
+
+Commands that actually move a robot require one more confirmation.
+
+Speech recognition can be wrong. The LLM can be wrong.
+
+I didn't think a robot should move immediately when both of those are stacked.
+
+# **What I Learned**
+
+Three things, looking back.
+
+**1. Deciding to remove a capability is harder and more important.**
+
+Throwing away the cockpit meant deleting something I'd built, and that stung.
+
+But that single decision made the product's identity clear.
+
+What you decide *not* to build sets the direction more than what you build.
+
+**2. Draw the boundary first and you don't have to wait.**
+
+Instead of waiting for an external dependency to be finalized, define the interface first and development never stalls.
+
+This seems to apply the same way whether the counterpart is a person or a company.
+
+**3. The same concept should be defined in exactly one place.**
+
+When I hadn't decided where two sources of state merge, the bug came from the design, not the code.
+
+Only after consolidating into one file could I add states with confidence.
+
+---
+
+Working as a frontend developer, I feel myself moving from *building screens well* toward **deciding what should be shown**.
+
+I've ended up writing requirements specs, defining interaction models, and turning external API mappings into negotiation material.
+
+There's still a long way to go, but this direction is fun.

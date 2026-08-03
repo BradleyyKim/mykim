@@ -1,0 +1,196 @@
+---
+title: "When Someone Who Only Did Frontend Had to Handle Deployment Too"
+slug: "first-fullstack-operation"
+description: "I joined an internal new-business task force. The job was building a service that automatically organizes construction site photos and manages work progress on a single screen. Until then I was someone who built screens. I consumed APIs, someone else designed the DB, someone else deployed. This time I had to do all of it. And I learned that building and operating are different jobs."
+publishedDate: "2026-08-01"
+category: "develop-knowledge"
+tags: ["Frontend", "Backend"]
+featuredImage: ""
+---
+
+I joined an internal new-business task force.
+
+The job was building a service that automatically organizes construction site photos and manages work progress on a single screen.
+
+Until then I was someone who built screens.
+
+I consumed APIs, someone else designed the DB, someone else deployed.
+
+This time I had to do all of it.
+
+I sat in from the planning meetings, drew the schema, built the screens, put it on a server, managed versions, and handled an incident.
+
+I learned more from **operating it** than from building it.
+
+# **The User Is Not a Developer**
+
+This service has three kinds of users.
+
+The partner-company foreman who takes and uploads photos in the field, our PM who reviews them at the office, and the client-side government official who checks progress.
+
+Of the three, the foreman was the hardest.
+
+At first I naturally started by drawing a login screen.
+
+Sign up, create a password, install the app.
+
+Then I thought about it. Asking someone pulling out a phone with gloved hands at a construction site to create an account made no sense.
+
+If they drop off at that step, the photos never arrive at all.
+
+So I removed all of it.
+
+Tap the SMS link the PM sends, and the upload screen opens immediately.
+
+No app install, no signup, no password.
+
+Pick several photos, upload, done. The system figures out "which site this is."
+
+It pulls GPS from the photo's EXIF and matches coordinates to an address via VWorld geocoding to determine which location it was taken at.
+
+If there's no location data, they pick from a list or tap "not sure," and the PM sorts out the rest.
+
+Making this decision taught me something.
+
+**You must not imagine your users through a developer's frame of reference.**
+
+To me, signing up is a three-second procedure. To a foreman in the field, it's a reason not to use the service.
+
+# **Decision 1. Photos Never Move**
+
+When a photo arrives, it gets placed into a "location, process step" slot.
+
+The PM sometimes drags to reassign it on the review board.
+
+At first I thought about it simply — if the placement changes, move the file to that folder.
+
+But that creates problems.
+
+If the move fails midway, a photo can end up existing nowhere.
+
+And later, when migrating from cloud to an in-house server, the folder structure becomes a wholesale obstacle.
+
+So I made it so that **once an original file is stored, it never moves.**
+
+Placement is expressed purely as DB metadata. A kind of virtual folder.
+
+Drag to reassign and the file stays exactly where it is while one DB column changes.
+
+This decision helped enormously later.
+
+The prototype was built on Supabase, but company policy required moving to on-premise PostgreSQL.
+
+Because storage access was isolated behind an adapter and file locations were fixed, I finished the migration with almost no changes to screen code.
+
+# **Decision 2. The DB Forbids Deletion**
+
+The photos in this service are completion evidence.
+
+They're what's needed if an audit comes years after construction ends.
+
+So they must not be deleted, whether by accident or intent.
+
+At first I thought "then I just won't build a delete button."
+
+But that's a UI-level promise, and those break eventually.
+
+I might rush out an admin feature later and reach for a delete. A new developer might join and remove something without knowing.
+
+So I **blocked physical deletion with DB constraints.**
+
+Photos and records are never erased — only replaced or deactivated.
+
+Swap the representative photo and the previous one isn't discarded; it stays as a spare.
+
+I built photo correction on the same principle.
+
+It supports rotation, fine leveling, and zoom, but never touches the original file.
+
+Correction values are stored separately and applied uniformly across screens and Excel output.
+
+**Important rules should be built as system constraints, not human agreements.**
+
+I'd had the same thought when writing code review conventions, but enforcing it at the schema level was far stronger.
+
+# **Lesson From Operations 1. Deployment Has an Order**
+
+Here I made a mistake.
+
+It was a release that included a DB migration.
+
+Change the schema, then ship the new code that uses that schema.
+
+But I got the order confused and **restarted the server before applying the DB**.
+
+The new code went looking for a column that didn't exist yet, and 500s started falling.
+
+Fortunately I recovered by applying the DB afterward with no downtime, but my stomach dropped for those few minutes.
+
+After that I added a signal rule to the deployment runbook.
+
+I clearly separated DB-inclusive releases from bundle-only releases in the document and pinned down the order step by step.
+
+To avoid repeating a mistake, you can't rely on memory. It has to live in the procedure.
+
+When I only did frontend, deployment was just "merge it."
+
+Now I know deployment is **an irreversible act**.
+
+# **Lesson From Operations 2. Features Are Entangled**
+
+As versions went up, features multiplied, and at some point fixing one feature broke something unrelated.
+
+Change the process composition and progress-rate calculation is affected. Progress rate shows in the one-line project summary. That also appears on the government official's screen.
+
+Change photo placement and the review board, the route diagram, and the Excel report all move with it.
+
+I only held this in my head, so I forgot it over time.
+
+So I built a **feature chaining map** as a document.
+
+It lays out, axis by axis, which feature touches which data and how far that ripples into which screens.
+
+Then I made it a rule to check this document before starting work and to update it whenever a feature changes.
+
+After building it, the time to answer "if I fix this, what breaks?" dropped sharply.
+
+Even on a project I develop alone, documentation was necessary.
+
+Future me was effectively a stranger.
+
+# **Lesson From Operations 3. Look at the Build Artifact Too**
+
+At one point the deployment bundle got strangely large.
+
+It turned out 1GB of test photos accumulated during development was being swept wholesale into the bundle.
+
+Next.js file tracing had been including the data directory.
+
+I excluded it with `outputFileTracingExcludes` and had the deploy script delete it once more for good measure.
+
+The bundle shrank to 39MB.
+
+"It runs fine locally" wasn't the finish line.
+
+**I had to check what the produced artifact actually contained.**
+
+# **Summing Up**
+
+When I only did frontend, the goal was "build it well."
+
+Owning one thing end to end as full-stack changed the goal.
+
+- More than building, what mattered was **closing off the paths where things can go wrong**
+- Rules held only when built as **constraints**, not agreements
+- Deployment wasn't uploading code but **a procedure with an order**
+- Even a solo project needed **documentation**
+
+I'm still clumsy at this.
+
+The DB design was revised after review from a senior engineer, and the AI classification server is being built by someone else.
+
+Still, this is the first time I've watched a single service go from planning to actually running on a real server, being used, and having its version go up — from beginning to end.
+
+I can see things that were invisible when I only looked at screens.
+
+I'm curious how this experience will show up in the next project.
