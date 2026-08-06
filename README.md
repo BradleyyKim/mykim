@@ -15,12 +15,13 @@
 ## 📖 소개
 
 개발하면서 배운 내용과 경험을 기록하는 개인 블로그입니다.
-Strapi Cloud를 Headless CMS로 활용하여 컨텐츠를 관리하며, Next.js의 SSR/ISR 기능으로 SEO를 개선했습니다.
+콘텐츠는 로컬 MDX 파일로 관리하며, Next.js의 SSR/ISR 기능으로 SEO를 개선했습니다.
 
 ## ✨ 주요 기능
 
 ### 컨텐츠 작성 및 관리
-- 📝 TipTap 에디터 기반 WYSIWYG 문서 편집
+- 📝 MDX 파일 기반 포스트 작성 (`content/blog/{ko,en}/*.mdx`)
+- 🌐 한국어/영어 다국어(i18n) 지원
 - 🏷️ 카테고리 & 태그 시스템
 - 🔍 포스트 검색 기능
 - 📊 Vercel Analytics 통합
@@ -37,13 +38,11 @@ Strapi Cloud를 Headless CMS로 활용하여 컨텐츠를 관리하며, Next.js�
 - **Framework**: Next.js 15 (App Router)
 - **Language**: React 19, TypeScript 5
 - **Styling**: Tailwind CSS 4.0
-- **UI Components**: shadcn/ui
-- **Editor**: TipTap (ProseMirror 기반)
-- **State Management**: Tanstack/react-query
-- **Form**: React Hook Form + Zod
+- **UI Components**: shadcn/ui (Radix 기반)
+- **Markdown 렌더링**: react-markdown + remark-gfm + rehype-highlight
 
 ### Backend & Infrastructure
-- **CMS**: Strapi Cloud (Headless CMS)
+- **Content**: 로컬 MDX 파일 (`gray-matter`로 프론트매터 파싱)
 - **Deployment**: Vercel
 - **Analytics**: Vercel Analytics
 - **Image Optimization**: Next.js Image + WebP
@@ -57,11 +56,11 @@ Strapi Cloud를 Headless CMS로 활용하여 컨텐츠를 관리하며, Next.js�
 
 ## 🏗️ 주요 기술적 특징
 
-### Headless CMS 아키텍처
+### MDX 파일 기반 콘텐츠 아키텍처
 ```
-Client (Next.js) ←→ Strapi Cloud API ←→ Database
+content/blog/{ko,en}/*.mdx  →  gray-matter 파싱  →  Next.js 페이지
 ```
-컨텐츠 관리와 프론트엔드를 분리하여 각각 독립적으로 확장 가능
+빌드/배포 시점에 별도 CMS 호출 없이 파일시스템에서 바로 콘텐츠를 읽어 렌더링
 
 ### SSR/ISR 하이브리드 렌더링
 - **SSR**: 동적 페이지 서버 사이드 렌더링
@@ -74,28 +73,29 @@ Client (Next.js) ←→ Strapi Cloud API ←→ Database
 - 파일 크기 50-90% 감소
 
 ### 캐싱 전략
-- React Query로 서버 상태 관리
+- Next.js ISR 기반 재검증 (`/api/revalidate`, `/api/revalidate-path`)
 - Stale-while-revalidate 패턴 적용
-- API 호출 최소화
 
 ## 📁 프로젝트 구조
 
 ```
 src/
-├── app/                    # Next.js App Router
-│   ├── (posts)/           # 포스트 관련 페이지
-│   ├── about/             # 소개 페이지
-│   ├── career/            # 경력 페이지
-│   ├── category/          # 카테고리별 포스트
-│   ├── tags/              # 태그별 포스트
-│   └── api/               # API Routes
+├── app/
+│   ├── (ko)/               # 한국어(기본) 라우트: /, /about, /career, /category/[slug], /posts/[slug], /tags
+│   ├── en/                 # 영어 라우트: /en, /en/about, /en/career, ...
+│   └── api/                # API Routes (revalidate, categories, tags)
 ├── components/
-│   ├── ui/                # shadcn/ui 컴포넌트
-│   ├── layout/            # 레이아웃 컴포넌트
-│   └── editor/            # TipTap 에디터
-├── hooks/                 # Custom React Hooks
-├── lib/                   # 유틸리티 함수
-└── styles/                # 전역 스타일
+│   ├── ui/                 # shadcn/ui 컴포넌트
+│   ├── layout/              # 레이아웃 컴포넌트
+│   ├── pages/                # 페이지 단위 컴포넌트 ((ko)/en이 공유)
+│   └── blog/                 # 포스트 목록/상세/검색 컴포넌트
+├── i18n/                   # 다국어 사전 및 유틸
+├── hooks/                  # Custom React Hooks
+├── lib/
+│   ├── mdx/                 # MDX 파싱/조회 (콘텐츠 소스)
+│   ├── api/, cms/            # 파싱된 데이터를 페이지에 전달하는 래퍼 계층
+│   └── cache/                 # ISR 재검증 로직
+└── middleware.ts            # locale 감지/쿠키 설정
 ```
 
 ---
@@ -110,15 +110,19 @@ npm install
 
 ### 환경 변수 설정
 
-`.env.local` 파일을 생성하고 다음 내용을 추가:
+`.env.local` 파일을 생성하고 다음 내용을 추가 (전부 선택 사항 — 없어도 로컬 개발/포스트 렌더링은 동작):
 
 ```bash
-# Strapi CMS
-NEXT_PUBLIC_API_URL=your-strapi-url
-STRAPI_API_TOKEN=your-api-token
+# 사이트 URL (RSS/사이트맵 절대경로 생성용)
+NEXT_PUBLIC_SITE_URL=https://mykim.in
 
-# Vercel Analytics (선택)
+# Google Analytics / Search Console
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=your-verification-code
+
+# On-demand ISR 재검증 API 보호용 시크릿
+REVALIDATE_SECRET=your-secret
+NEXT_PUBLIC_REVALIDATE_SECRET=your-secret
 ```
 
 ### 개발 서버 실행
@@ -138,19 +142,18 @@ npm start
 
 ## 📝 개발 과정에서 고민한 부분
 
-### 1. 에디터 선택
-- 마크다운 작성의 편의성과 WYSIWYG 편집의 직관성을 모두 원함
-- TipTap을 선택하여 두 가지 방식을 모두 지원
+### 1. CMS에서 MDX 파일로 전환
+- 초기에는 Strapi Cloud + TipTap 에디터로 웹에서 직접 글을 작성/편집하는 구조였음
+- Strapi Cloud 운영 비용과 배포 구조 복잡도를 줄이기 위해 로컬 MDX 파일 기반으로 전환
+- 글쓰기는 저장소에 MDX 파일을 추가하는 방식으로 바뀌었지만, 프론트엔드 쪽 함수 시그니처(`fetch*`, `get*PageData`)는 그대로 유지해 마이그레이션 범위를 최소화
 
 ### 2. 상태 관리
-- 서버 데이터는 React Query로 캐싱 및 관리
 - 클라이언트 상태는 React의 useState/useContext 활용
 - 전역 상태를 최소화하여 복잡도 감소
 
 ### 3. 성능 개선
 - 이미지 자동 WebP 변환으로 파일 크기 50-90% 감소
 - ISR로 정적 페이지 생성 (5분 주기 재검증)
-- React Query 캐싱으로 불필요한 API 호출 제거
 
 ### 4. SEO
 - App Router의 metadata API 활용
@@ -168,8 +171,7 @@ npm start
 
 ### 타입 안전성
 - TypeScript Strict Mode 활성화
-- Zod 스키마로 런타임 검증
-- API 응답 타입 정의
+- `gray-matter`로 파싱한 프론트매터를 `Post`/`Category`/`Tag` 타입(`src/lib/types/post.ts`)으로 매핑
 
 ### 코드 품질
 - ESLint + Prettier로 코드 스타일 통일
