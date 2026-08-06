@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { MenuIcon, LayoutIcon, HomeIcon, Sun, Moon, Tag } from "lucide-react";
+import { MenuIcon, LayoutIcon, HomeIcon, Sun, Moon, Briefcase } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
@@ -139,9 +139,9 @@ export default function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Tags 버튼 */}
-          <Button variant="ghost" onClick={() => router.push(getLocalePath(locale, "/tags"))}>
-            Tags
+          {/* Portfolio 버튼 */}
+          <Button variant="ghost" onClick={() => router.push(getLocalePath(locale, "/career"))}>
+            Portfolio
           </Button>
 
           {/* About 버튼 */}
@@ -208,10 +208,10 @@ export default function Header() {
                 <DropdownMenuLabel>Menu</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  {/* Tags 버튼 */}
-                  <DropdownMenuItem onSelect={() => router.push(getLocalePath(locale, "/tags"))}>
-                    <Tag className="mr-2 h-4 w-4" />
-                    <span>Tags</span>
+                  {/* Portfolio 버튼 */}
+                  <DropdownMenuItem onSelect={() => router.push(getLocalePath(locale, "/career"))}>
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    <span>Portfolio</span>
                   </DropdownMenuItem>
                   {/* About 버튼 */}
                   <DropdownMenuItem onSelect={() => router.push(getLocalePath(locale, "/about"))}>

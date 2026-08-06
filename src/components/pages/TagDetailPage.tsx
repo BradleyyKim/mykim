@@ -12,7 +12,8 @@ interface TagDetailPageProps {
 }
 
 export async function generateTagDetailMetadata(slug: string, locale: Locale): Promise<Metadata> {
-  const tag = await fetchTagByName(slug, locale);
+  // URL 파라미터는 퍼센트 인코딩된 채로 오므로 디코딩 후 비교 (한글 태그 404 수정)
+  const tag = await fetchTagByName(decodeURIComponent(slug), locale);
 
   if (!tag) {
     return {
@@ -45,9 +46,10 @@ export async function generateTagDetailMetadata(slug: string, locale: Locale): P
 }
 
 export default async function TagDetailPage({ slug, locale }: TagDetailPageProps) {
+  const tagName = decodeURIComponent(slug);
   const [tag, postsResult] = await Promise.all([
-    fetchTagByName(slug, locale),
-    fetchPostsByTag(slug, 1, locale)
+    fetchTagByName(tagName, locale),
+    fetchPostsByTag(tagName, 1, locale)
   ]);
 
   if (!tag) {

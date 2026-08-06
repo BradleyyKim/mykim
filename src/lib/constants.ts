@@ -28,7 +28,7 @@ export const MAIN = {
     name: "김민영",
     name_en: "Minyoung Kim",
     location: "Seoul, Korea",
-    duty: "Web Frontend Engineer",
+    duty: "Product Builder · Frontend → Full-stack",
     tagline: "어쩌면 오늘이 가장 행복한 날일지도 모르겠습니다.",
     subtitle: "Software Engineer & Life Architect",
     description: [
@@ -64,6 +64,6 @@ export const AVATAR = {
     MD: "w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14", // 40px -> 48px -> 56px
     LG: "w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20", // 48px -> 64px -> 80px
     XL: "w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32", // 64px -> 80px -> 96px -> 128px
-    RESPONSIVE: "w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-32 xl:h-32" // 완전 반응형
+    RESPONSIVE: "w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20" // 모바일 유지 · 데스크톱 80px 상한 (기존 128px 부담 완화)
   }
 } as const;
