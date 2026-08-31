@@ -12,17 +12,17 @@ I have several work projects and several personal projects.
 
 At some point a problem appeared.
 
-Where I left off yesterday, and what I should do now, lived **entirely in my head.**
+Where I left off yesterday, and what I should do now, lived entirely in my head.
 
 And heads empty out often.
 
 Reopening project A after three days, the first fifteen minutes go to reconstructing "what was I doing here."
 
-Worse was **forgetting what I was blocked on.** I'd be waiting on someone's reply, and I'd forget that I was waiting at all.
+Worse was forgetting what I was blocked on. I'd be waiting on someone's reply, and I'd forget that I was waiting at all.
 
 So I built a status board for my workshop.
 
-# **The Core Principle — Work Updates State, the Screen Visualizes It**
+# The Core Principle — Work Updates State, the Screen Visualizes It
 
 The structure looks like this.
 
@@ -36,32 +36,32 @@ The structure looks like this.
 
 Two decisions mattered here.
 
-**① Why one file per project**
+① Why one file per project
 
 At first I wanted all state in one file. It's easier to read that way.
 
-But working with several projects open at once produces **concurrent write conflicts.**
+But working with several projects open at once produces concurrent write conflicts.
 
 If work in project A is writing the file while work in project B also writes, one of them vanishes.
 
-Splitting per project makes that problem disappear entirely. **Each writes only its own file.**
+Splitting per project makes that problem disappear entirely. Each writes only its own file.
 
-Instead of solving concurrency with locks, I chose **to make them never overlap in the first place.**
+Instead of solving concurrency with locks, I chose to make them never overlap in the first place.
 
-**② Why keep it separate from existing handoff documents**
+② Why keep it separate from existing handoff documents
 
 Each project already has a detailed record — what was decided, why, and what the traps are.
 
-But that's **heavy.** Too long to put on a board.
+But that's heavy. Too long to put on a board.
 
 So I split the roles.
 
 - Detailed record = each project's handoff document. Deep and long.
-- Board state = **current status only**, lightly summarized. One line of next action and a few buckets.
+- Board state = current status only, lightly summarized. One line of next action and a few buckets.
 
-It isn't writing the same information twice — it's keeping **two documents at different resolutions.**
+It isn't writing the same information twice — it's keeping two documents at different resolutions.
 
-# **The Data Model**
+# The Data Model
 
 A state file is frontmatter plus sections. Easy for a human to read, easy for a machine to parse.
 
@@ -89,7 +89,7 @@ updated: 2026-07-30T11:35
 - ...
 ```
 
-The best decision here was **the single `focus` line.**
+The best decision here was the single `focus` line.
 
 Even when a card is collapsed on the board, that line is always visible.
 
@@ -97,7 +97,7 @@ Even when a card is collapsed on the board, that line is always visible.
 
 You don't have to expand a card and read a list, so scanning the whole board takes seconds.
 
-And I gave **`## Blocked` its own bucket.**
+And I gave `## Blocked` its own bucket.
 
 Anything waiting on someone else — a reply, an approval, an external device being restored — goes here.
 
@@ -105,7 +105,7 @@ On the board these items are highlighted in red and float to the top.
 
 This was the thing I forgot most often, so I made the system keep it in my face.
 
-# **A Server With Zero Dependencies**
+# A Server With Zero Dependencies
 
 The board server is built from the Python standard library alone. Nothing to install.
 
@@ -120,7 +120,7 @@ workbench/
 
 Every request re-reads `projects/*.md` and aggregates into JSON. There's no cache.
 
-With only a dozen or so project files, reading every time is instant — and **with no cache, there are no invalidation bugs.**
+With only a dozen or so project files, reading every time is instant — and with no cache, there are no invalidation bugs.
 
 For personal tools, this kind of simplicity was almost always right.
 
@@ -128,40 +128,40 @@ The same reason applies to using zero npm dependencies. This tool has to still r
 
 Nothing to rot if there's nothing to depend on.
 
-# **The Hard Part Was the Habit, Not the Tool**
+# The Hard Part Was the Habit, Not the Tool
 
-I learned this after building it: **updating the board was much harder than building it.**
+I learned this after building it: updating the board was much harder than building it.
 
 When work finishes you want to move to the next thing, not open a state file.
 
 After a few days the whole board was stale. A status board showing stale information is worse than none — you can't trust it.
 
-So I made updating **a rule rather than a habit.**
+So I made updating a rule rather than a habit.
 
 I pinned this into the working-rules document:
 
 > Every time a meaningful unit of work finishes (at the same moment you update the handoff document), also update that project's state file.
 > At minimum, `focus` and `updated` must always be current.
 
-The key was tying it to **"the same moment you update the handoff document."**
+The key was tying it to "the same moment you update the handoff document."
 
 Trying to build one more new habit fails.
 
-**Slotting it into behavior you already perform** has a far higher success rate.
+Slotting it into behavior you already perform has a far higher success rate.
 
-I also store the `updated` timestamp so that **stale cards render dimmed.**
+I also store the `updated` timestamp so that stale cards render dimmed.
 
 If a card hasn't been touched in a few days, it fades. That's a signal: "this may not be the current state."
 
 When I can't trust my own record, the screen says so on my behalf.
 
-# **Why Work and Personal Are Separated**
+# Why Work and Personal Are Separated
 
 Each card has a `category`, and the board toggles between work mode and personal mode.
 
 One practical reason: it's a bit awkward to have personal projects up on screen at the office.
 
-The more important reason is **context switching.**
+The more important reason is context switching.
 
 If personal project cards enter my field of view during work hours, focus breaks.
 
@@ -169,17 +169,17 @@ I decided that hiding what you shouldn't be looking at is also a tool's job.
 
 Sensitive projects can be removed entirely with `hidden: true`.
 
-# **To Sum Up**
+# To Sum Up
 
-- **Concurrent writes were eliminated by splitting files.** Partitioning was easier than locking
-- **Detailed record and current state were separated.** Two resolutions of the same information
-- **The single `focus` line** was the heart of the board — the part visible even when collapsed
-- **Blocked items got their own bucket**, making the most-forgotten thing the most visible thing
-- **Zero dependencies** so the tool doesn't rot
-- **Updating is a rule, not a habit** — and slotted into behavior I already perform
+- Concurrent writes were eliminated by splitting files. Partitioning was easier than locking
+- Detailed record and current state were separated. Two resolutions of the same information
+- The single `focus` line was the heart of the board — the part visible even when collapsed
+- Blocked items got their own bucket, making the most-forgotten thing the most visible thing
+- Zero dependencies so the tool doesn't rot
+- Updating is a rule, not a habit — and slotted into behavior I already perform
 
 Now I scan the board each morning and decide the day from it.
 
 Taking what was in my head and putting it outside made room in my head for something else.
 
-The biggest lesson from building this tool: **a good tool isn't one with many features, it's one that keeps you from forgetting to update it.**
+The biggest lesson from building this tool: a good tool isn't one with many features, it's one that keeps you from forgetting to update it.

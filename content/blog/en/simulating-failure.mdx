@@ -18,13 +18,13 @@ Take off, weave between the turbines, land.
 
 But as I built it, something felt off.
 
-**A control screen isn't something you look at when everything is fine.**
+A control screen isn't something you look at when everything is fine.
 
 If everything is fine, there's no reason for a human to be watching. Control screens are what you look at when something has gone wrong.
 
-So I changed direction. Instead of a drone that flies well, I built **a drone that runs into trouble.**
+So I changed direction. Instead of a drone that flies well, I built a drone that runs into trouble.
 
-# **Why 3D Instead of a 2D Map**
+# Why 3D Instead of a 2D Map
 
 I initially thought about plotting a dot on a map.
 
@@ -32,7 +32,7 @@ But given the nature of wind turbine inspection, that wasn't enough.
 
 Wind turbines are over 100 meters tall. Inspection drones pass very close alongside them.
 
-What the operator needs to know isn't "where is the drone" but **"at what altitude and in what attitude is the drone, relative to the turbine."**
+What the operator needs to know isn't "where is the drone" but "at what altitude and in what attitude is the drone, relative to the turbine."
 
 You can't see that on a 2D map. From above, the drone and the turbine just overlap.
 
@@ -40,13 +40,13 @@ So I rendered the actual wind farm with a 3D terrain engine, along with rotating
 
 Drone orientation is handled with quaternions. With Euler angles you genuinely hit gimbal-lock attitudes here.
 
-The instinct I took away was that **a UI dealing with space should show the space as it is.**
+The instinct I took away was that a UI dealing with space should show the space as it is.
 
-# **Why I Put a Contract on Internal Communication**
+# Why I Put a Contract on Internal Communication
 
 The frontend-to-backend link is ordinary REST plus WebSocket.
 
-But between the backend gateway and the drone simulator, I used **gRPC and Protobuf.**
+But between the backend gateway and the drone simulator, I used gRPC and Protobuf.
 
 For a solo personal project, that looks like overkill.
 
@@ -56,7 +56,7 @@ In robot control, commands have to be exact. If "altitude 50" goes out as a stri
 
 Protobuf enforces a schema. Field types are pinned in the contract, so there's less room to diverge at runtime.
 
-And one more thing — I wanted to **be able to swap the simulator to another language later.**
+And one more thing — I wanted to be able to swap the simulator to another language later.
 
 Real robot control layers often move to C++ or Go for performance.
 
@@ -64,35 +64,35 @@ For that to happen without touching the frontend, there has to be a language-neu
 
 Draw the boundary first and you can swap out everything behind it later.
 
-I wasn't preparing to wait — I was preparing to **replace.**
+I wasn't preparing to wait — I was preparing to replace.
 
-# **Adding Physics**
+# Adding Physics
 
 This is where the project actually gets interesting.
 
-I made the drone a **state machine plus physics**, not an animation.
+I made the drone a state machine plus physics, not an animation.
 
 A loop running every 100ms updates state, and that streams out over WebSocket at 10Hz.
 
-**Wind.** Random gusts blow, and they shake the drone's position. On screen, the drone jitters slightly.
+Wind. Random gusts blow, and they shake the drone's position. On screen, the drone jitters slightly.
 
-**Battery.** It doesn't just drain proportionally to time. Climbing and moving fast drain more. Hovering uses the least.
+Battery. It doesn't just drain proportionally to time. Climbing and moving fast drain more. Hovering uses the least.
 
 Once those two were in, the screen suddenly changed character.
 
-The battery gauge stopped being a number going down and became **information used to make a decision.**
+The battery gauge stopped being a number going down and became information used to make a decision.
 
 You start calculating: "can I get out there and back?"
 
 Stronger wind means faster battery drain, so when a wind warning appears you have to judge whether to move the mission up.
 
-That was the first time I felt that **a UI only means something when its information feeds a judgment.**
+That was the first time I felt that a UI only means something when its information feeds a judgment.
 
-# **Failsafe — Making It Come Back on Its Own**
+# Failsafe — Making It Come Back on Its Own
 
 Then I added the most important part.
 
-If the battery drops below a threshold or the connection is lost, the drone **initiates Return-To-Home on its own.**
+If the battery drops below a threshold or the connection is lost, the drone initiates Return-To-Home on its own.
 
 It doesn't wait for a human command.
 
@@ -106,7 +106,7 @@ LANDED → ARMED → TAKING_OFF → FLYING ⇄ HOVERING
                      RETURNING → LANDING → LANDED
 ```
 
-`RETURNING` can be triggered by the user, but it's also **a state the system can enter by itself.**
+`RETURNING` can be triggered by the user, but it's also a state the system can enter by itself.
 
 And that raised a hard UI design question.
 
@@ -114,13 +114,13 @@ When the drone starts coming back on its own, how should the screen present that
 
 From the pilot's point of view, the aircraft suddenly ignored their command and moved.
 
-So I decided to **display the reason alongside it** — something like "battery critical — auto return in progress."
+So I decided to display the reason alongside it — something like "battery critical — auto return in progress."
 
 If the system makes a decision on a human's behalf, it must say why.
 
 A system that quietly does the right thing without explaining never earns trust.
 
-# **When a Widget Shrinks, Its Content Must Shrink Too**
+# When a Widget Shrinks, Its Content Must Shrink Too
 
 The control screen lets you freely resize widgets — control panel, telemetry, video.
 
@@ -128,21 +128,21 @@ But shrinking a widget broke all its content.
 
 Text overflowed, logs got clipped, numbers wrapped to two lines.
 
-CSS media queries didn't solve it. It has to respond to **widget size**, not screen size.
+CSS media queries didn't solve it. It has to respond to widget size, not screen size.
 
 I used `ResizeObserver` to watch each widget's own size, hiding logs, shrinking fonts, and abbreviating labels as it got smaller.
 
 That's when I learned responsiveness isn't only a viewport problem.
 
-**You need responsiveness inside containers too.**
+You need responsiveness inside containers too.
 
-# **What This Project Left Behind**
+# What This Project Left Behind
 
 This simulator later fed into a company project.
 
 What I built here — telemetry streaming, state machines, failure scenarios, spatial 3D representation — became the foundation of a multi-robot control platform.
 
-A personal project turned into work. Looking back, I think that was possible because **what carried over wasn't the artifact but the instinct.**
+A personal project turned into work. Looking back, I think that was possible because what carried over wasn't the artifact but the instinct.
 
 The stack changed. Cesium became Mapbox plus Three.js; gRPC became REST.
 
@@ -150,9 +150,9 @@ But the instinct that "a control screen exists for the abnormal situation" carri
 
 To sum up:
 
-- **Building only the happy path gets you halfway.** Simulating failure is what designs a control UI
-- **A number is information only when it feeds a judgment.** The battery gauge became information only after physics went in
-- **If the system decided for the human, it has to say why.** That's why auto-return displays its reason
-- **Responsiveness isn't only about viewports.** Sometimes you have to respond to container size
+- Building only the happy path gets you halfway. Simulating failure is what designs a control UI
+- A number is information only when it feeds a judgment. The battery gauge became information only after physics went in
+- If the system decided for the human, it has to say why. That's why auto-return displays its reason
+- Responsiveness isn't only about viewports. Sometimes you have to respond to container size
 
 Building a drone that falls turned out to be far more fun than building one that flies.

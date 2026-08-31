@@ -8,7 +8,7 @@ tags: ["Frontend"]
 featuredImage: "https://res.cloudinary.com/dchriszw5/image/upload/v1773558119/image_3_g72hlc.png"
 ---
 
-# **시도하게 된 배경**
+# 시도하게 된 배경
 
 우리 회사는 고객사별로 커스터마이징된 소프트웨어를 제공한다.
 
@@ -28,7 +28,7 @@ featuredImage: "https://res.cloudinary.com/dchriszw5/image/upload/v1773558119/im
 
 또한, 기존 담당자가 없어지더라도 훨씬 관리가 수월하고 유지보수가 원활할 것이라 판단되었다.
 
-# **요구 사항 분석**
+# 요구 사항 분석
 
 현재 고객사에서 기존에 지정되어 있던 메뉴들과 옵션들을 직접 설정할 수 있도록,
 
@@ -56,21 +56,21 @@ featuredImage: "https://res.cloudinary.com/dchriszw5/image/upload/v1773558119/im
 
 전문 용어가 label에 많이 들어가기에 설명을 위한 tooltip, uiType에 따른 Input 출력 등 해당 Key들의 값을 통해 UI를 만들어냈다. 갯수는 무한으로 늘어날 수 있도록 매핑해서 반응형으로 UI를 구현하기로 했다.
 
-# **Component 구성**
+# Component 구성
 
 ![TODO: Cloudinary 이미지 교체](https://res.cloudinary.com/dchriszw5/image/upload/v1773558120/image_2_kusnte.png)
 
 클라이언트 코드는 위와 같이 구성하였고, 모듈화되어 추후 확장가능하도록 설계하였다.
 
-# **UI Result**
+# UI Result
 
 ![TODO: Cloudinary 이미지 교체](https://res.cloudinary.com/dchriszw5/image/upload/v1773558119/image_3_g72hlc.png)
 
 위 UI는 샘플로 그려낸 것이고, 8개의 약속된 JSON이 들어올 경우, 위와 같이 나타나게 된다. 각 액션과 상태는 모두 문제없이 동작하는 것을 확인했다.
 
-# **개선 사항**
+# 개선 사항
 
-### **1. 중복될 수 있는 groupName 처리**
+### 1. 중복될 수 있는 groupName 처리
 
 그룹 내의 각 인풋의 아이디가 고유하지 않고 같은 경우가 있을 수 있다고 했다.
 
@@ -80,6 +80,6 @@ featuredImage: "https://res.cloudinary.com/dchriszw5/image/upload/v1773558119/im
 
 해당 유니크 아이디를 바라보고 request, response할 수 있도록 수정했다.
 
-### **2. C++ 하드웨어 모듈 데이터 최적화**
+### 2. C++ 하드웨어 모듈 데이터 최적화
 
 클라이언트(프론트) - 로컬 서버(백엔드) - 임베디드 모듈(C++) 방식으로 통신이 되고 있다. 임베디드 모듈은 하드웨어라 최대한 성능을 최적화하는 것이 중요했다. 그래서 데이터를 받을 때는 모든 데이터를 받지만, 다시 보내줄 때에는 변경된 값들만 보내주는 게 효율적이었다. 해당 사항을 개선하기 위해 그룹 내의 각 인풋의 아이디를 잡아 필터링해서 변경된 값만 보내줄 수있도록 수정했다. 또 한 가지로, 하드웨어 상 정밀한 제어가 필요해 소숫점까지 숫자를 받아야 하는 옵션들이 많았다. 들어오는 valueType이 “String”, “Boolean” 그리고 일반 “Number”가 아닌 정수(Integer)와 부동소숫점 데이터(Float)를 구별해서 받아주어야 했다. 그래서 valueType을 체크하는 함수를 중간에 추가해주고 서버로 보내주기 전 해당 valueType을 체크하는 옵션을 추가했다.

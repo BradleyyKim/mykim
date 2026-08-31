@@ -20,9 +20,9 @@ This time I had to do all of it.
 
 I sat in from the planning meetings, drew the schema, built the screens, put it on a server, managed versions, and handled an incident.
 
-I learned more from **operating it** than from building it.
+I learned more from operating it than from building it.
 
-# **The User Is Not a Developer**
+# The User Is Not a Developer
 
 This service has three kinds of users.
 
@@ -52,11 +52,11 @@ If there's no location data, they pick from a list or tap "not sure," and the PM
 
 Making this decision taught me something.
 
-**You must not imagine your users through a developer's frame of reference.**
+You must not imagine your users through a developer's frame of reference.
 
 To me, signing up is a three-second procedure. To a foreman in the field, it's a reason not to use the service.
 
-# **Decision 1. Photos Never Move**
+# Decision 1. Photos Never Move
 
 When a photo arrives, it gets placed into a "location, process step" slot.
 
@@ -70,7 +70,7 @@ If the move fails midway, a photo can end up existing nowhere.
 
 And later, when migrating from cloud to an in-house server, the folder structure becomes a wholesale obstacle.
 
-So I made it so that **once an original file is stored, it never moves.**
+So I made it so that once an original file is stored, it never moves.
 
 Placement is expressed purely as DB metadata. A kind of virtual folder.
 
@@ -82,7 +82,7 @@ The prototype was built on Supabase, but company policy required moving to on-pr
 
 Because storage access was isolated behind an adapter and file locations were fixed, I finished the migration with almost no changes to screen code.
 
-# **Decision 2. The DB Forbids Deletion**
+# Decision 2. The DB Forbids Deletion
 
 The photos in this service are completion evidence.
 
@@ -96,7 +96,7 @@ But that's a UI-level promise, and those break eventually.
 
 I might rush out an admin feature later and reach for a delete. A new developer might join and remove something without knowing.
 
-So I **blocked physical deletion with DB constraints.**
+So I blocked physical deletion with DB constraints.
 
 Photos and records are never erased — only replaced or deactivated.
 
@@ -108,11 +108,11 @@ It supports rotation, fine leveling, and zoom, but never touches the original fi
 
 Correction values are stored separately and applied uniformly across screens and Excel output.
 
-**Important rules should be built as system constraints, not human agreements.**
+Important rules should be built as system constraints, not human agreements.
 
 I'd had the same thought when writing code review conventions, but enforcing it at the schema level was far stronger.
 
-# **Lesson From Operations 1. Deployment Has an Order**
+# Lesson From Operations 1. Deployment Has an Order
 
 Here I made a mistake.
 
@@ -120,7 +120,7 @@ It was a release that included a DB migration.
 
 Change the schema, then ship the new code that uses that schema.
 
-But I got the order confused and **restarted the server before applying the DB**.
+But I got the order confused and restarted the server before applying the DB.
 
 The new code went looking for a column that didn't exist yet, and 500s started falling.
 
@@ -134,9 +134,9 @@ To avoid repeating a mistake, you can't rely on memory. It has to live in the pr
 
 When I only did frontend, deployment was just "merge it."
 
-Now I know deployment is **an irreversible act**.
+Now I know deployment is an irreversible act.
 
-# **Lesson From Operations 2. Features Are Entangled**
+# Lesson From Operations 2. Features Are Entangled
 
 As versions went up, features multiplied, and at some point fixing one feature broke something unrelated.
 
@@ -146,7 +146,7 @@ Change photo placement and the review board, the route diagram, and the Excel re
 
 I only held this in my head, so I forgot it over time.
 
-So I built a **feature chaining map** as a document.
+So I built a feature chaining map as a document.
 
 It lays out, axis by axis, which feature touches which data and how far that ripples into which screens.
 
@@ -158,7 +158,7 @@ Even on a project I develop alone, documentation was necessary.
 
 Future me was effectively a stranger.
 
-# **Lesson From Operations 3. Look at the Build Artifact Too**
+# Lesson From Operations 3. Look at the Build Artifact Too
 
 At one point the deployment bundle got strangely large.
 
@@ -172,18 +172,18 @@ The bundle shrank to 39MB.
 
 "It runs fine locally" wasn't the finish line.
 
-**I had to check what the produced artifact actually contained.**
+I had to check what the produced artifact actually contained.
 
-# **Summing Up**
+# Summing Up
 
 When I only did frontend, the goal was "build it well."
 
 Owning one thing end to end as full-stack changed the goal.
 
-- More than building, what mattered was **closing off the paths where things can go wrong**
-- Rules held only when built as **constraints**, not agreements
-- Deployment wasn't uploading code but **a procedure with an order**
-- Even a solo project needed **documentation**
+- More than building, what mattered was closing off the paths where things can go wrong
+- Rules held only when built as constraints, not agreements
+- Deployment wasn't uploading code but a procedure with an order
+- Even a solo project needed documentation
 
 I'm still clumsy at this.
 

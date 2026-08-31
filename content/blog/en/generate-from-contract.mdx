@@ -20,32 +20,32 @@ I started wondering whether a human should be tracking this at all.
 
 So I set one rule.
 
-**Don't transcribe the spec by hand. Derive the code from a single source of truth.**
+Don't transcribe the spec by hand. Derive the code from a single source of truth.
 
-# **The Contract Comes First**
+# The Contract Comes First
 
 The premise of this approach is deciding, up front, *what counts as the truth*.
 
-- **Truth for APIs = the OpenAPI spec.** The backend provides it. Types, query hooks, and mocks are generated from it.
-- **Truth for design = design tokens.** Colors and typography reference tokens and are never hardcoded.
+- Truth for APIs = the OpenAPI spec. The backend provides it. Types, query hooks, and mocks are generated from it.
+- Truth for design = design tokens. Colors and typography reference tokens and are never hardcoded.
 
-Once that's in place, here's what happens when the backend changes the spec: **TypeScript points at exactly the places that broke.**
+Once that's in place, here's what happens when the backend changes the spec: TypeScript points at exactly the places that broke.
 
 Nobody has to walk around asking "did the API change?"
 
 The compiler asks on your behalf.
 
-When a spec arrives as a spreadsheet or a table, I move field definitions into types and forms. When it arrives verbally or over chat, I **first write it up as a short spec and get it confirmed** before implementing.
+When a spec arrives as a spreadsheet or a table, I move field definitions into types and forms. When it arrives verbally or over chat, I first write it up as a short spec and get it confirmed before implementing.
 
 If you turn a verbal requirement straight into code, you have no way to win the later argument about "I never said that."
 
-# **Make Rules Context, Not Documentation**
+# Make Rules Context, Not Documentation
 
 Setting principles is easy. Following them is hard.
 
 Especially when each project has a different stack and different conventions — yesterday's pattern is today's wrong pattern.
 
-So I embedded the rules **into the working environment itself.**
+So I embedded the rules into the working environment itself.
 
 ```
 work/
@@ -60,9 +60,9 @@ Three layers.
 
 - The root holds shared rules — commit style, branch policy, contract-first workflow
 - Per-project files hold that project's conventions — state management patterns, queryKey rules, design token naming, file naming
-- On conflict, **the project rule wins**
+- On conflict, the project rule wins
 
-The key point is that this **applies automatically without anyone being told to read it.**
+The key point is that this applies automatically without anyone being told to read it.
 
 The moment you touch a file in that project, that project's rules load.
 
@@ -70,7 +70,7 @@ I used to explain "here's how we do it" every single time.
 
 Now I don't. The environment already knows.
 
-# **Feature Work as a Pipeline**
+# Feature Work as a Pipeline
 
 I turned the process of building a single feature into a fixed sequence.
 
@@ -84,7 +84,7 @@ request → [0] identify target project & feature
         → [5] summary + items needing backend/planning confirmation
 ```
 
-The most important part here is **"no guessing" in step [1].**
+The most important part here is "no guessing" in step [1].
 
 When you don't know a response field name and you invent something plausible, that code compiles and passes review.
 
@@ -94,9 +94,9 @@ Marking something as unknown and leaving a mock is always cheaper than pretendin
 
 Explicitly extracting "needs backend confirmation" in step [5] exists for the same reason.
 
-A feature being done doesn't mean it's done — **what uncertainty remains** has to come out with it.
+A feature being done doesn't mean it's done — what uncertainty remains has to come out with it.
 
-# **Automation Should Run Quietly**
+# Automation Should Run Quietly
 
 Every time a file is edited, the formatter belonging to that file's project runs automatically.
 
@@ -109,17 +109,17 @@ file edit occurs
    → always exit successfully (never block the work)
 ```
 
-Because this is a multi-project workspace, the crucial part was **inferring which project a file belongs to from its path.**
+Because this is a multi-project workspace, the crucial part was inferring which project a file belongs to from its path.
 
 Walking upward to the nearest `package.json` does it.
 
-And that last line matters — **always exit successfully.**
+And that last line matters — always exit successfully.
 
 If a formatter failure blocks the whole task, people eventually just turn the automation off.
 
 Automation should only help. It must never stand in the way.
 
-# **Quality as a Triple Net**
+# Quality as a Triple Net
 
 I didn't try to catch everything with one layer.
 
@@ -129,45 +129,45 @@ I didn't try to catch everything with one layer.
 | Feature complete | pipeline step 4 | type & API consistency (type-check) |
 | Just before commit | husky pre-commit | final check (lint-staged) |
 
-The value isn't that the net is dense — it's that **each net catches something different.**
+The value isn't that the net is dense — it's that each net catches something different.
 
 Style right after editing, consistency at feature completion, final verification at commit.
 
 It isn't the same check three times; it's three different failures caught at three different moments.
 
-# **AI Raises the Ceiling, It Doesn't Lower the Floor**
+# AI Raises the Ceiling, It Doesn't Lower the Floor
 
 I worked this idea out while preparing an internal seminar, and I still think the same thing here.
 
-"Developing with AI" is often read as **"building fast and sloppy."**
+"Developing with AI" is often read as "building fast and sloppy."
 
 My experience was the opposite.
 
 There were things I used to skip for lack of time. Tests, documentation, design systems, CI setup.
 
-Now I turn all of that **on by default** and still move fast.
+Now I turn all of that on by default and still move fast.
 
 I didn't get faster by skipping the fundamentals. I got able to do the fundamentals fast.
 
 And the human job changed.
 
-It's not typing — it's **design, verification, and quality gates.**
+It's not typing — it's design, verification, and quality gates.
 
 Setting contracts, drawing boundaries, confirming the result is right.
 
 That's harder, and more interesting.
 
-# **I Don't Take It on Faith**
+# I Don't Take It on Faith
 
 To be honest about the limits:
 
 - Without a contract, nothing works. If a backend won't provide OpenAPI, this pipeline runs at half capacity.
-- Generated code still needs **human verification.** Compiling isn't the same as being correct.
+- Generated code still needs human verification. Compiling isn't the same as being correct.
 - Automation can't judge things like security and licensing. Humans put up the guardrails.
 
 So I don't think of this as "a system that develops for you."
 
-It's closer to **a system that makes it clear where a human needs to make a judgment.**
+It's closer to a system that makes it clear where a human needs to make a judgment.
 
 It tells you what to check, and handles the repetition around it.
 
@@ -175,9 +175,9 @@ It tells you what to check, and handles the repetition around it.
 
 To sum up:
 
-When I transcribed specs by hand, consistency depended on **human memory.**
+When I transcribed specs by hand, consistency depended on human memory.
 
-Since I started deriving from contracts, consistency depends on **the type system.**
+Since I started deriving from contracts, consistency depends on the type system.
 
 People forget. Type systems don't.
 

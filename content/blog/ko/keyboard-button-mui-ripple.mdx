@@ -8,11 +8,11 @@ tags: ["Frontend"]
 featuredImage: "https://res.cloudinary.com/dchriszw5/image/upload/v1773558097/image_dyg5cp.png"
 ---
 
-## **들어가며**
+## 들어가며
 
 최근 프로젝트에서 모달 내 네비게이션 버튼에 키보드 지원을 추가하면서 생긴 경험과 과정에서 느낀 점들을 공유해보려고 한다.
 
-## **문제 상황: 키보드 네비게이션의 시각적 피드백 부족**
+## 문제 상황: 키보드 네비게이션의 시각적 피드백 부족
 
 사용자들이 화살표 키로 네비게이션을 할 때 시각적 피드백이 없었다. 마우스로 클릭하면 MUI의 리플 효과가 나타나는데, 키보드로는 아무 반응이 없어서 사용자들이 혼란스러울 것 같았다. 그래서 처음에는 CSS를 이용해 단순히 scale을 키워보았으나 UX적으로 일관성을 헤치는 느낌이 들었고, UI도 적절하지 않아보였다.
 
@@ -22,25 +22,25 @@ featuredImage: "https://res.cloudinary.com/dchriszw5/image/upload/v1773558097/im
 
 그래서 아래와 같은 목표를 세우고 진행했다.
 
-### **기술적 도전과제**
+### 기술적 도전과제
 
-**MUI 리플 시스템과의 연동**: 키보드 이벤트로 MUI의 내장 리플 효과를 트리거해야 함
+MUI 리플 시스템과의 연동: 키보드 이벤트로 MUI의 내장 리플 효과를 트리거해야 함
 
-**일관된 사용자 경험**: 마우스 클릭과 키보드 입력이 동일한 시각적 피드백을 제공해야 함
+일관된 사용자 경험: 마우스 클릭과 키보드 입력이 동일한 시각적 피드백을 제공해야 함
 
-**재사용성**: 다른 버튼들에도 쉽게 적용할 수 있어야 함
+재사용성: 다른 버튼들에도 쉽게 적용할 수 있어야 함
 
-## **첫 번째 접근: 과도한 추상화의 함정**
+## 첫 번째 접근: 과도한 추상화의 함정
 
 처음에는 기존의 Button Component에 Ripple 기능을 추가해서 사용하면 좋겠다는 생각으로 복잡한 아키텍쳐를 설계했다. useKeyboardRipple Hook을 만들고, 해당 Hook에 trigger를 연결해 참조할 수 있는 구조를 생각했으나 아래와 같은 문제점들이 생겨났다.
 
-**과도한 복잡성**: 단순한 기능을 위해 너무 많은 파일과 로직이 필요
+과도한 복잡성: 단순한 기능을 위해 너무 많은 파일과 로직이 필요
 
-**Props Drilling**: ref를 여러 단계를 거쳐 전달해야 함
+Props Drilling: ref를 여러 단계를 거쳐 전달해야 함
 
-**학습 비용**: 새로운 개발자가 이해하기 어려운 구조
+학습 비용: 새로운 개발자가 이해하기 어려운 구조
 
-**유지보수 부담**: 작은 변경사항도 여러 파일을 수정해야 함
+유지보수 부담: 작은 변경사항도 여러 파일을 수정해야 함
 
 그래서 over-engineering이라는 생각이 들었고 단순하게 바꿀 방법을 고민하다. Button을 두 종류로 나누는 게 좋겠다는 생각이 들았다. keyboard 동작이 필요한 버튼과 아닌 버튼, 그리고 keyboard 동작이 가능한 버튼 내에 ripple 기능을 default로 제공하면 되겠다고 판단이 들었고, 로직을 하나의 컴포넌트(Self-contained Component)에 집중시키기로 했다.
 
@@ -103,17 +103,17 @@ export const KeyboardRippleButton = forwardRef<HTMLButtonElement, KeyboardRipple
 );
 ```
 
-## **주요 시사점: 아키텍처 설계의 교훈**
+## 주요 시사점: 아키텍처 설계의 교훈
 
-### **과도한 추상화는 독이 될 수 있다**
+### 과도한 추상화는 독이 될 수 있다
 
 처음에는 <strong>"재사용성"</strong>을 위해 모든 것을 분리하려고 했으나, 실제로는
 
-**단순한 기능**을 위해 **복잡한 구조**를 만들었고
+단순한 기능을 위해 복잡한 구조를 만들었고
 
-**유지보수성**을 위해 **유지보수 부담**을 증가시켰다.
+유지보수성을 위해 유지보수 부담을 증가시켰다.
 
-### **실제 사용 사례를 먼저 생각하라**
+### 실제 사용 사례를 먼저 생각하라
 
 ```jsx
 // 실제 사용 패턴
@@ -126,21 +126,21 @@ export const KeyboardRippleButton = forwardRef<HTMLButtonElement, KeyboardRipple
 </KeyboardRippleButton>
 ```
 
-이렇게 사용할 때 필요한 건 **단순한 API**였다. 복잡한 hook이나 여러 파일이 필요하지 않았다.
+이렇게 사용할 때 필요한 건 단순한 API였다. 복잡한 hook이나 여러 파일이 필요하지 않았다.
 
-### **Self-Contained 패턴의 장점**
+### Self-Contained 패턴의 장점
 
-**단순함**: 하나의 파일에 모든 로직이 집중
+단순함: 하나의 파일에 모든 로직이 집중
 
-**이해하기 쉬움**: 새로운 개발자도 쉽게 파악 가능
+이해하기 쉬움: 새로운 개발자도 쉽게 파악 가능
 
-**테스트하기 쉬움**: 독립적인 컴포넌트로 테스트 가능
+테스트하기 쉬움: 독립적인 컴포넌트로 테스트 가능
 
-**성능 최적화**: 불필요한 리렌더링 방지
+성능 최적화: 불필요한 리렌더링 방지
 
-## **추가적으로 구현한 기능 및 성능 최적화**
+## 추가적으로 구현한 기능 및 성능 최적화
 
-### **다양한 키보드 키 지원**
+### 다양한 키보드 키 지원
 
 ```jsx
 // 여러 키 지원
@@ -152,7 +152,7 @@ export const KeyboardRippleButton = forwardRef<HTMLButtonElement, KeyboardRipple
 </KeyboardRippleButton>
 ```
 
-**커스터마이징 가능한 리플 효과**
+커스터마이징 가능한 리플 효과
 
 ```jsx
 // 리플 지속시간과 중심점 조정
@@ -165,7 +165,7 @@ export const KeyboardRippleButton = forwardRef<HTMLButtonElement, KeyboardRipple
 </KeyboardRippleButton>
 ```
 
-**다른 컴포넌트와의 자연스러운 연동**
+다른 컴포넌트와의 자연스러운 연동
 
 ```jsx
 // CommonModal에서의 사용
@@ -179,7 +179,7 @@ export const KeyboardRippleButton = forwardRef<HTMLButtonElement, KeyboardRipple
 </KeyboardRippleButton>
 ```
 
-**useCallback을 통한 메모이제이션**
+useCallback을 통한 메모이제이션
 
 ```jsx
 const triggerRipple = useCallback(() => {
@@ -187,7 +187,7 @@ const triggerRipple = useCallback(() => {
 }, [rippleDuration, rippleCenterOffset]);
 ```
 
-**useEffect의 정확한 의존성 관리**
+useEffect의 정확한 의존성 관리
 
 ```jsx
 useEffect(() => {
@@ -195,13 +195,13 @@ useEffect(() => {
 }, [keyboardKeys, onKeyboardTrigger, triggerRipple]);
 ```
 
-**자동 정리(Cleanup) 처리**
+자동 정리(Cleanup) 처리
 
 ```jsx
 return () => document.removeEventListener("keydown", handleKeyDown);
 
 ```
 
-## **마무리: Simple is Best ?**
+## 마무리: Simple is Best ?
 
 실제 문제를 해결하기 위한 목적성을 분명히 하고 오버엔지니어링을 경계하며, 사용자 경험을 우선시하는 것을 항상 염두해 둘 것...!

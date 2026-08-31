@@ -8,11 +8,11 @@ tags: ["Frontend"]
 featuredImage: "https://res.cloudinary.com/dchriszw5/image/upload/v1773558097/image_dyg5cp.png"
 ---
 
-## **Introduction**
+## Introduction
 
 In a recent project, I'd like to share the experience and insights gained while adding keyboard support to navigation buttons within a modal.
 
-## **The Problem: Lack of Visual Feedback for Keyboard Navigation**
+## The Problem: Lack of Visual Feedback for Keyboard Navigation
 
 When users navigated with arrow keys, there was no visual feedback. Clicking with a mouse would trigger MUI's ripple effect, but keyboard input produced no response, which I thought would confuse users. So initially I tried simply scaling up with CSS, but it felt inconsistent from a UX perspective, and the UI didn't look right either.
 
@@ -22,25 +22,25 @@ When users navigated with arrow keys, there was no visual feedback. Clicking wit
 
 So I set the following goals and proceeded.
 
-### **Technical Challenges**
+### Technical Challenges
 
-**Integration with MUI's ripple system**: Needed to trigger MUI's built-in ripple effect via keyboard events
+Integration with MUI's ripple system: Needed to trigger MUI's built-in ripple effect via keyboard events
 
-**Consistent user experience**: Mouse clicks and keyboard input should provide identical visual feedback
+Consistent user experience: Mouse clicks and keyboard input should provide identical visual feedback
 
-**Reusability**: Should be easily applicable to other buttons
+Reusability: Should be easily applicable to other buttons
 
-## **First Approach: The Trap of Over-Abstraction**
+## First Approach: The Trap of Over-Abstraction
 
 Initially, I designed a complex architecture thinking it would be great to add Ripple functionality to the existing Button Component. I considered creating a useKeyboardRipple Hook and connecting a trigger to it, but the following problems emerged:
 
-**Excessive complexity**: Too many files and logic needed for a simple feature
+Excessive complexity: Too many files and logic needed for a simple feature
 
-**Props Drilling**: Refs needed to be passed through multiple layers
+Props Drilling: Refs needed to be passed through multiple layers
 
-**Learning cost**: A structure difficult for new developers to understand
+Learning cost: A structure difficult for new developers to understand
 
-**Maintenance burden**: Even small changes required modifying multiple files
+Maintenance burden: Even small changes required modifying multiple files
 
 So I realized it was over-engineering and started thinking about how to simplify it. I decided it would be better to split buttons into two types: buttons that need keyboard behavior and those that don't, with ripple functionality provided by default within keyboard-enabled buttons. I decided to concentrate the logic into a single Self-contained Component.
 
@@ -103,17 +103,17 @@ export const KeyboardRippleButton = forwardRef<HTMLButtonElement, KeyboardRipple
 );
 ```
 
-## **Key Takeaways: Lessons in Architecture Design**
+## Key Takeaways: Lessons in Architecture Design
 
-### **Over-abstraction can be poison**
+### Over-abstraction can be poison
 
-Initially, I tried to separate everything for **"reusability"**, but in reality:
+Initially, I tried to separate everything for "reusability", but in reality:
 
-I created a **complex structure** for a **simple feature**, and
+I created a complex structure for a simple feature, and
 
-increased **maintenance burden** for the sake of **maintainability**.
+increased maintenance burden for the sake of maintainability.
 
-### **Think about actual use cases first**
+### Think about actual use cases first
 
 ```jsx
 // Actual usage pattern
@@ -126,21 +126,21 @@ increased **maintenance burden** for the sake of **maintainability**.
 </KeyboardRippleButton>
 ```
 
-What was needed for this use case was a **simple API**. Complex hooks or multiple files weren't necessary.
+What was needed for this use case was a simple API. Complex hooks or multiple files weren't necessary.
 
-### **Advantages of the Self-Contained Pattern**
+### Advantages of the Self-Contained Pattern
 
-**Simplicity**: All logic concentrated in a single file
+Simplicity: All logic concentrated in a single file
 
-**Easy to understand**: New developers can quickly grasp it
+Easy to understand: New developers can quickly grasp it
 
-**Easy to test**: Testable as an independent component
+Easy to test: Testable as an independent component
 
-**Performance optimization**: Prevents unnecessary re-renders
+Performance optimization: Prevents unnecessary re-renders
 
-## **Additional Features and Performance Optimization**
+## Additional Features and Performance Optimization
 
-### **Multiple Keyboard Key Support**
+### Multiple Keyboard Key Support
 
 ```jsx
 // Multiple key support
@@ -152,7 +152,7 @@ What was needed for this use case was a **simple API**. Complex hooks or multipl
 </KeyboardRippleButton>
 ```
 
-**Customizable Ripple Effect**
+Customizable Ripple Effect
 
 ```jsx
 // Adjustable ripple duration and center point
@@ -165,7 +165,7 @@ What was needed for this use case was a **simple API**. Complex hooks or multipl
 </KeyboardRippleButton>
 ```
 
-**Seamless Integration with Other Components**
+Seamless Integration with Other Components
 
 ```jsx
 // Usage in CommonModal
@@ -179,7 +179,7 @@ What was needed for this use case was a **simple API**. Complex hooks or multipl
 </KeyboardRippleButton>
 ```
 
-**Memoization with useCallback**
+Memoization with useCallback
 
 ```jsx
 const triggerRipple = useCallback(() => {
@@ -187,7 +187,7 @@ const triggerRipple = useCallback(() => {
 }, [rippleDuration, rippleCenterOffset]);
 ```
 
-**Precise Dependency Management in useEffect**
+Precise Dependency Management in useEffect
 
 ```jsx
 useEffect(() => {
@@ -195,13 +195,13 @@ useEffect(() => {
 }, [keyboardKeys, onKeyboardTrigger, triggerRipple]);
 ```
 
-**Automatic Cleanup Handling**
+Automatic Cleanup Handling
 
 ```jsx
 return () => document.removeEventListener("keydown", handleKeyDown);
 
 ```
 
-## **Conclusion: Simple is Best?**
+## Conclusion: Simple is Best?
 
 Always keep in mind: clarify the purpose of solving the actual problem, guard against over-engineering, and prioritize user experience...!

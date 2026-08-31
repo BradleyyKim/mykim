@@ -8,7 +8,7 @@ tags: ["Frontend"]
 featuredImage: "https://res.cloudinary.com/dchriszw5/image/upload/v1773558119/image_3_g72hlc.png"
 ---
 
-# **Background**
+# Background
 
 Our company provides customized software for each client.
 
@@ -28,7 +28,7 @@ If this work was completed successfully, it would serve as a solid reference for
 
 Additionally, even if the original developer left, management and maintenance would be much smoother.
 
-# **Requirements Analysis**
+# Requirements Analysis
 
 The client requested the ability to directly configure menus and options that had previously been hardcoded,
 
@@ -54,21 +54,21 @@ We broadly agreed on 4 input types to receive: Switch, Text, Number, and Select.
 
 The image above is part of the specification (other parts are private...). While it's difficult to explain the detailed characteristics, since many technical terms go into labels, we generated the UI through the values of these keys—including tooltips for explanation and input rendering based on uiType. We decided to implement the UI responsively with mapping so the count could grow infinitely.
 
-# **Component Structure**
+# Component Structure
 
 ![TODO: Cloudinary image replacement](https://res.cloudinary.com/dchriszw5/image/upload/v1773558120/image_2_kusnte.png)
 
 The client code was structured as shown above, modularized and designed for future extensibility.
 
-# **UI Result**
+# UI Result
 
 ![TODO: Cloudinary image replacement](https://res.cloudinary.com/dchriszw5/image/upload/v1773558119/image_3_g72hlc.png)
 
 The UI above is a sample rendering. When 8 agreed-upon JSON objects come in, it appears like the above. All actions and states were confirmed to work without issues.
 
-# **Improvements**
+# Improvements
 
-### **1. Handling Potentially Duplicate groupNames**
+### 1. Handling Potentially Duplicate groupNames
 
 It was noted that the IDs of individual inputs within a group might not be unique and could be identical.
 
@@ -78,6 +78,6 @@ I simply combined each input's ID with the groupName to create unique IDs.
 
 I modified it so that requests and responses could reference these unique IDs.
 
-### **2. C++ Hardware Module Data Optimization**
+### 2. C++ Hardware Module Data Optimization
 
 Communication follows a Client (Frontend) → Local Server (Backend) → Embedded Module (C++) pattern. Since the embedded module is hardware, optimizing performance was crucial. So while we receive all data, it was efficient to send back only the changed values. To implement this improvement, I captured each input's ID within the group, filtered them, and modified it to send only changed values. Additionally, since many options required decimal precision for precise hardware control, I needed to distinguish between incoming valueTypes—not just "String," "Boolean," and regular "Number," but specifically Integer and Float (floating-point data). So I added a valueType checking function in between and added an option to check the valueType before sending to the server.

@@ -14,17 +14,17 @@ Every month you write in what you accomplished, per project. It has a fixed hier
 
 At first I naturally wrote straight into that format.
 
-But months later, reopening it, **I couldn't read my own writing.**
+But months later, reopening it, I couldn't read my own writing.
 
 Text optimized for a form isn't written for a human to read. It's written to be fed into a system.
 
-And there was a bigger problem. When I tried to summarize the year at year-end, **the raw material existed only inside that format, scattered.**
+And there was a bigger problem. When I tried to summarize the year at year-end, the raw material existed only inside that format, scattered.
 
-# **I Separated Source From Output**
+# I Separated Source From Output
 
 I brought over exactly what I do in frontend work.
 
-**Don't write the source in the output format. Write the source for humans, and transform it into output.**
+Don't write the source in the output format. Write the source for humans, and transform it into output.
 
 ```
 entries/YYYY-MM.md      ← source. Human-readable. Accumulated continuously
@@ -42,15 +42,15 @@ Splitting them solved two things at once.
 - I can read it later (because the source is in human language)
 - If the company form changes, the source doesn't (only the transform rules change)
 
-It isn't **writing the same information twice — it's writing once and extracting it two ways.**
+It isn't writing the same information twice — it's writing once and extracting it two ways.
 
 Structurally identical to how a blog produces list pages, detail pages, RSS, and sitemap from a single MDX file.
 
-# **A Project Axis, Not Just a Time Axis**
+# A Project Axis, Not Just a Time Axis
 
 Monthly files alone weren't enough.
 
-They answer "what did I do this month," but they can't answer **"how has this project moved along until now."**
+They answer "what did I do this month," but they can't answer "how has this project moved along until now."
 
 That's scattered across twelve files.
 
@@ -70,11 +70,11 @@ In database terms, I built two indexes.
 
 If there are two read patterns, there should be two indexes — I applied the same idea to documents.
 
-# **The Raw Material Already Existed — Git**
+# The Raw Material Already Existed — Git
 
 This is the part that got easiest.
 
-Reconstructing "what did I do this month" from memory at month's end is hard. And writing from memory **keeps only the memorable and drops the consistent.**
+Reconstructing "what did I do this month" from memory at month's end is hard. And writing from memory keeps only the memorable and drops the consistent.
 
 But the raw material was already there. Commit logs.
 
@@ -82,17 +82,17 @@ I wrote a script that gathers each repository's change history weekly, and used 
 
 Of course, commit logs don't become accomplishments as-is.
 
-`fix: typo` is not an achievement. So rather than transcribing logs, I added a step that **merges them by theme.**
+`fix: typo` is not an achievement. So rather than transcribing logs, I added a step that merges them by theme.
 
 Twenty commits become one line: "implemented drag-to-reassign on the review board."
 
 And the work that leaves no trace in git — meetings, negotiations, documentation, helping someone else — gets filled in by asking.
 
-**Automate what can be gathered automatically; humans supply only what isn't there.**
+Automate what can be gathered automatically; humans supply only what isn't there.
 
 Trying to automate everything fails; doing everything by hand means you stop doing it. Somewhere in between was right.
 
-# **An Unexpected Payoff — Negotiation Material Accumulated by Itself**
+# An Unexpected Payoff — Negotiation Material Accumulated by Itself
 
 When I built this, I was just trying to make a monthly chore easier.
 
@@ -100,7 +100,7 @@ There was an upside I hadn't expected.
 
 When salary negotiation season came, there was nothing to prepare.
 
-The project-axis files already held **what I did, when, and how — in sentences.**
+The project-axis files already held what I did, when, and how — in sentences.
 
 Instead of squeezing my memory to manufacture "here's what I accomplished," I just organized what was already there.
 
@@ -108,21 +108,21 @@ That difference was bigger than I expected.
 
 Relying on memory overweights the last two or three months and drops everything from early in the year entirely.
 
-And people forget their own work **in the direction of underestimating it.** You remember that something was hard; you don't remember how much of it there was.
+And people forget their own work in the direction of underestimating it. You remember that something was hard; you don't remember how much of it there was.
 
 Records prevent that distortion.
 
-# **To Sum Up**
+# To Sum Up
 
-- **Don't write the source in the output format.** Source in human language, output by transformation
-- **Two read patterns means two axes.** Time axis and project axis
-- **Automate what can be gathered automatically.** Git logs as the starting point; humans fill the gaps
-- **Don't transcribe logs directly.** You need a step that merges twenty commits into one line
+- Don't write the source in the output format. Source in human language, output by transformation
+- Two read patterns means two axes. Time axis and project axis
+- Automate what can be gathered automatically. Git logs as the starting point; humans fill the gaps
+- Don't transcribe logs directly. You need a step that merges twenty commits into one line
 
 Looking back, this is just a development principle moved over to work records.
 
 Keep a single source of truth and derive everything else.
 
-The core shift was going **from recording in order to report, to extracting reports from records.**
+The core shift was going from recording in order to report, to extracting reports from records.
 
 And because this is something I do for myself rather than because the company asked, it stays with me even if I change companies.
