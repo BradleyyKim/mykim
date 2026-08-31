@@ -1,0 +1,67 @@
+---
+title: "Code Without a Reviewer"
+slug: "frontend-mr-review-automation"
+description: "Our reviews weren't slow. They were absent. On a team where everyone drives their own project, reading someone else's code always loses the priority battle. On attaching a review bot to our internal GitLab, and what can and cannot be handed to a machine."
+publishedDate: "2026-08-08"
+category: "develop-knowledge"
+tags: ["Frontend", "AI", "Productivity"]
+featuredImage: ""
+---
+
+When people talk about review automation, they usually mean speed. Reviews pile up, you wait days.
+
+We were one stage earlier. There were no reviews.
+
+On a team where everyone drives a project of their own, opening someone else's repo to read a diff always sits behind your own work. Not out of ill will. It simply loses, every time, on priority.
+
+Repos with a single owner had no reviewer candidates to begin with, and our internal GitLab has no Runners, so CI wasn't catching anything either. The outcome was one of two things: merged without review, or forgotten while waiting for one.
+
+# Building what isn't there
+
+When you can't hire more people, the options narrow. So I built a bot.
+
+I made an account on our internal GitLab and wired up a pipeline that finds open MRs, reads the diff locally, and posts comments. Anyone can sketch that much.
+
+Running it for real, the hard parts turned out to be elsewhere. The question wasn't what to review. It was how far to trust this thing.
+
+# Where the state of record lives
+
+Run the bot from a work Mac and a home Mac and you get the same MR reviewed twice.
+
+At first I kept a local file of what had been reviewed. I dropped it quickly. The moment there are two machines, a local record only knows the truth of its own world.
+
+So I embedded an invisible marker inside the comment itself. It's an HTML comment — hidden on screen, retrievable through the API. Before reviewing, look for the marker.
+
+Once the record of truth became GitLab itself, running from any machine was safe. The local file was demoted to a cache.
+
+When several actors in different places do the same work, where you put the truth decides most of the other questions. This taught me that again.
+
+# Knowing when to stay quiet
+
+Re-reviewing an MR from scratch after new commits means repeating things already said. To the person receiving it, that isn't review. It's noise.
+
+So the bot reads only what changed since the point held in the marker, and checks whether the earlier remarks were addressed.
+
+There was one more rule. If the bot isn't confident about a point, it doesn't post it. It reports it to me and stops there.
+
+An automated comment carries less weight than a human one. Let a few wrong remarks accumulate and people stop reading the bot; after that, they skip the correct remarks too. What can be said and what should be said are different things.
+
+# What the bot cannot do
+
+The bot's token can only post comments. No merging, no approving, no labels, no writes to git at all. Outside its assigned group it doesn't even look.
+
+Designing the automation, I spent as long on the list of prohibitions as on the list of features. Automation that causes one accident doesn't get used again. Convenience accumulates slowly; trust collapses all at once.
+
+The review standards live in a document rather than inside the bot. To change them you edit a document, not code. Which means it stops being something only I can do.
+
+# What remains
+
+Now every MR is read at least once. Solo-owned repos included.
+
+With the mechanical remarks laid down first, human review drifted upward into design and context. Why this screen must look this way, what debt this decision creates next quarter.
+
+The biggest change wasn't technical, though. It was the quiet relief of no longer merging code just because there was nobody to ask.
+
+And one question stays with me. Did we remove the absence of review, or did we route around a relationship where asking for review had become hard?
+
+We handed the machine the reviews a machine can do, and the place where human review belongs came into sharper focus.

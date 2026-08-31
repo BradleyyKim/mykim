@@ -1,0 +1,75 @@
+---
+title: "Records Only Become Evidence Later"
+slug: "gongjang-expansion-and-patent"
+description: "A service that began as a small task force spread company-wide, and one day the IP team wrote to say we should file a patent. On reassembling scattered development records into the language of patents — and finding that the invention lived where the spec was blank."
+publishedDate: "2026-08-15"
+category: "develop-knowledge"
+tags: ["Work", "Growth"]
+featuredImage: ""
+---
+
+It started as a small task force.
+
+A project to relieve one specific operational inconvenience. A company-wide service was never the goal. But once it existed, it turned out the same inconvenience didn't live only at headquarters.
+
+# Expansion was a question of recovery, not features
+
+When the talk turned to widening it from headquarters to branch offices, the list of features to add was shorter than expected.
+
+The real homework sat elsewhere. Evolving the schema of a production database full of real data without breaking it, and turning the migrations that would keep repeating into procedure rather than human memory.
+
+So I fossilized the production update into a document. Back up, migrate, verify — running as a procedure, leaving an execution record behind.
+
+The difference between a task-force project and a company-wide service wasn't a count of features. It was whether a mistake could be undone.
+
+A tool you use alone can be fixed when it breaks. A tool many people use stops their day the moment it breaks. The same code asks different things of you depending on where it stands.
+
+# They reached out first
+
+Somewhere in the middle of the expansion talks, the company's IP team wrote to us. Let's file a patent for this.
+
+Honestly, I was caught off guard. While building it, patents had never crossed my mind. I was busy solving the inconvenience in front of me.
+
+But someone outside spotting the value first was an unmistakable signal. It meant the way we solved the problem was more distinctive than it looked from inside.
+
+The person who builds something is usually the worst judge of its worth. What you look at every day becomes ordinary, and what has become ordinary never looks remarkable.
+
+The delight was brief; the homework followed. Give us the materials describing the invention. A patent is established by documents rather than ideas, and the only person who could write those documents was the person who built the thing.
+
+# Digging up what had passed
+
+I pulled out everything left over from that month or so of development. Commits, design documents, meeting notes, messenger threads.
+
+The skeleton came out like this. An invention overview mapped onto the shape of a patent specification. A list of candidate technical elements, each with its novelty point and where the evidence lived. A table splitting the work into more than eighty units, classified by who raised the problem, conceived, designed, implemented, verified, decided. An analysis pulling the decisive passages out of a thousand-plus lines of messenger history, each quote annotated with what it proves.
+
+And one more. A document on who resolved the points the spec had left open.
+
+That last one stayed with me longest. Of the nineteen elements we shortlisted as claim candidates, thirteen came from outside the spec.
+
+The invention wasn't what the spec contained. It emerged from filling in what the spec left blank.
+
+Looking back, much of development works that way. Far more time goes into deciding what wasn't written than into transcribing what was. And yet we mostly record only the latter.
+
+# Same content, different readers
+
+I didn't produce one bundle and call it finished, because the recipients differed.
+
+The version circulated before the meeting had contribution attribution removed. Technical content only. The full version including contribution analysis was opened only in the room. A short document a co-developing colleague could check for accuracy on the spot was made separately.
+
+On a subject like contribution, how far you show matters as much as what you write. Even a fact reads differently depending on where it is placed.
+
+Everything was written in Markdown, with one script producing the PDFs. Content changing the night before a meeting means one build, and every deliverable regenerates.
+
+# What stayed
+
+Two things outlasted the outcome of the patent itself.
+
+One is about records. Every raw material for the patent package came from records kept during development. Notes made then for handover and organization became, months later, evidence of invention.
+
+At the moment of writing, you can't know what a record will be used for. That's precisely why you keep it, and only what was kept can be reassembled afterward.
+
+The other is about the boundary of the job. Translating what you built into the company's language, and into the law's language, can be part of a developer's work. And that translation is usually done best by the person who built it.
+
+That something small spread company-wide and reached patent discussions surely involved luck. One thing, though, was not accidental.
+
+Only what was kept could be used again.

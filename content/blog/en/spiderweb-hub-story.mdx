@@ -1,0 +1,69 @@
+---
+title: "I Drew the Map and Still Couldn't See the Road"
+slug: "spiderweb-hub-story"
+description: "To clean up a pile of markdown files, I drew the relationships between them as a web. The structure came into focus, and I still had no idea what to delete. On turning three times, and the difference between seeing and deciding."
+publishedDate: "2026-08-25"
+category: "develop-knowledge"
+tags: ["AI", "Productivity", "Frontend"]
+featuredImage: ""
+---
+
+Working with AI has one side effect. Documents get created far too easily.
+
+Meeting notes, specs, analysis memos, decks, pivot decision notes. One project accumulated seventy markdown files.
+
+The problem wasn't the volume. It was that nobody knew which of them were alive and which were dead. Write a document to organize the documents, and that document becomes the next thing needing organizing.
+
+# I assumed seeing would be knowing
+
+The first attempt was visualization. Files as points, links and mentions between them as lines, drawn as a web.
+
+Documents referenced by nothing and documents referenced by everything stood out immediately. The structure was visible, and I was fairly pleased.
+
+Then I opened it to actually clean up, and something was off. However long I stared at the graph, it never answered the only question I had: can I delete this one?
+
+After a few days I admitted it. A map and a judgment are different things.
+
+A map tells you where things are. It doesn't tell you what to discard. To discard something you have to know what it is, and that means opening and reading it, one by one.
+
+Visualization can't read for you. It can only order the reading.
+
+# What judgment actually needs
+
+So I turned. Instead of drawing, I had it read.
+
+AI agents read every document and attached to each a one-line summary, a role, and an opinion on whether to keep, archive, or merge it. The screen shows that list, and I press a decision on each.
+
+When the decisions are done, they compile into a list, and handing that back to the AI carries through to moving the actual files.
+
+I cleaned one project this way. The most striking moment was finding four documents sitting inside an archive folder that were still perfectly current.
+
+The folder organization a human had done was already wrong. Organizing is a judgment made at a moment, and judgments age. A folder structure is a place where past thinking has hardened — that's what I learned there.
+
+# The price of what you look at often
+
+Riding the momentum, I ran it across all twenty-seven projects in my personal and work folders. A page per project, and a screen collecting all of them.
+
+Soon something odd surfaced. Keeping that screen current meant asking the AI to rescan every time. I just wanted to glance at the state of things, and every glance cost something.
+
+So I turned a third time. The whole screen moved to a local server.
+
+A small server built on nothing but the standard library sweeps both folders each time the page opens. Twenty-seven projects in half a second. When a new project grows its first document, it appears with no registration step.
+
+The roles settled. Looking is done locally. Reading and producing the material for judgment is done by AI. Executing decisions is done by AI.
+
+The biggest lesson here wasn't technical. It was placement. More than what to automate, where you put the expensive part decides how long a tool survives.
+
+A screen you open daily that charges you each time is a screen that eventually stops being opened.
+
+# What three turns taught me
+
+That screen now sits permanently on one side of my monitor. I've picked up the habit of glancing at a project's document map before going in, and a rising count of unreferenced documents reads as a signal that cleanup is due.
+
+Looking back, this tool was built by passing through three rounds of this isn't it.
+
+That I needed a list to decide from, not a visualization. That material for judgment only comes from reading. And that what you look at often should be kept close.
+
+Admitting quickly that something is wrong has always been faster than getting the design right the first time. The luxury of building tools alone is being able to do that as often as you like.
+
+It was a tool built to organize documents. What actually got organized was my thinking about them.
