@@ -14,7 +14,7 @@ export async function GET() {
         const postUrl = `${siteUrl}/posts/${post.slug}`;
         const publishedDate = new Date(post.publishedDate || post.createdAt).toUTCString();
 
-        // Tiptap JSON 콘텐츠를 플레인 텍스트로 변환하여 description 생성
+        // MDX 본문에서 플레인 텍스트를 뽑아 description 생성
         const description = post.description || extractPlainText(post.content, 200);
 
         return `

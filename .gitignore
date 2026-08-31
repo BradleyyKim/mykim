@@ -41,5 +41,11 @@ yarn-error.log*
 next-env.d.ts
 
 
-#cursor 
+#cursor
 /.cursor
+
+# 채용 지원용 문서 (개인 정보 포함, 비공개)
+/resume
+
+# 워크벤치 전광판 상태 파일 (내부용)
+/.workbench

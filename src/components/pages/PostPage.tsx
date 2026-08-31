@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import PostDetail from "@/components/blog/PostDetail";
 import { NotFound as PostNotFound } from "@/components/ui";
 import { getPostBySlug } from "@/lib/cms";
-import { extractPlainText, extractFirstImageFromTiptapContent } from "@/lib/content";
+import { extractPlainText, extractFirstImageFromContent } from "@/lib/content";
 import { MAIN } from "@/lib/constants";
 import type { Locale } from "@/i18n";
 import { getLocalePath } from "@/i18n";
@@ -17,7 +17,7 @@ function getThumbnailImage(post: { featuredImage?: { url?: string } | null; cont
   if (post.featuredImage?.url) {
     return post.featuredImage.url;
   }
-  const firstImage = extractFirstImageFromTiptapContent(post.content);
+  const firstImage = extractFirstImageFromContent(post.content);
   if (firstImage) {
     return firstImage;
   }

@@ -1,5 +1,6 @@
 /**
- * Content utilities for MDX-based blog
+ * MDX 본문에서 SEO용 텍스트와 대표 이미지를 뽑아내는 유틸.
+ * 콘텐츠 소스는 `content/blog/{ko,en}/*.mdx` 이고, 여기 들어오는 값은 마크다운 문자열이다.
  */
 
 /**
@@ -60,6 +61,3 @@ export function extractFirstImageFromContent(content: string | object): string |
     return null;
   }
 }
-
-// Backward-compatible alias
-export const extractFirstImageFromTiptapContent = extractFirstImageFromContent;
