@@ -54,6 +54,31 @@ Designing the automation, I spent as long on the list of prohibitions as on the 
 
 The review standards live in a document rather than inside the bot. To change them you edit a document, not code. Which means it stops being something only I can do.
 
+# What went into the request
+
+The AI built the bot. What I decided was not what it could do but what it must not, which is why the rules document ends with a list of prohibitions.
+
+```markdown
+- Never touch anything outside the front group.
+- Never call a write API other than comments (merge, approve, label) with the bot token.
+- Never repost when a marker for the same SHA exists. An observation you are unsure of
+  goes into the report to me, not onto the MR.
+```
+
+All three are constraints rather than features. The last one especially. Without silence as the default the bot keeps saying things it isn't sure about, and then people stop reading what it says.
+
+Deduplication pins its source of truth in the same document.
+
+```markdown
+- Duplicate check (re-check right before posting): search the MR's notes for the
+  `<!-- mr-review:sha=<head_sha> -->` marker. Present means already reviewed → skip.
+  `state.json` is only a local cache — the GitLab marker always wins.
+```
+
+Putting the commit SHA inside the marker is the whole design. Mark per MR and later commits never get reviewed; mark per review point and the marker itself records where to resume.
+
+Keeping the local cache while stating in prose that it is not authoritative was deliberate too. A cache has to be something you can delete. If deleting it causes an incident, it was never a cache — it was a database.
+
 # What remains
 
 Now every MR is read at least once. Solo-owned repos included.

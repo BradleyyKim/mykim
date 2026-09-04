@@ -56,6 +56,39 @@ The biggest lesson here wasn't technical. It was placement. More than what to au
 
 A screen you open daily that charges you each time is a screen that eventually stops being opened.
 
+# What I actually asked for
+
+The AI wrote the code. What I did was set the constraints, and for this tool there were three.
+
+First, no dependencies. The moment `pip install` is required, this tool stops opening six months from now. That is why the import list ends where it does.
+
+```python
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import html, json, os, re, sys, time, urllib.parse
+```
+
+Second, no cache. From the moment I can't be sure how old the screen in front of me is, I stop looking at it.
+
+```python
+self.send_header("Cache-Control", "no-store")
+```
+
+Sweeping on every request meant the sweep had to be cheap. The third constraint came from there.
+
+```python
+SKIP_DIRS = {"node_modules", ".git", ".venv", "venv", "__pycache__", "dist", "build", ".next"}
+
+def find_md_files(root):
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
+```
+
+Slicing `dirnames[:]` in place is the whole trick. Build a new list and rebind the name instead, and `os.walk` never learns about the pruning and descends into `node_modules` anyway.
+
+I was curious, so I dropped the pruning and swept the same two folders. Two tenths of a second became 9.5 seconds, and the md count went from 477 to 16,481. Those extra sixteen thousand are mostly READMEs inside other people's packages.
+
+Reading the code I got back, that is the place I checked. Not what had been built, but which line my constraint survived in.
+
 # What three turns taught me
 
 That screen now sits permanently on one side of my monitor. I've picked up the habit of glancing at a project's document map before going in, and a rising count of unreferenced documents reads as a signal that cleanup is due.

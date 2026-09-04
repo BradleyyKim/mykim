@@ -157,6 +157,37 @@ Setting contracts, drawing boundaries, confirming the result is right.
 
 That's harder, and more interesting.
 
+# What went into the request
+
+The AI runs the pipeline and writes the code. So the brief is the source of this system. The section I refined longest wasn't features, it was the prohibitions.
+
+```markdown
+## Prohibitions (human gates)
+
+- No push, merge, deploy, or direct edits to the default branch. Committing to a
+  local branch is where your authority ends.
+- Never react to any status other than `BE done` (especially `FE in progress` —
+  someone already claimed that one).
+- Never implement a guess when the spec is ambiguous — leave it in QnA and hold that part.
+```
+
+The third line is the most valuable one in this pipeline. Code that plausibly fills in an ambiguous spec compiles and passes review. That it was wrong shows up much later, in production.
+
+So stopping when unsure got defined as a capability.
+
+```markdown
+If the spec is non-standard or ambiguous, do not guess. Leave the question in the
+document's QnA/agreement section and record it in the task log too.
+```
+
+The rule about existing code has the same character.
+
+```markdown
+If code already exists, apply only the diff against the spec (no full rewrites).
+```
+
+Without a ban on full rewrites, automation keeps only as much as it understood and deletes the rest each time. The edge cases a human added by hand usually live in the rest.
+
 # I Don't Take It on Faith
 
 To be honest about the limits:

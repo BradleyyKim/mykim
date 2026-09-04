@@ -40,6 +40,39 @@ Third, record what doesn't work. Surprisingly many places offer no RSS. Even som
 
 Records of failed attempts help more often than records of successful results.
 
+# What went into the request
+
+The AI wrote both the collector and the screen. What I handed over was not a feature list but the three rules above, and this is where they landed in the code.
+
+Keeping the screen from waiting means separating the reader from the writer. The collector writes everything to a temp file and renames it at the end.
+
+```python
+tmp = CACHE + ".tmp"
+...
+os.replace(tmp, CACHE)
+```
+
+The screen reads that file every few seconds. Write straight into the cache and a read landing mid-write sees half-written JSON; `os.replace` is atomic within one filesystem, so that moment never exists. The screen sees either the old file or the new one.
+
+Lightness applied to imports too.
+
+```python
+def _feeds_mod():
+    """Load scripts/feeds.py late — no reason to import it when only the board is in use."""
+```
+
+And the rule about recording what doesn't work ended up as a reserved slot in the source list itself.
+
+```json
+"_RSS_없음_확인함": [
+  "Anthropic News/Engineering — rss.xml and feed both 404, no link[rel=alternate] in the HTML (checked 2026-08-27)",
+  "The Batch (DeepLearning.AI) — /feed/ 404",
+  "Hugging Face Papers — /papers/feed 401, /papers.rss 404 (HF Blog is fine)"
+]
+```
+
+Confirming that something isn't there is data too. Without this array, the me of six months from now knocks on the same doors again.
+
 # Choosing sources
 
 As you read, you develop a sense for sources. This blog delivers every time; that feed is mostly noise.

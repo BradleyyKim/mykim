@@ -48,6 +48,37 @@ The reason is simple. If a ledger gets an amount wrong even once, you start doub
 
 That's usually how tools earn trust from people. Not through one impressive feature, but through repetition without error.
 
+# What went into the request
+
+I wrote the code with the AI. What I fixed before starting was the path money travels. Totals come out of a view.
+
+```sql
+create or replace view monthly_summary as
+select
+  household_id,
+  date_trunc('month', occurred_at at time zone 'Asia/Seoul')::date as month,
+  sum(amount) filter (where type = 'income')  as income,
+  sum(amount) filter (where type = 'expense') as expense,
+  ...
+from transactions
+where type <> 'transfer' and occurred_at <= now()
+group by 1, 2;
+```
+
+The piece that actually costs something here is the `at time zone 'Asia/Seoul'` fragment. Drop it and the month boundary follows UTC, so anything spent after nine in the evening lands in the next month. Late-evening spending at the end of a month is not rare in our house.
+
+The reason sits at the top of the migration file, in those words.
+
+```sql
+-- Month boundaries in KST — UTC date_trunc files month-end transactions between
+-- 21:00 and 24:00 KST into the following month. This is a two-person app, so
+-- Asia/Seoul is fixed (multi-region comes if it ever becomes a service).
+```
+
+To avoid re-explaining currency and time zones on every request, the explanation has to live next to the code. A comment like this is for people, but it is also for the next request.
+
+With the view in place, what the AI does narrows on its own. It sits where numbers get turned into sentences, never where numbers get made. Constraining a capability by structure always beats constraining it by instruction.
+
 # A service with two users
 
 Something I only learned after building it: with two users, there are no metrics.

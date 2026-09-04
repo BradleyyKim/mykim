@@ -92,6 +92,29 @@ Automate what can be gathered automatically; humans supply only what isn't there
 
 Trying to automate everything fails; doing everything by hand means you stop doing it. Somewhere in between was right.
 
+# What went into the request
+
+The AI does the gathering and the conversion. So I wrote the process document first and used it as the brief. The part I spent longest on wasn't the order of steps but which input counts as the source of truth.
+
+```markdown
+## 2. Cross-check against the git log (to catch omissions)
+- Purpose = find development work that never made it onto the timeline. In git but
+  not on the timeline → ask me "should this be added?"
+- ⚠️ Commit count ≠ effort. Some projects are mostly meetings; the timeline is the answer key.
+```
+
+Putting git in the cross-check position rather than the source position is the whole point of that document. A month with many commits and a month with much work are not the same month, and treating them as the same makes documentation and meetings disappear entirely.
+
+The weekly-report archive carries the same label.
+
+```markdown
+- Not authoritative — a derived snapshot. KPI weighting and the record of truth stay
+  on the timeline. Weekly reports are for (1) pulling narrative sentences and
+  (2) filling in non-git activity.
+```
+
+In automation that draws on several inputs, the first thing to settle isn't format but rank. Without writing down which is source and which is derivative, every day the two disagree becomes a fresh decision about what to believe.
+
 # An Unexpected Payoff — Negotiation Material Accumulated by Itself
 
 When I built this, I was just trying to make a monthly chore easier.

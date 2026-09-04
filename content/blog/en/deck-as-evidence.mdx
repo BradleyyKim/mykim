@@ -60,6 +60,44 @@ Charts were hand-drawn SVG with motion on top, rather than a chart library. Char
 
 In a presentation, that difference matters more than you'd expect.
 
+# What went into the request
+
+The AI wrote the engine. What I handed over was not a requirements list but the four items above and a ceiling of one dependency. With that ceiling, the code came back and ended at 240 lines.
+
+Keyboard input arrives like this.
+
+```tsx
+const onKey = (e: KeyboardEvent) => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+    e.preventDefault()
+    paginate(1)
+  } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+    e.preventDefault()
+    paginate(-1)
+  } else if (e.key === 'Home') {
+    goTo(0)
+  }
+```
+
+Space and PageDown are both accepted because of presentation remotes. Most of them send PageUp/PageDown, and if you leave that out you find out on the day.
+
+Touch reuses the drag the animation library already provides.
+
+```tsx
+drag="x"
+dragConstraints={{ left: 0, right: 0 }}
+dragElastic={0.18}
+dragSnapToOrigin
+onDragEnd={(_, info) => {
+  if (info.offset.x < -SWIPE) paginate(1)
+  else if (info.offset.x > SWIPE) paginate(-1)
+}}
+```
+
+Judging a swipe by distance rather than velocity was also a choice about the room. Some people drag their finger slowly, and their swipe has to advance the deck too.
+
+Whether building it myself was right is answered by the length of that file. There was no reason to take on a general framework's configuration and constraints for something that ends in 240 lines.
+
 # I Pinned the Core Messages First
 
 Before building any slides, I wrote a document listing "what this talk must never lose."

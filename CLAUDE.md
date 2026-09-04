@@ -69,6 +69,11 @@ Post prose follows a fixed voice, enforced by the global `humanize-kr` skill
 `#` for section headings, short sentences, prose over bullet lists. The full profile is
 `references/voice-profile.md` there.
 
+Posts about a personal project carry a "요청에 담은 것" section: the constraints given to the AI,
+the lines of real repo code those constraints landed in, and what was checked in the result. Code
+must be copied from the actual repo and numbers must be measured — never invented or adapted.
+Company-project code is generalized to interface or pattern level instead of quoted.
+
 A PostToolUse hook audits any `.md`/`.mdx` written under `content/blog/` and reports what it
 catches, so expect feedback when a draft drifts from that voice. Company work is generalized in
 posts — no partner names, unannounced expo names, unconfirmed clients, or operational screenshots.

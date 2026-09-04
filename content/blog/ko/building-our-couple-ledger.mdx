@@ -48,6 +48,36 @@ AI를 얹을 때 하나를 먼저 정했다. 금액은 절대 AI가 만지지 �
 
 도구가 사람에게 신뢰를 얻는 방식은 대체로 이렇다. 인상적인 기능 하나가 아니라, 틀리지 않는 반복이다.
 
+# 요청에 담은 것
+
+코드는 AI와 같이 썼다. 대신 금액이 지나가는 길은 처음부터 못 박아 두고 시작했다. 합계는 뷰에서 나온다.
+
+```sql
+create or replace view monthly_summary as
+select
+  household_id,
+  date_trunc('month', occurred_at at time zone 'Asia/Seoul')::date as month,
+  sum(amount) filter (where type = 'income')  as income,
+  sum(amount) filter (where type = 'expense') as expense,
+  ...
+from transactions
+where type <> 'transfer' and occurred_at <= now()
+group by 1, 2;
+```
+
+여기서 실제로 값을 치른 건 `at time zone 'Asia/Seoul'` 한 조각이다. 이걸 빼면 월 경계가 UTC 기준이 되고, 밤 아홉 시 이후에 쓴 돈은 다음 달로 넘어간다. 월말 저녁의 지출은 우리 집에서 드물지 않다.
+
+마이그레이션 파일 맨 위에 그 이유를 그대로 적어 뒀다.
+
+```sql
+-- 월 경계를 KST 기준으로 — UTC date_trunc는 월말 21~24시(KST) 거래를
+-- 다음 달로 분류한다. 부부 앱이므로 Asia/Seoul 고정 (다지역화는 서비스화 때)
+```
+
+AI에게 요청할 때 매번 통화나 시간대를 설명하지 않으려면, 설명이 코드 옆에 남아 있어야 한다. 이런 주석은 사람을 위한 것이기도 하지만 다음 요청을 위한 것이기도 하다.
+
+이 뷰가 있으니 AI가 할 일이 자연스럽게 좁아졌다. 숫자를 만드는 자리가 아니라 이미 나온 숫자를 문장으로 옮기는 자리에만 놓인다. 권한을 말로 제한하는 것보다 구조로 제한하는 편이 언제나 낫다.
+
 # 사용자가 둘인 서비스
 
 만들고 나서 알게 된 게 있다. 사용자가 둘이면 지표가 없다.

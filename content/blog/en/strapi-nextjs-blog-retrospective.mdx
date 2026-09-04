@@ -100,6 +100,18 @@ and it had the added benefit of minimizing frontend changes if the backend were 
 
 In fact, when migrating from Strapi Cloud to local MDX, this architecture made the transition much smoother.
 
+Checking during the migration, the function names and signatures stayed put and only the bodies changed.
+
+```ts
+export async function fetchPosts(locale: Locale = "ko"): Promise<Post[]> {
+  return getAllPosts(locale);
+}
+```
+
+The `fetch` prefix exists because this was once an HTTP call, and `async` survives for the same reason. It reads the filesystem synchronously now, and because the name never changed, not one caller had to be touched.
+
+Since then, whenever I ask an AI to work in this repo, I explain the three layers first. Skip the explanation and back comes a suggestion to strip the "unnecessary wrapping" — which is precisely the wrapping that absorbed the migration cost. Without being told why something was kept, it looks like cleanup.
+
 ### Separating Server Components and Client Components
 
 Data fetching was handled in Server Components, while interactions (editor, theme toggle) were in Client Components.

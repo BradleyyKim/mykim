@@ -155,6 +155,39 @@ If a card hasn't been touched in a few days, it fades. That's a signal: "this ma
 
 When I can't trust my own record, the screen says so on my behalf.
 
+# What went into the request
+
+The AI wrote the collector and the checker. I decided two things, and both came from not trusting myself rather than not trusting the tool.
+
+First, collection must never erase what I wrote. The file a project writes holds state only; the board card also holds display values like color and ordering. When the two merge, an absent value must not overwrite a present one.
+
+```python
+def merge_frontmatter(card_fm, state_vals):
+    """Overwrite only the state keys on the card's frontmatter. Line order and display keys stay."""
+    ...
+        if key in STATE_KEYS:
+            new = state_vals.get(key, "")
+            # If .workbench has no value, keep the card's existing one (never blank it out).
+            if new:
+                lines[i] = f"{key}: {new}"
+```
+
+In merging code the most important line is not what it writes but when it declines to. Once automation starts erasing human input, the human turns the automation off.
+
+Second, distrust the timestamp before trusting it. The same file gets updated from several machines, clocks drift, and then the staleness math quietly breaks.
+
+```python
+age = (datetime.now() - updated).days
+if age < 0:
+    # Future timestamp — a typo, or another machine's clock is off. Staleness becomes meaningless.
+    out["issues"].append(f"updated is in the future ({meta.get('updated')}) — needs checking")
+else:
+    if age >= STALE_DAYS:
+        out["issues"].append(f"{age} days without an update")
+```
+
+Leave a future timestamp as a negative number and the card looks fresh forever. The dangerous failure isn't the one that stops. It's the one that keeps looking fine.
+
 # Why Work and Personal Are Separated
 
 Each card has a `category`, and the board toggles between work mode and personal mode.
