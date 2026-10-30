@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { MenuIcon, LayoutIcon, HomeIcon, Sun, Moon, Briefcase } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronDown, Menu, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuGroup,
-  DropdownMenuLabel
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { ThemeMode } from "@/components/ui";
 import { MAIN } from "@/lib/constants";
@@ -24,215 +23,125 @@ import { getLocalePath, removeLocaleFromPath, t } from "@/i18n";
 import type { Locale } from "@/i18n";
 
 /**
- * Header 컴포넌트
- * - 좌측: 블로그 타이틀
- * - 중앙: 네비게이션 버튼들 (데스크탑에서만 표시)
- * - 우측: 기능 버튼들 (다크모드, 언어) + 모바일용 메뉴 드롭다운
+ * Header — wordmark on the left, text navigation in the middle, locale + theme on the right.
+ * Series is a dropdown fed by /api/categories. Everything collapses into one menu under md.
+ * Portfolio is reachable from About (and the footer), not from the primary nav.
  */
 export default function Header() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const { trackThemeChange } = useBlogAnalytics();
-  const currentCategory = searchParams.get("category");
   const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
-  // 현재 locale 감지
   const locale: Locale = pathname.startsWith("/en") ? "en" : "ko";
+  const bare = removeLocaleFromPath(pathname);
+  const isHome = bare === "/";
+  const isSeries = bare.startsWith("/category");
+  const isAbout = bare.startsWith("/about");
 
-  // 현재 홈페이지인지 확인
-  const isHomePage = pathname === "/" || pathname === "/en" || pathname === "/en/";
-
-  // 언어 전환 핸들러
-  const handleLocaleToggle = () => {
-    const newLocale = locale === "ko" ? "en" : "ko";
-    const pathWithoutLocale = removeLocaleFromPath(pathname);
-    router.push(getLocalePath(newLocale, pathWithoutLocale));
-  };
-
-  // 카테고리 데이터 로드
   useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        setIsLoadingCategories(true);
-        const response = await fetch(`/api/categories?locale=${locale}`);
-        const data = await response.json();
-        const categoryData = data.data || [];
-
-        if (categoryData.length > 0) {
-          setCategories(categoryData);
-        } else {
-          console.warn("카테고리 데이터가 비어있습니다");
-        }
-      } catch (error) {
-        console.error("카테고리 로드 중 오류 발생:", error);
-      } finally {
-        setIsLoadingCategories(false);
-      }
+    let cancelled = false;
+    fetch(`/api/categories?locale=${locale}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (!cancelled) setCategories(d.data || []);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
     };
-
-    loadCategories();
   }, [locale]);
 
-  // 카테고리 선택 핸들러
-  const handleCategorySelect = (slug: string) => {
-    router.push(getLocalePath(locale, `/category/${slug}`));
+  const toggleLocale = () => {
+    const next = locale === "ko" ? "en" : "ko";
+    router.push(getLocalePath(next, bare));
   };
 
-  // 모든 포스트 보기
-  const handleViewAllPosts = () => {
-    router.push(getLocalePath(locale, "/"));
-  };
+  const navClass = (active: boolean) =>
+    `relative px-3 py-1.5 text-sm font-medium transition-colors duration-1 ${
+      active ? "text-foreground" : "text-text-2 hover:text-foreground"
+    } after:absolute after:inset-x-3 after:-bottom-0.5 after:h-px after:bg-primary after:transition-transform after:duration-2 after:ease-soft ${
+      active ? "after:scale-x-100" : "after:scale-x-0 hover:after:scale-x-100"
+    }`;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-14 items-center px-4">
-        {/* 좌측: 블로그 타이틀 */}
-        <div className="mr-4 flex items-center">
-          <Link href={getLocalePath(locale, "/")} className="flex items-center space-x-2">
-            <span className="text-xl font-bold italic">{isHomePage ? MAIN.title : "Home"}</span>
-          </Link>
-        </div>
+    <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/80 backdrop-blur-md">
+      <div className="page flex h-14 items-center">
+        <Link href={getLocalePath(locale, "/")} className="text-[1.0625rem] font-extrabold tracking-[-0.03em] text-foreground">
+          {MAIN.title}
+        </Link>
 
-        {/* 중앙: 네비게이션 메뉴 (태블릿/데스크탑에서만 표시) */}
-        <div className="hidden md:flex flex-1 items-center justify-center space-x-4">
-          {/* Series 드롭다운 */}
+        <nav className="ml-8 hidden items-center md:flex" aria-label="primary">
+          <Link href={getLocalePath(locale, "/")} className={navClass(isHome)}>
+            {t(locale, "nav.posts")}
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className={`${currentCategory ? "text-blue-500" : ""}`}>
-                Series
-              </Button>
+              <button type="button" className={`${navClass(isSeries)} inline-flex items-center gap-1`}>
+                {t(locale, "nav.series")}
+                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+              </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {currentCategory && (
-                <>
-                  <DropdownMenuItem onSelect={handleViewAllPosts}>
-                    <HomeIcon className="mr-2 h-4 w-4" />
-                    <span>{t(locale, "nav.allPosts")}</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              {isLoadingCategories ? (
-                <DropdownMenuItem disabled>
-                  <span className="flex items-center">
-                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent mr-2"></span>
-                    {t(locale, "nav.loading")}
-                  </span>
-                </DropdownMenuItem>
-              ) : categories.length === 0 ? (
-                <DropdownMenuItem disabled>{t(locale, "nav.noCategories")}</DropdownMenuItem>
+            <DropdownMenuContent align="start" className="min-w-52">
+              {categories.length === 0 ? (
+                <DropdownMenuItem disabled>{t(locale, "nav.loading")}</DropdownMenuItem>
               ) : (
-                categories.map(category => (
-                  <DropdownMenuItem
-                    key={category.id}
-                    onSelect={() => handleCategorySelect(category.slug as string)}
-                    className={currentCategory === category.slug ? "bg-blue-50 text-blue-700" : ""}
-                  >
-                    {category.name}
-                    {currentCategory === category.slug && <span className="ml-auto text-blue-500">✓</span>}
+                categories.map((c) => (
+                  <DropdownMenuItem key={c.id} onSelect={() => router.push(getLocalePath(locale, `/category/${c.slug}`))}>
+                    {c.name}
                   </DropdownMenuItem>
                 ))
               )}
             </DropdownMenuContent>
           </DropdownMenu>
+          <Link href={getLocalePath(locale, "/about")} className={navClass(isAbout)}>
+            {t(locale, "nav.about")}
+          </Link>
+        </nav>
 
-          {/* Portfolio 버튼 */}
-          <Button variant="ghost" onClick={() => router.push(getLocalePath(locale, "/career"))}>
-            Portfolio
-          </Button>
-
-          {/* About 버튼 */}
-          <Button variant="ghost" onClick={() => router.push(getLocalePath(locale, "/about"))}>
-            About
-          </Button>
-        </div>
-
-        {/* 우측: 기능 버튼들 */}
-        <div className="ml-auto flex items-center space-x-2">
-          {/* KO | EN 언어 토글 (모든 화면 크기에서 표시) */}
+        <div className="ml-auto flex items-center gap-1">
           <button
-            onClick={handleLocaleToggle}
-            className="px-2 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            type="button"
+            onClick={toggleLocale}
+            className="mono rounded-md px-2 py-1 text-text-2 transition-colors duration-1 hover:bg-accent hover:text-foreground"
+            aria-label="switch language"
           >
             {locale === "ko" ? "EN" : "KO"}
           </button>
-
-          {/* 다크모드 토글 (태블릿/데스크탑에서만 표시) */}
           <div className="hidden md:block">
             <ThemeMode />
           </div>
 
-          {/* 모바일 메뉴 (모바일에서만 표시) */}
           <div className="md:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" title="Menu">
-                  <MenuIcon className="h-5 w-5" />
-                  <span className="sr-only">Menu</span>
+                <Button variant="ghost" size="icon" aria-label={t(locale, "nav.menu")}>
+                  <Menu className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onSelect={() => router.push(getLocalePath(locale, "/"))}>{t(locale, "nav.posts")}</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => router.push(getLocalePath(locale, "/about"))}>{t(locale, "nav.about")}</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel>Series</DropdownMenuLabel>
+                <DropdownMenuLabel className="eyebrow">{t(locale, "nav.series")}</DropdownMenuLabel>
+                {categories.map((c) => (
+                  <DropdownMenuItem key={c.id} onSelect={() => router.push(getLocalePath(locale, `/category/${c.slug}`))}>
+                    {c.name}
+                  </DropdownMenuItem>
+                ))}
                 <DropdownMenuSeparator />
-                {currentCategory && (
-                  <DropdownMenuItem onSelect={handleViewAllPosts}>
-                    <HomeIcon className="mr-2 h-4 w-4" />
-                    <span>{t(locale, "nav.allPosts")}</span>
-                  </DropdownMenuItem>
-                )}
-                {isLoadingCategories ? (
-                  <DropdownMenuItem disabled>
-                    <span className="flex items-center">
-                      <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent mr-2"></span>
-                      {t(locale, "nav.loading")}
-                    </span>
-                  </DropdownMenuItem>
-                ) : categories.length === 0 ? (
-                  <DropdownMenuItem disabled>{t(locale, "nav.noCategories")}</DropdownMenuItem>
-                ) : (
-                  categories.map(category => (
-                    <DropdownMenuItem
-                      key={category.id}
-                      onSelect={() => handleCategorySelect(category.slug as string)}
-                      className={currentCategory === category.slug ? "bg-blue-50 text-blue-700" : ""}
-                    >
-                      {category.name}
-                      {currentCategory === category.slug && <span className="ml-auto text-blue-500">✓</span>}
-                    </DropdownMenuItem>
-                  ))
-                )}
-                <DropdownMenuLabel>Menu</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  {/* Portfolio 버튼 */}
-                  <DropdownMenuItem onSelect={() => router.push(getLocalePath(locale, "/career"))}>
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <span>Portfolio</span>
-                  </DropdownMenuItem>
-                  {/* About 버튼 */}
-                  <DropdownMenuItem onSelect={() => router.push(getLocalePath(locale, "/about"))}>
-                    <LayoutIcon className="mr-2 h-4 w-4" />
-                    <span>About</span>
-                  </DropdownMenuItem>
-                  {/* ThemeMode 버튼 - 모바일에서만 표시 */}
-                  <DropdownMenuItem
-                    onClick={() => {
-                      const newTheme = theme === "dark" ? "light" : "dark";
-                      setTheme(newTheme);
-                      trackThemeChange(newTheme);
-                    }}
-                  >
-                    <div className="flex items-start">
-                      <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                      <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                      <span className="ml-2">Theme</span>
-                    </div>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    const next = theme === "dark" ? "light" : "dark";
+                    setTheme(next);
+                    trackThemeChange(next);
+                  }}
+                >
+                  <Sun className="mr-2 h-4 w-4 dark:hidden" />
+                  <Moon className="mr-2 hidden h-4 w-4 dark:block" />
+                  {t(locale, "nav.theme")}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -1,3 +1,5 @@
+import type { Heading } from "@/lib/content/headings";
+
 // 1. Basic entity types
 export interface Tag {
   id: number;
@@ -36,6 +38,17 @@ export interface Post {
   publishedAt: string;
   tags: Tag[];
   category: Category | null;
+  /** Estimated reading time in minutes (computed from content) */
+  readingMinutes: number;
+  /** Headings for the table of contents */
+  headings: Heading[];
+}
+
+/** Lightweight neighbour reference for prev/next navigation */
+export interface PostRef {
+  title: string;
+  slug: string;
+  publishedDate: string;
 }
 
 // 3. Page-specific types
@@ -43,10 +56,12 @@ export interface PostListItem {
   id: number;
   title: string;
   slug: string;
+  description: string | null;
   publishedDate: string;
   createdAt: string;
   category: Category | null;
   tags: Tag[];
+  readingMinutes: number;
 }
 
 export interface PostsByYear {

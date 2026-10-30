@@ -16,23 +16,23 @@ const content = {
   en: [
     "I tend to reflect deeply on the **purpose** and **underlying reason** behind everything I do.",
     "Rather than simply executing tasks, I value the process of asking myself **why this work matters** and **what kind of value it can create**—both for users and for the team.",
-    "I started from the screen (**frontend**), grew through servers, databases, and deployment (**full-stack**), and now my work is **turning ideas into products that actually run in production**—a **Builder**. Not just building things, but keeping them alive with an operator's discipline.",
+    "I started from the screen (**frontend**), grew through servers, databases, and deployment (**full-stack**), and now my work is **turning ideas into products that actually run in production**—a **Product Engineer**. Not just building things, but keeping them alive with an operator's discipline.",
     "As a team, we believe that in order to carefully design and experiment with **truly user-centered interfaces**, it's essential to have a **stable and trustworthy foundation in place**.",
     "The same applies to life. When our **inner foundation** is solid, we can move forward with **greater clarity and resilience**."
   ],
   ko: [
     "저는 어떤 일이든 그 **목적**과 **본질적인 이유**를 고민하는 편입니다.",
     "단순히 실행하는 것보다, **왜 이 작업이 필요한지**, 그리고 그것이 **어떤 의미와 가치를 만들어낼 수 있는지**를 끊임없이 자문하고 정리하는 과정을 중요하게 생각합니다.",
-    "화면(**프론트엔드**)에서 시작해 서버·DB·배포(**풀스택**)를 지나, 지금은 **아이디어를 실제 운영되는 제품으로 만드는 일(Builder)**을 합니다. 짓는 데서 멈추지 않고, 지은 것을 지키는 규율까지가 제 일이라고 생각합니다.",
+    "화면(**프론트엔드**)에서 시작해 서버·DB·배포(**풀스택**)를 지나, 지금은 **아이디어를 실제 운영되는 제품으로 만드는 일(Product Engineer)**을 합니다. 짓는 데서 멈추지 않고, 지은 것을 지키는 규율까지가 제 일이라고 생각합니다.",
     "팀이 **사용자 경험 중심의 인터페이스**를 정교하게 설계하고 실험하려면, **안정적이고 신뢰할 수 있는 기반(foundation)**이 필요하다고 믿습니다.",
     "삶도 마찬가지입니다. **나를 지탱하는 내면의 기반이 단단할수록**, 더 **깊고 의미 있는 방향**으로 움직일 수 있다고 생각합니다."
   ]
 };
 
-// 성장 아크 — Frontend → Full-stack → Builder (Anthropic Boris Cherny의 미래 직무 분류 참조)
+// 성장 아크 — Frontend → Full-stack → Product Engineer (Anthropic Boris Cherny의 미래 직무 분류 참조)
 const growthArc = {
   ko: {
-    heading: "Frontend → Full-stack → Builder",
+    heading: "Frontend → Full-stack → Product Engineer",
     stages: [
       {
         label: "Frontend",
@@ -45,16 +45,16 @@ const growthArc = {
         description: "DB 스키마·인증·배포 인프라·장애 대응까지 — 한 서비스의 전 구간을 단독 담당."
       },
       {
-        label: "Builder",
+        label: "Product Engineer",
         period: "현재",
         description:
           "아이디어를 실제 운영되는 제품으로 — 기획·구현·배포·운영·확산까지 제품 단위로 완결. 짓는 것에서 멈추지 않고 런북·백업·모니터링으로 지키는 규율까지."
       }
     ],
-    note: 'Builder는 Anthropic의 Boris Cherny가 제시한 미래의 다섯 직무(Prototyper · Builder · Sweeper · Grower · Maintainer) 중 "아이디어를 진짜 제품으로 만들어내는 사람"입니다. 저는 Maintainer의 규율을 가진 Builder를 지향합니다.'
+    note: '풀스택이 "전 구간을 다룰 수 있다"는 범위의 말이라면, Product Engineer는 "제품이 실제로 돌아가게 책임진다"는 결과의 말입니다. Anthropic의 Boris Cherny가 제시한 다섯 직무(Prototyper · Builder · Sweeper · Grower · Maintainer) 중 Builder에 가깝고, 저는 Maintainer의 규율을 가진 Builder를 지향합니다.'
   },
   en: {
-    heading: "Frontend → Full-stack → Builder",
+    heading: "Frontend → Full-stack → Product Engineer",
     stages: [
       {
         label: "Frontend",
@@ -67,40 +67,40 @@ const growthArc = {
         description: "DB schema, auth, deploy infra, incident response — owning every layer of a service alone."
       },
       {
-        label: "Builder",
+        label: "Product Engineer",
         period: "now",
         description:
           "Turning ideas into products that actually run in production — planning, building, shipping, operating, and scaling as one complete unit, kept alive by runbooks, backups, and monitoring."
       }
     ],
-    note: '"Builder" is one of the five future roles proposed by Boris Cherny of Anthropic (Prototyper · Builder · Sweeper · Grower · Maintainer) — the one who turns ideas into real products. I aim to be a Builder with a Maintainer’s discipline.'
+    note: 'Full-stack describes a range — being able to touch every layer. Product Engineer describes an outcome — being responsible for the product actually running. It maps closest to the Builder among the five future roles proposed by Boris Cherny of Anthropic (Prototyper · Builder · Sweeper · Grower · Maintainer); I aim to be a Builder with a Maintainer’s discipline.'
   }
 };
 
-// 일하는 방식 — 두 달간의 AI 페어링 세션 로그를 역으로 분석해 도출한 작업 패턴
+// 일하는 방식 — 두 달간의 AI 페어링 세션 로그를 역분석해 도출, 경력 전체를 관통하는 원칙으로 일반화
 const workStyle = {
   ko: {
     heading: "How I Work",
     items: [
       {
-        title: "배포는 기능이 아니라 사이클 단위",
+        title: "완결의 단위로 일한다",
         description:
-          "구현에서 멈추지 않고 변경 내역·사용 매뉴얼·사용자 공지·피드백 답글까지 닫아야 한 번의 배포로 칩니다. 실서비스 10영업일 10릴리스 동안 이 사이클을 유지했습니다."
+          "\"구현이 끝난 코드\"가 아니라 \"사용자 손에서 돌아가는 제품\"을 작업의 단위로 봅니다. 기능을 만들면 배포·문서·사용 안내·피드백 회수까지 한 사이클을 닫고, 그 피드백이 다음 버전의 입력이 되게 합니다. 화면 하나를 만들 때도, 서비스 전체를 운영할 때도 같은 원칙입니다."
+      },
+      {
+        title: "변경을 경계 안에 가둔다",
+        description:
+          "외부 API·지도 SDK·데이터 출처처럼 언젠가 바뀔 것들은 어댑터와 변환 계층 뒤로 격리하고, 색·상태·표기처럼 여러 화면에 퍼지는 것들은 단일 정의에서 파생시킵니다. 스펙이 바뀌어도 수정 지점이 한 곳으로 모이는 구조 — 개발 속도와 유지보수의 단순함은 여기서 나온다고 믿습니다."
       },
       {
         title: "사고를 제도화한다",
         description:
-          "장애와 실수는 사람 탓이 아니라 절차의 구멍으로 봅니다. 배포 순서 신호 규칙, 기능 간 파급 지도, 백업 복원 리허설 — 한 번 겪은 문제는 런북 규칙으로 바꿔 재발을 구조적으로 차단합니다."
+          "장애와 실수를 사람의 부주의가 아니라 절차의 구멍으로 봅니다. 한 번 겪은 문제는 런북 규칙·체크리스트·복구 리허설로 바꿔 같은 사고가 구조적으로 재발할 수 없게 만듭니다. 문서는 기록이 아니라 재발 방지 장치라고 생각합니다."
       },
       {
-        title: "원리까지 소유한다",
+        title: "AI를 공정에 넣되, 책임은 사람에게",
         description:
-          "도구를 쓰면 왜 그렇게 동작하는지까지 파고듭니다. 네트워크 경로는 추측 대신 실측하고, 발표 자료에는 재현 가능한 사실만 싣습니다."
-      },
-      {
-        title: "AI는 공정의 일부",
-        description:
-          "시안·구현·문서·운영까지 AI 페어링을 숨기지 않는 공개된 방법론으로 씁니다. 대신 방향 결정과 최종 검증은 언제나 사람의 몫으로 남깁니다."
+          "시안·구현·문서·운영까지 AI 페어링을 숨기지 않는 공개된 방법론으로 씁니다. 대신 방향 결정·아키텍처 판단·최종 검증은 언제나 사람의 몫으로 남깁니다. 도구가 빨라질수록 원리를 이해하고 추측 대신 측정으로 확인하는 습관이 더 중요해진다고 믿습니다."
       }
     ],
     footnote: "이 섹션은 두 달간의 Claude Code 세션 기록을 AI에게 역으로 분석시켜 도출했습니다.",
@@ -110,24 +110,24 @@ const workStyle = {
     heading: "How I Work",
     items: [
       {
-        title: "A release is a cycle, not a feature",
+        title: "Working in units of completion",
         description:
-          "Implementation alone doesn't count — changelog, user manual, release notice, and feedback replies close the loop. I kept that cycle through 10 releases in 10 business days on a live service."
+          "My unit of work is not \"code that compiles\" but \"a product running in users' hands.\" Every feature closes a full cycle — ship, document, announce, collect feedback — and that feedback becomes the input for the next version. The same principle applies whether I'm building a single screen or operating an entire service."
+      },
+      {
+        title: "Containing change behind boundaries",
+        description:
+          "Things that will eventually change — external APIs, map SDKs, data sources — get isolated behind adapters and conversion layers; things that spread across screens — colors, states, labels — derive from a single definition. When specs change, the fix converges to one place. I believe that is where development speed and maintainability actually come from."
       },
       {
         title: "Turning incidents into process",
         description:
-          "Failures are process gaps, not people problems. Deploy-order signal rules, a feature-dependency map, backup restore rehearsals — every incident becomes a runbook rule that structurally prevents recurrence."
+          "I treat failures as process gaps, not personal carelessness. Every problem I hit once becomes a runbook rule, a checklist, or a restore rehearsal, so the same incident structurally cannot recur. Documentation, to me, is not a record — it is a prevention mechanism."
       },
       {
-        title: "Owning the why",
+        title: "AI in the pipeline, accountability with humans",
         description:
-          "When I adopt a tool, I dig into how it actually works. Network paths get measured instead of guessed, and presentation claims are limited to reproducible facts."
-      },
-      {
-        title: "AI as part of the pipeline",
-        description:
-          "From design drafts to implementation, docs, and operations, AI pairing is an open methodology I don't hide — while direction and final verification always stay human."
+          "From design drafts to implementation, docs, and operations, AI pairing is an open methodology I don't hide. But direction, architectural judgment, and final verification always stay human. The faster the tools get, the more it matters to understand the underlying principles and verify by measurement instead of guessing."
       }
     ],
     footnote: "This section was distilled by asking the AI to analyze two months of my Claude Code session logs.",
@@ -144,127 +144,118 @@ export default function AboutPage({ locale }: AboutPageProps) {
   const ws = workStyle[locale];
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          {/* Header + 프로필 (사진 없이 텍스트 중심) */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">About</h1>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">{MAIN.author_en}</h2>
-            <p className="text-xl text-gray-700 dark:text-gray-300 font-medium mb-1">{MAIN.bio.duty}</p>
-            <p className="text-lg text-gray-500 dark:text-gray-400 mb-6">{MAIN.bio.location}</p>
-            <div className="flex justify-center space-x-4">
-              <Link
-                href={`mailto:${MAIN.social.email}`}
-                className="p-3 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 border border-gray-200 dark:border-gray-700"
-                title="Email"
-              >
-                <Mail className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-              </Link>
-              <Link
-                href={MAIN.social.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 border border-gray-200 dark:border-gray-700"
-                title="GitHub"
-              >
-                <Image src="/images/icons/github.svg" alt="GitHub" width={20} height={20} className="w-5 h-5" />
-              </Link>
-              <Link
-                href={MAIN.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 border border-gray-200 dark:border-gray-700"
-                title="LinkedIn"
-              >
-                <Image src="/images/icons/linkedin.svg" alt="LinkedIn" width={20} height={20} className="w-5 h-5" />
-              </Link>
-            </div>
+    <div className="page py-10 sm:py-14">
+      <div className="mx-auto max-w-[56rem]">
+        {/* Header */}
+        <header className="grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
+          <div>
+            <p className="eyebrow">{MAIN.bio.duty}</p>
+            <h1 className="t-title mt-3 text-foreground">{MAIN.author_en}</h1>
+            <p className="mono mt-3">{MAIN.bio.location}</p>
           </div>
-
-          {/* 소개 문단 */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-lg mb-12">
-            <div className="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed">
-              {content[locale].map((text, index) => (
-                <p
-                  key={index}
-                  className="text-lg"
-                  dangerouslySetInnerHTML={{ __html: text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") }}
-                />
-              ))}
-            </div>
+          <div className="flex gap-1">
+            {[
+              { href: `mailto:${MAIN.social.email}`, label: "Email", node: <Mail className="h-4 w-4" /> },
+              {
+                href: MAIN.social.github,
+                label: "GitHub",
+                node: <Image src="/images/icons/github.svg" alt="" width={16} height={16} className="h-4 w-4 dark:invert" />
+              },
+              {
+                href: MAIN.social.linkedin,
+                label: "LinkedIn",
+                node: <Image src="/images/icons/linkedin.svg" alt="" width={16} height={16} className="h-4 w-4" />
+              }
+            ].map((l) => (
+              <Link
+                key={l.label}
+                href={l.href}
+                target={l.href.startsWith("http") ? "_blank" : undefined}
+                rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                aria-label={l.label}
+                className="surface inline-flex h-10 w-10 items-center justify-center text-text-2 transition-colors duration-1 hover:border-primary/50 hover:text-foreground"
+              >
+                {l.node}
+              </Link>
+            ))}
           </div>
+        </header>
 
-          {/* 성장 아크 — Frontend → Full-stack → Builder */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">{arc.heading}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {arc.stages.map((stage, index) => (
-                <div
-                  key={index}
-                  className={`relative border rounded-lg p-5 ${
-                    index === arc.stages.length - 1
-                      ? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                      : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
-                  }`}
-                >
-                  <div className="flex items-baseline justify-between mb-2">
-                    <h3 className="text-md font-semibold text-gray-800 dark:text-gray-100">{stage.label}</h3>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">{stage.period}</span>
+        {/* Intro */}
+        <section className="mt-12 space-y-4">
+          {content[locale].map((text, index) => (
+            <p
+              key={index}
+              className="t-lead [&_strong]:font-semibold [&_strong]:text-foreground"
+              dangerouslySetInnerHTML={{ __html: text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") }}
+            />
+          ))}
+        </section>
+
+        {/* Growth arc */}
+        <section className="mt-16">
+          <p className="eyebrow mb-2">01</p>
+          <div className="section-head mb-6">
+            <h2 className="t-h1 text-foreground">{arc.heading}</h2>
+          </div>
+          <ol className="grid gap-3 md:grid-cols-3">
+            {arc.stages.map((stage, index) => {
+              const last = index === arc.stages.length - 1;
+              return (
+                <li key={index} className={`surface relative p-5 ${last ? "border-primary/60 bg-primary/5" : ""}`}>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <h3 className={`t-h3 ${last ? "text-primary" : "text-foreground"}`}>{stage.label}</h3>
+                    <span className="mono">{stage.period}</span>
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{stage.description}</p>
-                  {index < arc.stages.length - 1 && (
-                    <span className="hidden md:block absolute -right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-lg z-10">
+                  <p className="t-small mt-2">{stage.description}</p>
+                  {!last ? (
+                    <span className="absolute -right-4 top-1/2 hidden -translate-y-1/2 text-text-3 md:block" aria-hidden="true">
                       →
                     </span>
-                  )}
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{arc.note}</p>
-          </div>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ol>
+          <p className="t-small mt-4">{arc.note}</p>
+        </section>
 
-          {/* 일하는 방식 */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">{ws.heading}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {ws.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-gray-50 dark:bg-gray-800"
-                >
-                  <h3 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{item.description}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-              {ws.footnote}{" "}
-              <Link
-                href={ws.footnoteLink.href}
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline underline-offset-2"
-              >
-                {ws.footnoteLink.label}
-              </Link>
-            </p>
+        {/* How I work */}
+        <section className="mt-16">
+          <p className="eyebrow mb-2">02</p>
+          <div className="section-head mb-6">
+            <h2 className="t-h1 text-foreground">{ws.heading}</h2>
           </div>
-
-          {/* Portfolio 이동 */}
-          <div className="text-center">
-            <Link
-              href={getLocalePath(locale, "/career")}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium shadow-sm"
-            >
-              Portfolio
-              <ArrowRight className="h-4 w-4" />
+          <ol className="grid gap-3 md:grid-cols-2">
+            {ws.items.map((item, index) => (
+              <li key={index} className="surface p-5">
+                <p className="mono mb-2">{String(index + 1).padStart(2, "0")}</p>
+                <h3 className="t-h3 text-foreground">{item.title}</h3>
+                <p className="t-small mt-2">{item.description}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="t-small mt-4">
+            {ws.footnote}{" "}
+            <Link href={getLocalePath(locale, ws.footnoteLink.href)} className="text-primary link-underline">
+              {ws.footnoteLink.label}
             </Link>
-            <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-              {locale === "en"
-                ? "Project details, achievements, and tech stacks"
-                : "프로젝트 상세 · 성과 · 기술 스택 보기"}
-            </p>
-          </div>
-        </div>
+          </p>
+        </section>
+
+        {/* Portfolio */}
+        <section className="mt-16 flex flex-col items-start gap-2">
+          <Link
+            href={getLocalePath(locale, "/career")}
+            className="inline-flex h-11 items-center gap-2 rounded-md bg-foreground px-5 text-sm font-semibold text-background transition-opacity duration-1 hover:opacity-90"
+          >
+            Portfolio
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <p className="t-small">
+            {locale === "en" ? "Project details, interactive demos, and the PDF résumé" : "프로젝트 상세 · 인터랙티브 데모 · PDF 이력서"}
+          </p>
+        </section>
       </div>
     </div>
   );

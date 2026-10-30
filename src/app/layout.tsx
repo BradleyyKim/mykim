@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JetBrains_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
@@ -11,6 +12,13 @@ import { getGAMeasurementId, isGAEnabled } from "@/lib/analytics";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { VercelAnalyticsProvider } from "@/components/providers/analytics-provider";
 import { MAIN } from "@/lib/constants";
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
+  display: "swap"
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(MAIN.url),
@@ -74,7 +82,7 @@ export default async function RootLayout({
   const locale = cookieStore.get("locale")?.value || "ko";
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className={mono.variable}>
       <head>
         <link
           rel="alternate"
@@ -103,7 +111,7 @@ export default async function RootLayout({
             <VercelAnalyticsProvider>
               <Suspense
                 fallback={
-                  <div className="h-14 border-b bg-background/95"></div>
+                  <div className="h-14 border-b border-border bg-background/95"></div>
                 }
               >
                 <Header />

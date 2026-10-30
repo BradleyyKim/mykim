@@ -2,54 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ------------------------------------------------------------------
+   Design tokens
+   Colors are HSL triplets so Tailwind can add alpha (bg-primary/10).
+   Everything on screen derives from these — no raw gray-* in components.
+   ------------------------------------------------------------------ */
 :root {
-  --radius: 0.5rem;
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  --radius: 0.75rem;
+
+  --background: 0 0% 98.4%;
+  --foreground: 240 20% 6%;
+  --text-1: 240 12% 17%;
+  --text-2: 240 6% 42%;
+  --text-3: 240 5% 58%;
+
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  --card-foreground: 240 20% 6%;
   --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 221.2 83.2% 53.3%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222.2 84% 4.9%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222.2 84% 4.9%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
+  --popover-foreground: 240 20% 6%;
+
+  --primary: 235 80% 58%;
+  --primary-foreground: 0 0% 100%;
+  --brand-2: 190 90% 46%;
+  --glow: 235 80% 58%;
+
+  --secondary: 240 6% 94%;
+  --secondary-foreground: 240 20% 6%;
+  --muted: 240 6% 94%;
+  --muted-foreground: 240 6% 42%;
+  --accent: 240 6% 93%;
+  --accent-foreground: 240 20% 6%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240 6% 89%;
+  --input: 240 6% 89%;
+  --ring: 235 80% 58%;
+
   --chart-1: 12 76% 61%;
   --chart-2: 173 58% 39%;
   --chart-3: 197 37% 24%;
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
+
+  /* Motion */
+  --ease-soft: cubic-bezier(0.2, 0.9, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-1: 160ms;
+  --dur-2: 240ms;
+  --dur-3: 480ms;
+
+  /* Layout */
+  --measure: 44rem;
+  --page: 72rem;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 84% 4.9%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 224.3 76.3% 94.1%;
+  --background: 240 18% 5%;
+  --foreground: 240 10% 96%;
+  --text-1: 240 10% 84%;
+  --text-2: 240 8% 64%;
+  --text-3: 240 6% 48%;
+
+  --card: 240 14% 8%;
+  --card-foreground: 240 10% 96%;
+  --popover: 240 14% 8%;
+  --popover-foreground: 240 10% 96%;
+
+  --primary: 226 100% 74%;
+  --primary-foreground: 240 20% 6%;
+  --brand-2: 190 95% 60%;
+  --glow: 226 100% 74%;
+
+  --secondary: 240 10% 13%;
+  --secondary-foreground: 240 10% 96%;
+  --muted: 240 10% 13%;
+  --muted-foreground: 240 8% 64%;
+  --accent: 240 10% 14%;
+  --accent-foreground: 240 10% 96%;
+  --destructive: 0 62% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240 10% 16%;
+  --input: 240 10% 16%;
+  --ring: 226 100% 74%;
+
   --chart-1: 220 70% 50%;
   --chart-2: 160 60% 45%;
   --chart-3: 30 80% 55%;
@@ -61,206 +96,600 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11", "tnum";
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: hsl(var(--primary) / 0.22);
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-/* 마크다운 콘텐츠 스타일링 */
+/* ------------------------------------------------------------------
+   Type scale — fluid, with tracking tightened as weight goes up.
+   Pretendard needs negative tracking at 700+ or it reads loose.
+   ------------------------------------------------------------------ */
+@layer components {
+  .t-display {
+    font-size: clamp(2.75rem, 8vw, 5.5rem);
+    font-weight: 900;
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+  }
+  .t-title {
+    font-size: clamp(1.875rem, 4.6vw, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+  .t-h1 {
+    font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+  .t-h2 {
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.25;
+  }
+  .t-h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+  }
+  .t-lead {
+    font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+    line-height: 1.7;
+    color: hsl(var(--text-2));
+    text-wrap: pretty;
+  }
+  .t-body {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: hsl(var(--text-1));
+  }
+  .t-small {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: hsl(var(--text-2));
+  }
+
+  /* Secondary voice — monospace labels for metadata, counters, eyebrows */
+  .eyebrow {
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: hsl(var(--text-2));
+  }
+  .mono {
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: hsl(var(--text-2));
+    font-variant-numeric: tabular-nums;
+  }
+  .num {
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .page {
+    width: 100%;
+    max-width: var(--page);
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 640px) {
+    .page {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  .surface {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .section-head::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: hsl(var(--border));
+    transform: translateY(-0.35em);
+  }
+
+  .accent-word {
+    color: hsl(var(--primary));
+  }
+
+  .link-underline {
+    text-decoration: underline;
+    text-decoration-color: hsl(var(--primary) / 0.35);
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+    transition: text-decoration-color var(--dur-1) var(--ease-soft);
+  }
+  .link-underline:hover {
+    text-decoration-color: hsl(var(--primary));
+  }
+
+  .row-hover {
+    transition:
+      background-color var(--dur-1) var(--ease-soft),
+      transform var(--dur-2) var(--ease-soft);
+  }
+  .row-hover:hover {
+    background-color: hsl(var(--accent) / 0.6);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: 1.5rem;
+    padding-inline: 0.5rem;
+    border-radius: 999px;
+    background: hsl(var(--muted));
+    color: hsl(var(--text-2));
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    transition:
+      background-color var(--dur-1) var(--ease-soft),
+      color var(--dur-1) var(--ease-soft);
+  }
+  .chip:hover {
+    background: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary));
+  }
+
+  /* Hero backdrop — two soft glows, no image */
+  .hero-glow {
+    background:
+      radial-gradient(42rem 24rem at 12% 0%, hsl(var(--glow) / 0.16), transparent 60%),
+      radial-gradient(36rem 20rem at 92% 10%, hsl(var(--brand-2) / 0.12), transparent 60%);
+  }
+  .dark .hero-glow {
+    background:
+      radial-gradient(42rem 24rem at 12% 0%, hsl(var(--glow) / 0.14), transparent 60%),
+      radial-gradient(36rem 20rem at 92% 10%, hsl(var(--brand-2) / 0.1), transparent 60%);
+  }
+
+  .fade-up {
+    animation: fade-up var(--dur-3) var(--ease-out) both;
+  }
+  .delay-1 {
+    animation-delay: 60ms;
+  }
+  .delay-2 {
+    animation-delay: 120ms;
+  }
+  .delay-3 {
+    animation-delay: 200ms;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes ring-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Prose — the reading surface. Post sections are written as `#` in MDX
+   and rendered one level down (h2), so the post title is the only h1.
+   ------------------------------------------------------------------ */
 .prose {
-  @apply max-w-none text-foreground;
+  max-width: none;
+  color: hsl(var(--text-1));
+  font-size: 1rem;
+  line-height: 1.85;
+  text-wrap: pretty;
+}
+@media (min-width: 768px) {
+  .prose {
+    font-size: 1.0625rem;
+  }
 }
 
-.prose h1 {
-  @apply text-3xl font-bold mb-6 text-foreground;
-}
-
-.prose h2 {
-  @apply text-2xl font-semibold mb-4 mt-8 text-foreground;
-}
-
-.prose h3 {
-  @apply text-xl font-semibold mb-3 mt-6 text-foreground;
-}
-
-.prose h4 {
-  @apply text-lg font-medium mb-2 mt-4 text-foreground;
+.prose > :first-child {
+  margin-top: 0;
 }
 
 .prose p {
-  @apply mb-4 leading-7 text-foreground;
+  margin: 0 0 1.25em;
 }
 
-.prose ul {
-  @apply list-disc list-inside mb-4 space-y-2;
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: hsl(var(--foreground));
+  position: relative;
+  scroll-margin-top: 5.5rem;
+  text-wrap: balance;
 }
-
-.prose ol {
-  @apply list-decimal list-inside mb-4 space-y-2;
+.prose h2 {
+  font-size: 1.625rem;
+  font-weight: 800;
+  letter-spacing: -0.028em;
+  line-height: 1.25;
+  margin: 3rem 0 1rem;
 }
-
-.prose li {
-  @apply text-foreground;
+.prose h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  line-height: 1.35;
+  margin: 2.25rem 0 0.75rem;
 }
-
-.prose blockquote {
-  @apply border-l-4 border-border pl-4 italic my-4 text-muted-foreground;
+.prose h4 {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 1.75rem 0 0.5rem;
 }
-
-.prose code {
-  @apply bg-muted px-2 py-1 rounded text-sm font-mono;
+.prose .heading-anchor {
+  position: absolute;
+  left: -1.4em;
+  top: 0.15em;
+  color: hsl(var(--text-3));
+  opacity: 0;
+  text-decoration: none;
+  font-weight: 400;
+  transition: opacity var(--dur-1) var(--ease-soft);
 }
-
-.prose pre {
-  @apply bg-muted p-4 rounded-md overflow-x-auto mb-4;
+.prose h2:hover .heading-anchor,
+.prose h3:hover .heading-anchor,
+.prose h4:hover .heading-anchor,
+.prose .heading-anchor:focus-visible {
+  opacity: 1;
 }
-
-.prose pre code {
-  @apply bg-transparent p-0;
+@media (max-width: 767px) {
+  .prose .heading-anchor {
+    display: none;
+  }
 }
 
 .prose a {
-  @apply text-primary hover:underline;
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--primary) / 0.35);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color var(--dur-1) var(--ease-soft);
+}
+.prose a:hover {
+  text-decoration-color: hsl(var(--primary));
+}
+.prose a[target="_blank"]::after {
+  content: "↗";
+  font-size: 0.75em;
+  margin-left: 0.15em;
+  opacity: 0.7;
 }
 
-.prose img {
-  @apply rounded-md max-w-full h-auto;
+.prose strong {
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+.prose em {
+  font-style: italic;
 }
 
-.prose table {
-  @apply w-full border-collapse border border-border;
+.prose ul,
+.prose ol {
+  margin: 0 0 1.25em;
+  padding-left: 1.5em;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li {
+  margin: 0.3em 0;
+  padding-left: 0.25em;
+}
+.prose li::marker {
+  color: hsl(var(--text-3));
+}
+.prose li > p {
+  margin: 0.25em 0;
 }
 
-.prose th,
-.prose td {
-  @apply border border-border px-4 py-2;
+.prose blockquote {
+  margin: 1.5em 0;
+  padding: 0.25em 0 0.25em 1.25em;
+  border-left: 2px solid hsl(var(--primary) / 0.6);
+  color: hsl(var(--text-2));
 }
-
-.prose th {
-  @apply bg-muted font-semibold;
+.prose blockquote p {
+  margin: 0.5em 0;
 }
 
 .prose hr {
-  @apply border-border my-6;
+  border: 0;
+  height: 1px;
+  background: hsl(var(--border));
+  margin: 3rem auto;
+  width: 40%;
 }
 
-/* 다크 모드에서 prose 스타일 조정 */
-.dark .prose {
-  @apply text-foreground;
+.prose img {
+  border-radius: calc(var(--radius) - 2px);
+  max-width: 100%;
+  height: auto;
+}
+.prose figure {
+  margin: 1.75em 0;
+}
+.prose figcaption {
+  margin-top: 0.5em;
+  font-size: 0.8125rem;
+  color: hsl(var(--text-2));
 }
 
-.dark .prose h1,
-.dark .prose h2,
-.dark .prose h3,
-.dark .prose h4,
-.dark .prose h5,
-.dark .prose h6 {
-  @apply text-foreground;
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  margin: 1.5em 0 2em;
+  display: block;
+  overflow-x: auto;
+}
+.prose thead {
+  background: hsl(var(--muted));
+}
+.prose th,
+.prose td {
+  border: 1px solid hsl(var(--border));
+  padding: 0.55em 0.8em;
+  text-align: left;
+  vertical-align: top;
+}
+.prose th {
+  font-weight: 600;
+  color: hsl(var(--foreground));
 }
 
-.dark .prose p,
-.dark .prose li,
-.dark .prose span {
-  @apply text-foreground;
+/* Inline code */
+.prose :not(pre) > code {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86em;
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  padding: 0.12em 0.4em;
+  border-radius: 0.35rem;
+  border: 1px solid hsl(var(--border));
 }
 
-/* 코드 블록 스타일링 */
-.prose .code-block-container {
-  @apply relative mb-4;
+/* Code blocks — wrapper comes from CodeBlock.tsx */
+.prose .code-block {
+  position: relative;
+  margin: 1.5em 0 2em;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--card));
+  overflow: hidden;
+}
+.prose .code-block__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem 0.4rem 0.9rem;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.6);
+}
+.prose .code-block pre {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  background: transparent;
+}
+.prose .code-block code {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+  color: hsl(var(--text-1));
 }
 
-.prose .code-block-container::before {
-  content: attr(data-language);
-  @apply absolute top-2 right-2 text-xs text-muted-foreground bg-muted px-2 py-1 rounded uppercase;
+/* Syntax colors — one quiet palette for both themes */
+.prose .hljs-keyword,
+.prose .hljs-selector-tag,
+.prose .hljs-built_in {
+  color: hsl(262 70% 55%);
+}
+.prose .hljs-string,
+.prose .hljs-attr,
+.prose .hljs-template-variable {
+  color: hsl(150 55% 34%);
+}
+.prose .hljs-comment,
+.prose .hljs-quote {
+  color: hsl(var(--text-3));
+  font-style: italic;
+}
+.prose .hljs-number,
+.prose .hljs-literal {
+  color: hsl(20 80% 45%);
+}
+.prose .hljs-title,
+.prose .hljs-function,
+.prose .hljs-section {
+  color: hsl(var(--primary));
+}
+.prose .hljs-variable,
+.prose .hljs-name {
+  color: hsl(0 60% 50%);
+}
+.prose .hljs-type,
+.prose .hljs-class {
+  color: hsl(190 60% 36%);
+}
+.dark .prose .hljs-keyword,
+.dark .prose .hljs-selector-tag,
+.dark .prose .hljs-built_in {
+  color: hsl(262 90% 78%);
+}
+.dark .prose .hljs-string,
+.dark .prose .hljs-attr,
+.dark .prose .hljs-template-variable {
+  color: hsl(150 60% 66%);
+}
+.dark .prose .hljs-number,
+.dark .prose .hljs-literal {
+  color: hsl(28 90% 68%);
+}
+.dark .prose .hljs-variable,
+.dark .prose .hljs-name {
+  color: hsl(0 80% 74%);
+}
+.dark .prose .hljs-type,
+.dark .prose .hljs-class {
+  color: hsl(190 80% 68%);
 }
 
-.prose .code-block-container pre {
-  @apply bg-muted border border-border rounded-md p-4 overflow-x-auto;
+/* ------------------------------------------------------------------
+   Reading progress + TOC
+   ------------------------------------------------------------------ */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  z-index: 60;
+  pointer-events: none;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--brand-2)));
 }
 
-.prose .code-block-container code {
-  @apply bg-transparent text-sm;
+.toc a {
+  display: block;
+  padding: 0.2rem 0 0.2rem 0.75rem;
+  border-left: 1px solid hsl(var(--border));
+  color: hsl(var(--text-2));
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  transition:
+    color var(--dur-1) var(--ease-soft),
+    border-color var(--dur-1) var(--ease-soft);
+}
+.toc a:hover {
+  color: hsl(var(--foreground));
+}
+.toc a[data-active="true"] {
+  color: hsl(var(--primary));
+  border-left-color: hsl(var(--primary));
+}
+.toc a[data-level="2"] {
+  padding-left: 1.5rem;
+  font-size: 0.75rem;
 }
 
-/* 구문 하이라이팅 */
-.prose .hljs-keyword {
-  @apply text-blue-600 font-medium;
+/* ------------------------------------------------------------------
+   Showcase diagrams
+   ------------------------------------------------------------------ */
+.flow-line {
+  stroke-dasharray: 6 6;
+  animation: dash-flow 1.2s linear infinite;
 }
 
-.prose .hljs-string {
-  @apply text-green-600;
+/* ------------------------------------------------------------------
+   Hero typewriter caret
+   ------------------------------------------------------------------ */
+.typewriter-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 3px;
+  vertical-align: -0.12em;
+  background: hsl(var(--primary));
+  border-radius: 1px;
+}
+.typewriter-caret.is-blinking {
+  animation: caret-blink 1s steps(1) infinite;
+}
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
 }
 
-.prose .hljs-comment {
-  @apply text-gray-500 italic;
+/* ------------------------------------------------------------------
+   Interactive figures inside posts — opt out of prose spacing
+   ------------------------------------------------------------------ */
+.prose .post-interactive {
+  margin: 2.25rem 0;
 }
-
-.prose .hljs-number {
-  @apply text-purple-600;
+.prose .not-prose :is(p, ol, ul, li, figure) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-
-.prose .hljs-function {
-  @apply text-blue-700 font-medium;
+.prose .not-prose li::marker {
+  content: none;
 }
-
-.prose .hljs-variable {
-  @apply text-red-600;
-}
-
-.prose .hljs-type {
-  @apply text-teal-600;
-}
-
-.prose .hljs-operator {
-  @apply text-gray-700;
-}
-
-.prose .hljs-punctuation {
-  @apply text-gray-600;
-}
-
-/* 다크 모드 구문 하이라이팅 */
-.dark .prose .hljs-keyword {
-  @apply text-blue-400;
-}
-
-.dark .prose .hljs-string {
-  @apply text-green-400;
-}
-
-.dark .prose .hljs-comment {
-  @apply text-gray-400;
-}
-
-.dark .prose .hljs-number {
-  @apply text-purple-400;
-}
-
-.dark .prose .hljs-function {
-  @apply text-blue-300;
-}
-
-.dark .prose .hljs-variable {
-  @apply text-red-400;
-}
-
-.dark .prose .hljs-type {
-  @apply text-teal-400;
-}
-
-.dark .prose .hljs-operator {
-  @apply text-gray-300;
-}
-
-.dark .prose .hljs-punctuation {
-  @apply text-gray-400;
-}
-
-/* 인라인 코드 스타일 (코드 블록이 아닌) */
-.prose code:not(.code-block-container code) {
-  @apply bg-muted text-foreground px-1.5 py-0.5 rounded text-sm font-mono;
-}
-
-.dark .prose code:not(.code-block-container code) {
-  @apply bg-muted text-foreground;
+.prose .not-prose svg text {
+  font-family: var(--font-mono), ui-monospace, monospace;
 }

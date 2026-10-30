@@ -28,7 +28,7 @@ export const MAIN = {
     name: "김민영",
     name_en: "Minyoung Kim",
     location: "Seoul, Korea",
-    duty: "Product Builder · Frontend → Full-stack",
+    duty: "Product Engineer · Frontend → Full-stack",
     tagline: "어쩌면 오늘이 가장 행복한 날일지도 모르겠습니다.",
     subtitle: "Software Engineer & Life Architect",
     description: [

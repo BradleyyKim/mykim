@@ -1,8 +1,10 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import type { Post, Tag, Category, PaginationResult } from "@/lib/types/post";
+import type { Post, PostRef, Tag, Category, PaginationResult } from "@/lib/types/post";
 import type { Locale } from "@/i18n";
+import { extractHeadings } from "@/lib/content/headings";
+import { readingTime } from "@/lib/content/reading-time";
 
 const CATEGORIES_FILE = path.join(process.cwd(), "content", "categories.json");
 
@@ -81,6 +83,8 @@ function toPost(
       name,
     })),
     category: matchedCategory,
+    readingMinutes: readingTime(content, locale).minutes,
+    headings: extractHeadings(content),
   };
 }
 
@@ -123,6 +127,18 @@ export function getPostBySlugLocal(slug: string, locale: Locale = "ko"): Post | 
   const found = files.find((f) => f.frontmatter.slug === slug);
   if (!found) return null;
   return toPost(found, 0, locale);
+}
+
+/**
+ * Previous (older) and next (newer) posts around a slug, in publishedDate order
+ */
+export function getAdjacentPosts(slug: string, locale: Locale = "ko"): { prev: PostRef | null; next: PostRef | null } {
+  const all = getAllPosts(locale); // newest first
+  const i = all.findIndex((p) => p.slug === slug);
+  if (i === -1) return { prev: null, next: null };
+  const ref = (p: Post | undefined): PostRef | null =>
+    p ? { title: p.title, slug: p.slug, publishedDate: p.publishedDate || p.createdAt } : null;
+  return { next: ref(all[i - 1]), prev: ref(all[i + 1]) };
 }
 
 /**

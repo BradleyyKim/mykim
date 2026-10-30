@@ -5,7 +5,8 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const tagName = searchParams.get("name") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
+  const locale = searchParams.get("locale") === "en" ? "en" : "ko";
 
-  const result = getPostsByTag(tagName, page);
+  const result = getPostsByTag(tagName, page, undefined, locale);
   return NextResponse.json(result);
 }

@@ -1,22 +1,62 @@
 {
   "nav": {
+    "posts": "Posts",
     "series": "Series",
     "tags": "Tags",
     "about": "About",
+    "portfolio": "Portfolio",
     "home": "Home",
     "allPosts": "View all posts",
     "loading": "Loading...",
     "noCategories": "No categories",
-    "theme": "Theme"
+    "theme": "Theme",
+    "menu": "Menu"
   },
   "home": {
     "title": "MYKim",
     "description": "A blog about programming, web development, and more",
-    "posts": "posts"
+    "posts": "posts",
+    "eyebrow": "PRODUCT ENGINEER",
+    "display": [
+      "BUILD.",
+      "DEVELOP.",
+      "WRITE."
+    ],
+    "statPosts": "posts",
+    "statTags": "tags",
+    "statYears": "years",
+    "latest": "Latest",
+    "latestHint": "just published",
+    "recent": "Recent",
+    "recentHint": "latest writing",
+    "series": "Series",
+    "seriesHint": "read as a thread",
+    "archive": "Archive",
+    "archiveHint": "by year",
+    "items": "items",
+    "readMore": "Read",
+    "globeHint": "Drag to rotate, tap a marker",
+    "globeOpen": "Open",
+    "typed": [
+      "Building control screens that run in the field.",
+      "Developing from the screen to the server and deploys.",
+      "Writing down why things were placed the way they are."
+    ]
   },
   "post": {
     "notFound": "Post not found",
-    "notFoundDesc": "The requested post could not be found."
+    "notFoundDesc": "The requested post could not be found.",
+    "backToList": "All posts",
+    "minutes": "{n} min",
+    "readLabel": "read",
+    "toc": "Contents",
+    "prev": "Previous",
+    "next": "Next",
+    "updated": "Updated",
+    "copy": "Copy",
+    "copied": "Copied",
+    "share": "Share",
+    "top": "Top"
   },
   "category": {
     "notFound": "Category not found",
@@ -27,25 +67,51 @@
   },
   "tags": {
     "title": "Tags",
-    "description": "Explore all tags and find related posts.",
+    "description": "Pick a tag to find related posts.",
     "notFound": "Tag not found",
-    "notFoundDesc": "The requested tag could not be found."
+    "notFoundDesc": "The requested tag could not be found.",
+    "empty": "No tags yet"
   },
   "about": {
     "title": "About",
-    "careerDetail": "Career Detail",
-    "content": [
-      "I tend to reflect deeply on the **purpose** and **underlying reason** behind everything I do.",
-      "Rather than simply executing tasks, I value the process of asking myself **why this work matters** and **what kind of value it can create**—both for users and for the team.",
-      "As a team, we believe that in order to carefully design and experiment with **truly user-centered interfaces**, it's essential to have a **stable and trustworthy foundation in place**.",
-      "The same applies to life. When our **inner foundation** is solid, we can move forward with **greater clarity and resilience**."
-    ]
+    "careerDetail": "Career Detail"
   },
   "career": {
-    "title": "Career",
-    "description": "Career and project experience"
+    "title": "Portfolio",
+    "description": "Career and project experience",
+    "eyebrow": "PORTFOLIO",
+    "lead": "Only things that actually ran, at work and on my own. The demos below are interactive; the résumé is available as a PDF.",
+    "pdf": "PDF",
+    "pdfPreview": "Preview",
+    "pdfDownload": "Download",
+    "projects": "Projects",
+    "overview": "Overview",
+    "highlights": "Highlights",
+    "techStack": "Stack",
+    "references": "References",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "openProject": "Open project"
+  },
+  "showcase": {
+    "globe": {
+      "title": "Project map",
+      "desc": "Where the things I built actually ran. Pick a marker or a row to read about that site, then open the project to jump to its card below.",
+      "hint": "Drag · tap a marker"
+    },
+    "dispatch": {
+      "title": "From detection to return — dispatch flow",
+      "desc": "A camera catches an intrusion, a person approves, a robot goes out and comes back. Tap a stage to see what actually happened there.",
+      "hint": "tap a stage"
+    },
+    "network": {
+      "title": "Where it broke — booth network hops",
+      "desc": "The robot went dark at the show because of three wireless hops, not the screen. Tap a hop, then toggle to see next time's wiring.",
+      "hint": "tap a hop · before/after"
+    }
   },
   "footer": {
-    "copyright": "© {year} {title}. All rights reserved."
+    "copyright": "© {year} {title}. All rights reserved.",
+    "tagline": "Build. Develop. Write."
   }
 }

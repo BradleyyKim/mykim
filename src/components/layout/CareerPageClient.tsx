@@ -1,20 +1,16 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import {
-  ChevronDown,
-  ChevronRight,
-  ExternalLink,
-  Calendar,
-  MapPin,
-  Briefcase,
-  Download,
-  ChevronUp
-} from "lucide-react";
-import type { Company } from "@/components/pages/CareerPage";
-import Link from "next/link";
+import { useCallback, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import { ChevronDown, Download, ExternalLink, Eye } from "lucide-react";
 import { toast } from "sonner";
+import type { Company } from "@/components/pages/CareerPage";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import ProjectGlobe from "@/components/showcase/ProjectGlobe";
 import { generateClientPDF, previewPDF } from "@/lib/media";
+import { t } from "@/i18n";
+import type { Locale } from "@/i18n";
+import { pad2 } from "@/lib/format";
 
 interface CareerPageClientProps {
   careerData: Company[];
@@ -22,307 +18,215 @@ interface CareerPageClientProps {
 }
 
 export default function CareerPageClient({ careerData, careerDataEn }: CareerPageClientProps) {
-  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const locale: Locale = pathname.startsWith("/en") ? "en" : "ko";
+  const [open, setOpen] = useState<Set<string>>(() => new Set(["0-0"]));
 
-  const toggleProject = (companyIndex: number, projectIndex: number) => {
-    const projectKey = `${companyIndex}-${projectIndex}`;
-    const newExpanded = new Set(expandedProjects);
-    if (newExpanded.has(projectKey)) {
-      newExpanded.delete(projectKey);
-    } else {
-      newExpanded.add(projectKey);
-    }
-    setExpandedProjects(newExpanded);
-  };
+  const toggle = (key: string) =>
+    setOpen((cur) => {
+      const next = new Set(cur);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
 
-  const isProjectExpanded = (companyIndex: number, projectIndex: number) =>
-    expandedProjects.has(`${companyIndex}-${projectIndex}`);
-
-  // 드롭다운 외부 클릭 시 닫기
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleDownloadPDF = async (language: "ko" | "en") => {
+  const pdf = async (kind: "download" | "preview", language: "ko" | "en") => {
     try {
-      setIsDropdownOpen(false);
-
-      // CSS Print Media 방식으로 PDF 생성
       const data = language === "ko" ? careerData : careerDataEn;
-      await generateClientPDF(data, language);
+      if (kind === "download") await generateClientPDF(data, language);
+      else await previewPDF(data, language);
     } catch (error) {
-      console.error("PDF 다운로드 중 오류 발생:", error);
-      const errorMessage = error instanceof Error ? error.message : "PDF 다운로드에 실패했습니다.";
-      toast.error(errorMessage);
+      toast.error(error instanceof Error ? error.message : "PDF failed");
     }
   };
 
-  const handlePreviewPDF = async (language: "ko" | "en") => {
-    try {
-      setIsDropdownOpen(false);
+  const totalProjects = careerData.reduce((n, c) => n + c.projects.length, 0);
 
-      // CSS Print Media 방식으로 PDF 미리보기
-      const data = language === "ko" ? careerData : careerDataEn;
-      await previewPDF(data, language);
+  /** flat list for the globe, in display order */
+  const globeProjects = useMemo(
+    () => careerData.flatMap((c) => c.projects.filter((p) => p.id).map((p) => ({ id: p.id!, name: p.name }))),
+    [careerData]
+  );
 
-      toast.success("PDF 미리보기가 열렸습니다!");
-    } catch (error) {
-      console.error("PDF 미리보기 중 오류 발생:", error);
-      const errorMessage = error instanceof Error ? error.message : "PDF 미리보기에 실패했습니다.";
-      toast.error(errorMessage);
-    }
-  };
+  /** expand a project card and bring it into view (globe marker → card) */
+  const openProject = useCallback(
+    (id: string) => {
+      careerData.forEach((c, ci) =>
+        c.projects.forEach((p, pi) => {
+          if (p.id === id) setOpen((cur) => new Set(cur).add(`${ci}-${pi}`));
+        })
+      );
+      requestAnimationFrame(() => document.getElementById(`project-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    },
+    [careerData]
+  );
 
   return (
-    <div className="container mx-auto px-4 py-12" id="career-content">
-      <div className="mb-12 text-center">
-        {/* 제목 */}
-        <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-6">Career</h1>
-
-        {/* PDF 다운로드 버튼 */}
-        <div className="flex justify-end">
-          <div className="relative" ref={dropdownRef}>
+    <div className="page py-10 sm:py-14" id="career-content">
+      {/* Header */}
+      <header className="grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
+        <div>
+          <p className="eyebrow">{t(locale, "career.eyebrow")}</p>
+          <h1 className="t-title mt-3 text-foreground">{t(locale, "career.title")}</h1>
+          <p className="t-lead mt-4 max-w-[60ch]">{t(locale, "career.lead")}</p>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium shadow-sm"
+              type="button"
+              className="inline-flex h-10 items-center gap-2 rounded-md bg-foreground px-4 text-sm font-semibold text-background transition-opacity duration-1 hover:opacity-90"
             >
               <Download className="h-4 w-4" />
-              PDF
-              {isDropdownOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {t(locale, "career.pdf")}
+              <ChevronDown className="h-4 w-4 opacity-70" />
             </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel className="eyebrow">한국어</DropdownMenuLabel>
+            <DropdownMenuItem onSelect={() => pdf("preview", "ko")}>
+              <Eye className="mr-2 h-4 w-4" /> 미리보기
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => pdf("download", "ko")}>
+              <Download className="mr-2 h-4 w-4" /> 다운로드
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="eyebrow">English</DropdownMenuLabel>
+            <DropdownMenuItem onSelect={() => pdf("preview", "en")}>
+              <Eye className="mr-2 h-4 w-4" /> Preview
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => pdf("download", "en")}>
+              <Download className="mr-2 h-4 w-4" /> Download
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </header>
 
-            {isDropdownOpen && (
-              <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                <div className="py-1">
-                  <div className="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                    한국어
-                  </div>
-                  <button
-                    onClick={() => handlePreviewPDF("ko")}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
-                  >
-                    <span>👁️</span>
-                    미리보기
-                  </button>
-                  <button
-                    onClick={() => handleDownloadPDF("ko")}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
-                  >
-                    <span>📄</span>
-                    PDF 다운로드
-                  </button>
-
-                  <div className="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 mt-1">
-                    English
-                  </div>
-                  <button
-                    onClick={() => handlePreviewPDF("en")}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
-                  >
-                    <span>👁️</span>
-                    Preview
-                  </button>
-                  <button
-                    onClick={() => handleDownloadPDF("en")}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
-                  >
-                    <span>📄</span>
-                    Download PDF
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+      {/* Project map */}
+      <section className="mt-14 sm:mt-20" id="demo-globe">
+        <p className="eyebrow mb-2">{t(locale, "showcase.globe.hint")}</p>
+        <div className="section-head mb-3">
+          <h2 className="t-h1 text-foreground">{t(locale, "showcase.globe.title")}</h2>
         </div>
-      </div>
+        <p className="t-small mb-8 max-w-[64ch]">{t(locale, "showcase.globe.desc")}</p>
+        <ProjectGlobe locale={locale} projects={globeProjects} onOpen={openProject} />
+      </section>
 
-      {/* 회사별 경력 정보 */}
-      <div className="space-y-16">
-        {careerData.map((company, companyIndex) => (
-          <div key={companyIndex} className="company-section">
-            <div className="flex flex-col md:flex-row gap-8">
-              {/* 회사 정보 (좌측 또는 상단) */}
-              <div className="w-full md:w-1/4 mb-6 md:mb-0">
-                <div className="sticky top-20">
-                  <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-                    {company.link ? (
-                      <Link href={company.link} target="_blank" rel="noopener noreferrer">
-                        {company.name}
-                      </Link>
-                    ) : (
-                      company.name
-                    )}
-                  </h2>
-                  <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>{company.period}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Briefcase className="h-4 w-4" />
-                      <span>{company.position}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span>{company.projects.length} projects</span>
-                    </div>
-                  </div>
-                </div>
+      {/* Projects */}
+      <section className="mt-20 sm:mt-24">
+        <p className="eyebrow mb-2">
+          {pad2(totalProjects)} {t(locale, "home.items")}
+        </p>
+        <div className="section-head mb-8">
+          <h2 className="t-h1 text-foreground">{t(locale, "career.projects")}</h2>
+        </div>
+
+        <div className="space-y-14">
+          {careerData.map((company, ci) => (
+            <div key={ci} className="grid gap-6 md:grid-cols-[14rem_1fr] md:gap-10">
+              <div className="md:sticky md:top-24 md:self-start">
+                <h3 className="t-h2 text-foreground">
+                  {company.link ? (
+                    <a href={company.link} target="_blank" rel="noopener noreferrer" className="link-underline">
+                      {company.name}
+                    </a>
+                  ) : (
+                    company.name
+                  )}
+                </h3>
+                <p className="mono mt-2">{company.period}</p>
+                <p className="t-small mt-1">{company.position}</p>
+                <p className="mono mt-1">
+                  {pad2(company.projects.length)} projects
+                </p>
               </div>
 
-              {/* 프로젝트 목록 (우측 또는 하단) */}
-              <div className="w-full md:w-3/4">
-                <div className="space-y-4">
-                  {company.projects.map((project, projectIndex) => (
-                    <div
-                      key={`${companyIndex}-${projectIndex}`}
-                      className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md"
+              <ol className="space-y-3">
+                {company.projects.map((project, pi) => {
+                  const key = `${ci}-${pi}`;
+                  const isOpen = open.has(key);
+                  return (
+                    <li
+                      key={key}
+                      id={project.id ? `project-${project.id}` : undefined}
+                      className={`surface scroll-mt-24 overflow-hidden transition-colors duration-2 ${isOpen ? "border-primary/40" : ""}`}
                     >
-                      {/* 토글 헤더 */}
                       <button
-                        onClick={() => toggleProject(companyIndex, projectIndex)}
-                        className="w-full px-6 py-4 text-left bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                        type="button"
+                        onClick={() => toggle(key)}
+                        aria-expanded={isOpen}
+                        className="flex w-full items-start gap-4 px-5 py-4 text-left transition-colors duration-1 hover:bg-accent/50"
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">
-                              {project.name}
-                            </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{project.period}</p>
-                          </div>
-                          <div className="ml-4">
-                            {isProjectExpanded(companyIndex, projectIndex) ? (
-                              <ChevronDown className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                            ) : (
-                              <ChevronRight className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                            )}
-                          </div>
-                        </div>
+                        <span className="mono mt-1 w-6 shrink-0 text-text-3">{pad2(pi + 1)}</span>
+                        <span className="min-w-0 flex-1">
+                          <span className="t-h3 block text-foreground">{project.name}</span>
+                          <span className="mono mt-1 block">
+                            {project.period}
+                            {project.role ? ` · ${project.role}` : ""}
+                          </span>
+                        </span>
+                        <ChevronDown
+                          className={`mt-1 h-4 w-4 shrink-0 text-text-3 transition-transform duration-2 ease-soft ${isOpen ? "rotate-180" : ""}`}
+                        />
                       </button>
 
-                      {/* 토글 콘텐츠 */}
-                      {isProjectExpanded(companyIndex, projectIndex) && (
-                        <div className="px-6 py-6 bg-white dark:bg-gray-900">
-                          {/* 프로젝트 개요 */}
-                          <div className="mb-6">
-                            <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                              📋 Project Overview
-                            </h4>
-                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{project.overview}</p>
-                          </div>
-
-                          {/* 주요 업무 */}
-                          <div className="mb-6">
-                            <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                              💼 Responsibilities
-                            </h4>
-                            <ul className="space-y-2">
-                              {project.responsibilities.map((responsibility, index) => (
-                                <li key={index} className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
-                                  <span className="text-blue-500 dark:text-blue-400 mt-1">▸</span>
-                                  <span className="leading-relaxed">{responsibility}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
-                          {/* 성과 */}
-                          <div className="mb-6">
-                            <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                              ✨ Achievements
-                            </h4>
-                            <ul className="space-y-2">
-                              {project.achievements.map((achievement, index) => (
-                                <li key={index} className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
-                                  <span className="text-green-500 dark:text-green-400 mt-1">✓</span>
-                                  <span className="leading-relaxed">{achievement}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
-                          {/* 성과 지표 */}
-                          {project.metrics && project.metrics.length > 0 && (
-                            <div className="mb-6">
-                              <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                                📊 Metrics & Impact
-                              </h4>
+                      <div
+                        className={`grid transition-[grid-template-rows] duration-3 ease-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+                      >
+                        <div className="overflow-hidden">
+                          <div className="space-y-6 border-t border-border px-5 py-5 sm:pl-[3.75rem]">
+                            <div>
+                              <p className="eyebrow mb-2">{t(locale, "career.overview")}</p>
+                              <p className="t-body">{project.overview}</p>
+                            </div>
+                            <div>
+                              <p className="eyebrow mb-2">{t(locale, "career.highlights")}</p>
                               <ul className="space-y-2">
-                                {project.metrics.map((metric, index) => (
-                                  <li
-                                    key={index}
-                                    className="flex items-start gap-3 text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg"
-                                  >
-                                    <span className="text-orange-500 dark:text-orange-400 mt-1">📈</span>
-                                    <span className="leading-relaxed font-medium">{metric}</span>
+                                {project.highlights.map((h, i) => (
+                                  <li key={i} className="t-body relative pl-4 before:absolute before:left-0 before:top-[0.8em] before:h-1 before:w-1 before:rounded-full before:bg-primary">
+                                    {h}
                                   </li>
                                 ))}
                               </ul>
                             </div>
-                          )}
-
-                          {/* 기술 스택 */}
-                          {project.techStack && project.techStack.length > 0 && (
-                            <div className="mb-6">
-                              <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                                🛠️ Tech Stack
-                              </h4>
-                              <div className="flex flex-wrap gap-2">
-                                {project.techStack.map((tech, index) => (
-                                  <span
-                                    key={index}
-                                    className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-sm rounded-full"
-                                  >
-                                    {tech}
-                                  </span>
-                                ))}
+                            {project.techStack?.length ? (
+                              <div>
+                                <p className="eyebrow mb-2">{t(locale, "career.techStack")}</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {project.techStack.map((s) => (
+                                    <span key={s} className="chip">
+                                      {s}
+                                    </span>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
-
-                          {/* 레퍼런스 링크 */}
-                          {project.references && project.references.length > 0 && (
-                            <div>
-                              <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-3">
-                                🔗 References
-                              </h4>
-                              <div className="space-y-2">
-                                {project.references.map((reference, index) => (
+                            ) : null}
+                            {project.references?.length ? (
+                              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                                {project.references.map((r) => (
                                   <a
-                                    key={index}
-                                    href={reference}
+                                    key={r}
+                                    href={r}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm transition-colors duration-200"
+                                    className="inline-flex items-center gap-1 text-sm text-text-2 transition-colors duration-1 hover:text-foreground"
                                   >
-                                    {reference}
-                                    <ExternalLink className="h-4 w-4 mr-3" />
+                                    <ExternalLink className="h-3.5 w-3.5" />
+                                    {r.replace(/^https?:\/\/(www\.)?/, "").slice(0, 40)}
                                   </a>
                                 ))}
                               </div>
-                            </div>
-                          )}
+                            ) : null}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

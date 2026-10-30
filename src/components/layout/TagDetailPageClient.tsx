@@ -4,9 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import type { Tag, Post, PaginationResult } from "@/lib/types/post";
 import { Pagination } from "@/components/blog";
-import { formatDate } from "date-fns";
-import { getLocalePath } from "@/i18n";
+import PostRow from "@/components/blog/PostRow";
+import { getLocalePath, t } from "@/i18n";
 import type { Locale } from "@/i18n";
+import { pad2 } from "@/lib/format";
 
 interface TagDetailPageClientProps {
   tag: Tag;
@@ -19,17 +20,11 @@ export default function TagDetailPageClient({ tag, initialPosts, locale = "ko" }
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
-  const dateFormat = locale === "en" ? "MMM dd, yyyy HH:mm" : "yyyy.MM.dd HH:mm";
-  const noPostsTitle = locale === "en" ? "No posts" : "포스트가 없습니다";
-  const noPostsDesc = locale === "en"
-    ? `There are no posts related to the "${tag.name}" tag yet.`
-    : `"${tag.name}" 태그와 관련된 포스트가 아직 없습니다.`;
-
   const handlePageChange = async (page: number) => {
     if (isLoading) return;
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/tags/posts?name=${encodeURIComponent(tag.name || "")}&page=${page}`);
+      const response = await fetch(`/api/tags/posts?name=${encodeURIComponent(tag.name || "")}&page=${page}&locale=${locale}`);
       const newPosts = await response.json();
       setPosts(newPosts);
       setCurrentPage(page);
@@ -42,87 +37,41 @@ export default function TagDetailPageClient({ tag, initialPosts, locale = "ko" }
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      {/* 태그 섹션 - 홈페이지 스타일 */}
-      <div className="space-y-16">
-        <div className="tag-section">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* 태그 정보 (좌측 또는 상단) */}
-            <div className="w-full md:w-1/4 mb-6 md:mb-0">
-              <div className="sticky top-20">
-                <div className="flex items-center gap-3 mb-2">
-                  {/* 태그 아이콘 */}
-                  <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center">
-                    <div className="relative">
-                      <svg
-                        className="w-6 h-6 text-blue-500 dark:text-blue-400"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                      </svg>
-                      {/* 작은 점 표시 */}
-                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-400 dark:bg-blue-500 rounded-full"></div>
-                    </div>
-                  </div>
-                  <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100">{tag.name}</h3>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {posts.pagination.total.toLocaleString()} posts
-                </p>
-              </div>
-            </div>
+    <div className="page py-10 sm:py-14">
+      <header className="max-w-[60ch]">
+        <p className="eyebrow">
+          <Link href={getLocalePath(locale, "/tags")} className="hover:text-foreground">
+            {t(locale, "tags.title")}
+          </Link>{" "}
+          · {pad2(posts.pagination.total)} posts
+        </p>
+        <h1 className="t-title mt-3 text-foreground">#{tag.name}</h1>
+      </header>
 
-            {/* 해당 태그의 포스트 목록 (우측 또는 하단) */}
-            <div className="w-full md:w-3/4">
-              {posts.data.length > 0 ? (
-                <>
-                  <div className="space-y-6">
-                    {posts.data.map(post => {
-                      const formattedDate = formatDate(new Date(post.createdAt), dateFormat);
-
-                      return (
-                        <article
-                          key={post.id}
-                          className="group border-b border-gray-200 dark:border-gray-700 pb-6 last:border-b-0"
-                        >
-                          <Link href={getLocalePath(locale, `/posts/${post.slug}`)} className="block">
-                            <div className="flex justify-between items-center gap-4">
-                              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 flex-1">
-                                {post.title}
-                              </h2>
-                              <p className="text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">{formattedDate}</p>
-                            </div>
-                          </Link>
-                        </article>
-                      );
-                    })}
-                  </div>
-
-                  {/* 페이지네이션 */}
-                  {posts.pagination.pageCount > 1 && (
-                    <div className="flex justify-center mt-12">
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={posts.pagination.pageCount}
-                        onPageChange={handlePageChange}
-                        isLoading={isLoading}
-                      />
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="text-center py-12">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{noPostsTitle}</h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    {noPostsDesc}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+      <div className="mt-10">
+        {posts.data.length ? (
+          <ol className="divide-y divide-border">
+            {posts.data.map((post, i) => (
+              <PostRow
+                key={post.id}
+                locale={locale}
+                index={(currentPage - 1) * posts.pagination.pageSize + i + 1}
+                post={{
+                  title: post.title,
+                  slug: post.slug,
+                  description: post.description,
+                  publishedDate: post.publishedDate || post.createdAt,
+                  readingMinutes: post.readingMinutes,
+                  tags: post.tags,
+                  category: post.category
+                }}
+              />
+            ))}
+          </ol>
+        ) : (
+          <p className="t-small">{t(locale, "tags.notFoundDesc")}</p>
+        )}
+        <Pagination currentPage={currentPage} totalPages={posts.pagination.pageCount} onPageChange={handlePageChange} isLoading={isLoading} />
       </div>
     </div>
   );

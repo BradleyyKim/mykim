@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import PostDetail from "@/components/blog/PostDetail";
 import { NotFound as PostNotFound } from "@/components/ui";
 import { getPostBySlug } from "@/lib/cms";
+import { getAdjacentPosts } from "@/lib/mdx";
 import { extractPlainText, extractFirstImageFromContent } from "@/lib/content";
 import { MAIN } from "@/lib/constants";
 import type { Locale } from "@/i18n";
@@ -132,11 +133,12 @@ export default async function PostPage({ slug, locale }: PostPageProps) {
   }
 
   const structuredData = generateStructuredData(post);
+  const { prev, next } = getAdjacentPosts(slug, locale);
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-      <PostDetail post={post} locale={locale} />
+      <PostDetail post={post} locale={locale} prev={prev} next={next} />
     </>
   );
 }

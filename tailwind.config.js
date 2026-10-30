@@ -10,6 +10,11 @@ const config = {
     "./src/lib/**/*.{js,ts,jsx,tsx,mdx}"
   ],
   theme: {
+    container: {
+      center: true,
+      padding: { DEFAULT: "1rem", sm: "1.5rem" },
+      screens: { "2xl": "72rem" }
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -17,6 +22,13 @@ const config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        // Text tiers — body copy, secondary, tertiary
+        text: {
+          1: "hsl(var(--text-1))",
+          2: "hsl(var(--text-2))",
+          3: "hsl(var(--text-3))"
+        },
+        brand2: "hsl(var(--brand-2))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))"
@@ -47,6 +59,7 @@ const config = {
         }
       },
       borderRadius: {
+        xl: "calc(var(--radius) + 4px)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)"
@@ -64,28 +77,18 @@ const config = {
           "Apple SD Gothic Neo",
           "Noto Sans KR",
           "Malgun Gothic",
-          "Apple Color Emoji",
-          "Segoe UI Emoji",
-          "Segoe UI Symbol",
           "sans-serif"
         ],
-        pretendard: [
-          "Pretendard Variable",
-          "Pretendard",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "system-ui",
-          "Roboto",
-          "Helvetica Neue",
-          "Segoe UI",
-          "Apple SD Gothic Neo",
-          "Noto Sans KR",
-          "Malgun Gothic",
-          "Apple Color Emoji",
-          "Segoe UI Emoji",
-          "Segoe UI Symbol",
-          "sans-serif"
-        ]
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"]
+      },
+      transitionTimingFunction: {
+        soft: "var(--ease-soft)",
+        "out-expo": "var(--ease-out)"
+      },
+      transitionDuration: {
+        1: "var(--dur-1)",
+        2: "var(--dur-2)",
+        3: "var(--dur-3)"
       },
       keyframes: {
         "pulse-slow": {

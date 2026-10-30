@@ -52,9 +52,41 @@ Custom-built i18n, not next-intl or similar:
 
 - `PostPage`/date rendering intentionally drops time-of-day formatting because MDX frontmatter dates have no time component — adding `HH:mm` back reintroduces a UTC/KST hydration mismatch (React #418) that was already fixed once (commit `d572d81`).
 - Theme defaults to light (`defaultTheme="light"`, `enableSystem={false}` in `src/app/layout.tsx`). Both theme toggles (`ui/ThemeMode.tsx`, `layout/Header.tsx`) only flip light↔dark, so leaving `enableSystem` on would make the first click behave unpredictably for OS-dark visitors.
-- Career page (`src/components/pages/CareerPage.tsx`, `CareerPageClient.tsx`) supports exporting the résumé as a PDF via `src/lib/media/{client,css}-pdf-generator.ts`.
+- Career page (`src/components/pages/CareerPage.tsx`, `CareerPageClient.tsx`) supports exporting the résumé as a PDF via `src/lib/media/{client,css}-pdf-generator.ts`. Career copy (overview/highlights) is résumé style — terse 개조식 in Korean (명사형 종결: 적용·구축·감소·0건), verb-first fragments in English — not the blog's `-다` prose. Every number comes from a repo, a post or the user's own history.
 - `src/app/rss.xml/route.ts` and `src/app/sitemap.ts` are generated from the same MDX post data, not separate content.
 - Revalidation: `/api/revalidate` and `/api/revalidate-path` plus `src/lib/cache/*` exist for on-demand ISR revalidation, guarded by `REVALIDATE_SECRET` / `NEXT_PUBLIC_REVALIDATE_SECRET`.
+
+## Design system (v2, Oct 2026)
+
+- All color/type/motion tokens live in `src/app/globals.css` (`:root` / `.dark` HSL triplets, `--text-1/2/3`,
+  `--ease-soft`, `--dur-*`, `--measure`, `--page`). Components use Tailwind token colors (`text-text-2`,
+  `bg-primary/10`) or the utility classes defined in `@layer components` (`.t-display`, `.t-title`, `.t-h1..h3`,
+  `.t-lead`, `.eyebrow`, `.mono`, `.page`, `.surface`, `.chip`, `.section-head`). Never add raw `gray-*` classes.
+- Monospace is JetBrains Mono via `next/font/google` (`--font-mono` on `<html>`); it is the "second voice" for
+  metadata, counters and eyebrows. Pretendard stays the body face and needs negative tracking at 700+.
+- Prose: `.prose` in globals.css is hand-written (no `@tailwindcss/typography`). Post sections are authored as `#`
+  in MDX and rendered one level down (`h1→h2`, `h2→h3`, `h3→h4`) in `PostDetail.tsx`, so the post title is the only
+  h1. Heading ids are `github-slugger` on both sides: `src/lib/content/headings.ts` for the server TOC and
+  `rehype-slug` in the renderer. Never assign ids during render with a stateful counter — that drifted on
+  re-render and broke TOC links.
+- Post data carries `readingMinutes` and `headings` (computed in `src/lib/mdx/index.ts`); `getAdjacentPosts`
+  feeds prev/next.
+- 3D: `src/lib/three/globe.ts` is a framework-free three.js *hologram* globe: the NASA day/night JPEGs in
+  `public/globe` (public domain) are used only as land/city-light masks, all colours come from the `PALETTE`
+  uniforms (dark navy ocean, cyan land, graticule, scanline, fresnel rim; light pillars + soft rings as markers).
+  `components/home/Globe.tsx` wraps it and is only ever loaded through `next/dynamic({ ssr: false })` so `three`
+  never enters the shared bundle. Globe labels are always the English site name in uppercase mono. Respects
+  `prefers-reduced-motion`, pauses when offscreen or hidden. Anything overlaid on the canvas must be
+  `pointer-events-none` or sit below it — a positioned placeholder once swallowed every drag.
+- Hero copy: `home.display` words + `home.typed` phrases (typewriter, `components/home/Typewriter.tsx`) in the
+  locale JSON. Primary nav is Posts / Series / About; Portfolio (`/career`) is linked from About and the footer.
+- `/career` opens with a project map: `components/showcase/ProjectGlobe.tsx` draws `PROJECT_SITES` from
+  `src/lib/sites.ts`, each site carrying a `projectId` that matches `Project.id` in `CareerPage.tsx`. Picking a marker
+  expands and scrolls to `#project-<id>`. Keep ids stable; a project may have several sites.
+- Interactive figures inside posts: author `<div data-interactive="dispatch-flow"></div>` (or `network-hops`) on
+  its own line in MDX; `PostDetail` maps that div to `components/blog/PostInteractive.tsx`, which renders the
+  `components/showcase/*` component in `stacked` mode. These are generalized rebuilds of company work: no partner
+  data, no operational screenshots, scenario copy only.
 
 ## CI/CD
 
@@ -67,7 +99,9 @@ Custom-built i18n, not next-intl or similar:
 Post prose follows a fixed voice, enforced by the global `humanize-kr` skill
 (`~/.claude/skills/humanize-kr`): plain declarative `-다` endings, no bold (`**`), no emoji,
 `#` for section headings, short sentences, prose over bullet lists. The full profile is
-`references/voice-profile.md` there.
+`references/voice-profile.md` there. Titles are plain technical noun phrases that say what was
+built or what the post is about ("GitLab MR 자동 코드리뷰 봇 만들기", "… 시연 회고"), never an
+aphorism or a philosophical sentence, and never a colon or dash subtitle.
 
 Posts about a personal project carry a "요청에 담은 것" section: the constraints given to the AI,
 the lines of real repo code those constraints landed in, and what was checked in the result. Code
@@ -77,3 +111,7 @@ Company-project code is generalized to interface or pattern level instead of quo
 A PostToolUse hook audits any `.md`/`.mdx` written under `content/blog/` and reports what it
 catches, so expect feedback when a draft drifts from that voice. Company work is generalized in
 posts — no partner names, unannounced expo names, unconfirmed clients, or operational screenshots.
+Internal project code names never appear anywhere public: the robot C2 project is "Physical AI 통합관제
+솔루션" and the construction-progress platform is "사업관리시스템" (en "Project Management System", slug
+prefix `pms`), never their in-house names. Identifiers that embed a partner's product name are renamed
+before they go into a post. The border-watch scenario is described as a European border, not by country.
