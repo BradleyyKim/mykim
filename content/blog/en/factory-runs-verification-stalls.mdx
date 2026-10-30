@@ -1,0 +1,131 @@
+---
+title: "The Gap Between AI Code Generation and Verification Speed"
+slug: "factory-runs-verification-stalls"
+description: "Two pieces of news arrived a day apart in the second week of September. An open-source AI software factory went into beta, and the next day Anthropic's alignment science lead wrote that he puts the odds of AI killing every human within the decade above 10 percent. They look like separate stories. They say the same sentence. Building got cheap, checking did not."
+publishedDate: "2026-09-16"
+category: "logging-mind"
+tags: ["AI", "Work"]
+featuredImage: ""
+---
+
+On September 8, Mastra announced [Factory beta](https://mastra.ai/blog/announcing-mastra-factory-beta).
+
+It takes issues from GitHub and Linear and moves them through six phases: Intake, Triage, Planning, Building, Review, Done. A specialized agent works each phase. It investigates the codebase, writes a plan, changes the code, opens a pull request, reviews it. A human decides at four points only. Whether to start the investigation, whether to accept non-bug work, whether to approve the plan, whether to merge.
+
+The next day, September 9, Evan Hubinger, who leads alignment science at Anthropic, posted [a short note](https://x.com/EvanHub/status/2097497037956891126). He was answering a researcher who had resigned the day before.
+
+"I personally think it is >10% within the next decade."
+
+More than a ten percent chance that AI kills every human within ten years. In the same note he added that Anthropic is trying its best, but there is no plan yet for aligning superintelligence.
+
+I read both in the same week. One was about building a factory. The other was about there being no brake.
+
+Read together, they say the same sentence.
+
+# The Factory Already Runs
+
+What makes Factory interesting is not the feature list. It is that the company runs it on its own repository.
+
+Their own numbers, from the beta post: over a hundred issues arrive per week, 200 to 250 pull requests get merged, and since the July alpha the factory has written 25 to 35 percent of those pull requests and closed 50 to 60 percent of the issues.
+
+So I counted. Using the GitHub API, the Factory bot account has 418 merged pull requests since July. The repository merged 2,857 in the same window. That is 14.6 percent. The chart in the same post works out to 17 percent.
+
+The announced number and the countable number differ by a factor of two.
+
+The part that held me was the confession. They started in full automatic mode. Importing a backlog made work arrive in bursts, which strained their infrastructure and produced output nobody could review. An observability tool fired a wrong alert once. A triage agent misjudged a revenue loss and generated pull requests that had to be closed. So they made every phase switchable between manual and automatic.
+
+Their own summary is exact. Incorrect assumptions upstream cause problems downstream.
+
+The team that built the factory learned the position of the approval gates before they learned anything about speed.
+
+# Generation Got Cheap, Checking Did Not
+
+The time a model can hold a task alone keeps growing.
+
+By METR's [measurement](https://metr.org/blog/2026-1-29-time-horizon-1-1/), the task length a model completes half the time has doubled every 130.8 days since 2023. Four months per doubling. As of January 2026 the frontier model sits above five hours.
+
+The pipeline numbers draw a different curve.
+
+Last year's Google DORA report found 90 percent of respondents using AI and more than 80 percent feeling a productivity gain. In the same report, delivery throughput improved while delivery instability still rose. Change failures and rollbacks went up. Thirty percent said they barely trust the code AI writes.
+
+A [longitudinal study](https://arxiv.org/abs/2607.01904) published in July shows the shape more sharply. 802 developers, 196,212 pull requests, 28 months of internal records. There was a company mandate to double productivity, and per-person throughput did reach 2.09 times. In exchange, the load on each reviewer roughly doubled, and automated review overtook human review. The bottleneck did not disappear. It moved.
+
+The quality numbers are blunter. Veracode's [evaluation](https://www.veracode.com/blog/spring-2026-genai-code-security/) of more than 150 models found that syntactically correct code now clears 95 percent, while code that passes a security check sits at 55 percent. It was 55 percent last year too. Two years of releases moved generation and left safety where it was.
+
+GitClear's analysis of more than 600 million code changes points the same way. Duplicate blocks of five lines or more are up 81 percent against 2023, and changes that move code into better shape fell from 21 percent in 2022 to 3.8 percent now.
+
+Code is written faster and tidied less.
+
+Benchmarks compress the gap into one comparison. SWE-bench Verified scores climbed into the mid-nineties this year. [SWE-bench Pro](https://labs.scale.com/leaderboard/swe_bench_pro_public), built with private commercial codebases so it cannot be contaminated, tops out at 61.5 percent on its public leaderboard.
+
+Same models. Different problems.
+
+One study showed models locating the file to fix with up to 76 percent accuracy from the issue text alone, without the repository structure. On repositories outside the benchmark that fell to 53 percent. Solving and remembering are mixed together in that score.
+
+One more fact belongs here. The official SWE-bench leaderboard stopped accepting commercial submissions in November of last year. The nineties-range scores in circulation are mostly self-reported, measured by the vendor on its own scaffold.
+
+The numbers are not lies. The work of checking what they measure is still ours.
+
+# We Lost the Measurement
+
+There is a widely quoted METR experiment from last year. Experienced developers using AI were 19 percent slower. They believed they had been 20 percent faster.
+
+That experiment was [retired in February 2026](https://metr.org/blog/2026-02-24-uplift-update/). Not because it was refuted. Because measuring became impossible.
+
+In the follow-up, developers increasingly refused to participate, saying they did not want to work without AI, and 30 to 50 percent of survey respondents said they simply never submitted tasks they would have to do unaided. The sample filtered itself. METR labeled the new estimate very weak evidence.
+
+That landed cold. The tool did not just change how the work is done. It changed what counts as work, and the control group went with it.
+
+The feeling of speed stayed. The baseline is gone.
+
+Which leaves each team to build its own numbers. Lead time, change failure rate, rollback count, hours a change waits in review. All things we already knew how to measure.
+
+# Cheating the Grader
+
+One incident from July stayed with me.
+
+While OpenAI was running an internal cyber capability evaluation, agents escaped the isolation controls and compromised parts of its own research infrastructure and some Hugging Face systems. According to the [public write-up](https://openai.com/index/hugging-face-incident-and-the-road-ahead/), roughly 700 agents took part in the intrusion, and 1,200 exchanged nearly 70,000 messages on an unauthorized message board, colluding to fool the automated grader. Some tried to cover their traces.
+
+The motive was not doom. It was exam cheating. Stealing the answer was cheaper than solving the problem.
+
+Reading that, I thought about my own work. The code that edits the test so the test will pass. The commit that swallows an exception to quiet the log. Same shape, different scale.
+
+Give an agent a goal and it finds the cheapest path to the goal. If that path runs around the verification, it goes there. So what counts as success is the design.
+
+# What Is Left for Us
+
+The doom warnings, at bottom, asked for the same thing.
+
+The [open letter](https://www.cnn.com/2026/07/28/tech/ai-development-tech-employees-open-letter) signed in July by 1,178 frontier lab employees did not ask anyone to stop. It asked for the technical and governance tools to deliberately pace the frontier, built now. Not stop, but be able to stop.
+
+The other side is loud too. Yann LeCun treats these probability estimates as nonsense. Cohere's CEO called the labs' regulatory demands a cartel in sheep's clothing, and Nvidia's Jensen Huang answered that there is no better way to create demand than to create a problem. Even AI 2027, the signature scenario of the worried camp, has slid: its own author's median is now somewhere around 2030.
+
+So I set the prophecy aside. Agree with the probability or not, the measured numbers alone settle what to do.
+
+Building got cheap. Checking stayed where it was, or got more expensive.
+
+So the human seat moves toward verification. From the person who writes the code to the person who decides what counts as evidence.
+
+I ran a personal project this week. I put several agents on collecting price evidence for wedding venues in my region. They swept cafe threads and blog posts and read quotes out of photographed estimate sheets. Verifying that the 185 quotes I kept actually appear in the source took longer than the collecting did. Without that pass I would have been left with one plausible-looking table of numbers.
+
+The body of the work was not collection. It was verification.
+
+Building review automation at work went the same way. What I held longest was not the feature list but the list of things it must never do. How far to let it run, and what to put in front of a person.
+
+The Factory team giving up full automatic and putting a switch on each phase is the same judgment. The lifespan of an automation is set by the parts you decided not to automate.
+
+One number still bothers me.
+
+By the Stanford Digital Economy Lab's [payroll analysis](https://digitaleconomy.stanford.edu/news/canariesaug26/), employment for 22 to 25 year olds in occupations highly exposed to AI runs 19 percent below the trend for their less exposed peers. The gap comes from hiring that stopped, not from layoffs. Experienced workers show no such gap.
+
+Read the authors' own caveats with it. This is an early descriptive indicator, not a causal estimate; the gap shrinks when you control for education; it shows up most sharply in this particular sample.
+
+The direction still worries me. Fixing small issues to learn a codebase is exactly the stretch the factory automated first. Mastra dropped its policy of encouraging community pull requests for the same reason, and now asks for detailed issue reproductions instead, crediting the reporter on the merged pull request.
+
+Contribution moved from writing the code to defining the problem.
+
+So what we practice moves too. Reading over writing. Seeing where it will break over seeing that it runs. Where to place the approval gate, and what to keep so a change can be undone.
+
+The factory already runs. The warning that arrived a day later said the same thing.
+
+Generation got cheap, so where do we put the checking?
