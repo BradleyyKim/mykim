@@ -436,35 +436,15 @@ export class CSSPDFGenerator {
                             project => `
                           <div class="pdf-project">
                             <h3 class="pdf-project-name">${project.name}</h3>
-                            <div class="pdf-project-period">${project.period}</div>
+                            <div class="pdf-project-period">${project.period}${project.role ? ` · ${project.role}` : ""}</div>
                             <div class="pdf-overview">${project.overview}</div>
 
                             <div class="pdf-section">
-                              <h4 class="pdf-section-title">${language === "ko" ? "주요 업무" : "Responsibilities"}</h4>
+                              <h4 class="pdf-section-title">${language === "ko" ? "핵심 경험" : "Highlights"}</h4>
                               <ul>
-                                ${project.responsibilities.map(resp => `<li>${resp}</li>`).join("")}
+                                ${project.highlights.map(highlight => `<li>${highlight}</li>`).join("")}
                               </ul>
                             </div>
-
-                            <div class="pdf-section">
-                              <h4 class="pdf-section-title">${language === "ko" ? "성과" : "Achievements"}</h4>
-                              <ul>
-                                ${project.achievements.map(achievement => `<li>${achievement}</li>`).join("")}
-                              </ul>
-                            </div>
-
-                            ${
-                              project.metrics && project.metrics.length > 0
-                                ? `
-                            <div class="pdf-section">
-                              <h4 class="pdf-section-title">${language === "ko" ? "성과 지표" : "Metrics & Impact"}</h4>
-                              <ul>
-                                ${project.metrics.map(metric => `<li>${metric}</li>`).join("")}
-                              </ul>
-                            </div>
-                            `
-                                : ""
-                            }
 
                             ${
                               project.techStack && project.techStack.length > 0
