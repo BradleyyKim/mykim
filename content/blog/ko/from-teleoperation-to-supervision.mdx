@@ -1,5 +1,5 @@
 ---
-title: "로봇을 조종하는 화면을 만들다가, 조종을 그만뒀다"
+title: "원격조작에서 감독으로 바꾼 멀티 로봇 관제 UI"
 slug: "from-teleoperation-to-supervision"
 description: "개인 프로젝트로 시작한 것이 회사 과제가 되었다. 드론 시뮬레이터를 만들고, 로봇 팔과 AGV를 붙여 멀티 플랫폼 디지털 트윈을 만들었다. 관절 슬라이더를 움직이면 3D 로봇이 따라 움직이는 화면. 만들면서 꽤 뿌듯했다. 그런데 어느 순간 이상하다는 생각이 들었다. 이 화면으로 로봇 스무 대를 어떻게 다루지?"
 publishedDate: "2026-07-27"
@@ -92,8 +92,8 @@ interface FleetSource {
 구현체는 세 개를 뒀다.
 
 - `SelfSimSource` — 내가 만든 백엔드 시뮬레이터에서 받아온다
-- `DispectorMockSource` — 시나리오 대본대로 움직이는 목업
-- `DispectorSource` — 실연동 자리 (아직 비어 있음)
+- `RobotMockSource` — 시나리오 대본대로 움직이는 목업
+- `RobotSource` — 실연동 자리 (아직 비어 있음)
 
 환경변수로 어느 걸 쓸지 고른다.
 

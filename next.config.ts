@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
     // 타입 체크를 무시하고 빌드 진행
     ignoreBuildErrors: true
   },
+  // 공개용 이름 변경으로 바뀐 글 주소 — 옛 링크는 영구 이동
+  async redirects() {
+    return [
+      { source: "/posts/gongjang-expansion-and-patent", destination: "/posts/pms-expansion-and-patent", permanent: true },
+      { source: "/en/posts/gongjang-expansion-and-patent", destination: "/en/posts/pms-expansion-and-patent", permanent: true }
+    ];
+  },
   outputFileTracingIncludes: {
     "/**": ["./content/**/*"],
   },

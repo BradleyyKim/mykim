@@ -1,5 +1,5 @@
 ---
-title: "I Was Building a Cockpit for Robots, Then I Stopped Piloting Them"
+title: "A Multi-Robot Control UI, from Teleoperation to Supervision"
 slug: "from-teleoperation-to-supervision"
 description: "What started as a personal project became a company assignment. I built a drone simulator first, then added a 6-axis robot arm, an AGV, and a conveyor to grow it into a multi-platform digital twin. Move a joint slider and the 3D robot follows. I was pretty proud of it. Then something started to bother me. How would I handle twenty robots with this screen?"
 publishedDate: "2026-07-27"
@@ -90,8 +90,8 @@ As long as something satisfies this interface, the screen doesn't care where the
 I wrote three implementations.
 
 - `SelfSimSource` — reads from the backend simulator I built
-- `DispectorMockSource` — a mock that moves according to the scenario script
-- `DispectorSource` — the slot for live integration (still empty)
+- `RobotMockSource` — a mock that moves according to the scenario script
+- `RobotSource` — the slot for live integration (still empty)
 
 An environment variable picks which one to use.
 
