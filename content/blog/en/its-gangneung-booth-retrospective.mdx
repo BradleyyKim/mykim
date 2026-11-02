@@ -1,0 +1,101 @@
+---
+title: "Running a Robot Control Demo at the ITS World Congress in Gangneung"
+slug: "its-gangneung-booth-retrospective"
+description: "Five days of a live robot control demo at our ITS World Congress booth in Gangneung. The screen almost never stopped, the robot stopped often, and the screen could not say why. What went wrong on site, how each problem had already shown up in a smaller form before the show, and what goes into the next one."
+publishedDate: "2026-10-29"
+category: "deploy-life"
+tags: ["Retrospective", "Robotics", "Frontend"]
+featuredImage: ""
+---
+
+I spent five days at our booth at the ITS World Congress in Gangneung.
+
+Every time the robot moved, people gathered. A robot standing still is an exhibit. A robot walking is a show.
+
+There were almost no robots at an ITS show. Between the autonomous cars and the signal controllers, one four-legged robot stood out. The story landed: when ITS detects an incident, the robot is the last link that actually responds. The booth made the MBC and KBS evening news, and a [trade article](https://www.boannews.com/news/articleView.html?idxno=146564) ran too.
+
+What we showed fits in one line. A camera catches an intrusion into a restricted zone, it appears on the dashboard, an operator approves the dispatch, and a real robot goes out and comes back. Of the four domains on screen, only Gangneung was real hardware. The other three were simulations, and the screen said so.
+
+Press a step in the flow below to see what actually happened at that step.
+
+<div data-interactive="dispatch-flow"></div>
+
+That is the end of the part that went well. This post is about the part that did not.
+
+# The Problems Were Outside the Screen
+
+Before the show, what I worried about most was our screen. Detection stalling, video dropping, touch not registering.
+
+On site the screen was mostly fine. Most of the trouble came from robot navigation and the wireless links.
+
+There were three causes.
+
+First, the robot platform could not hold the waypoints inside the booth. It failed to recognise rough ground and walls and wandered off in the wrong direction. Its repeated failures to enter the charging dock were the same problem.
+
+Second, the robot platform's local server and our server were joined over Wi-Fi. Token issuance, commands and status polls dropped in the noise of the exhibition hall.
+
+Third, the link between the robot's access point and the local server was also Wi-Fi.
+
+Until the third one became visible, we only suspected the first two. With three wireless hops you cannot tell where the connection broke. Every time it went dead we could only guess.
+
+The conclusion shrank to one line. Keep exactly one wireless hop, between the robot and its access point, and run everything else over cable.
+
+Press a hop to compare this show's wiring with the next one's.
+
+<div data-interactive="network-hops"></div>
+
+# Where the Screen Was Still Wrong
+
+I wrote that the screen was fine. That is not entirely true. I fixed a little over ten things on site.
+
+Connecting to the local server by IP returned an empty 200. The server routed by host name and we did not know the name. I wrote it into the hosts file and switched the address to the name. The list of things to collect before setup grew by one entry: the connection name.
+
+After reconnecting, an error from a few minutes earlier stayed on screen. The integration server did not clear the last error after a success. In front of visitors, a stale error only adds to the things you have to explain.
+
+The screen shows the present state only. I made that a rule. For the same reason I removed the 8fps readout on the video tiles. That number only invited questions.
+
+Overnight the power went out. The MacBook switched to battery, the screen went dark and locked. Only after seeing the lock screen in the morning did "is it on mains power" make it into the checklist.
+
+The most painful one was a regression we created ourselves. Someone on site asked where the robot video went during the return leg, so I changed the dashboard to stay up while the robot came back. That change touched the defaults of the other three screens and turned the road and disaster screens black. A new array was being created on every render and the component fell into an infinite render loop.
+
+Fixing it did not take long. The problem was that I only looked at the screen I had fixed and never opened the others.
+
+Code changes during operation happen only on request, and all four screens are opened before anything goes live. That rule was set on the afternoon of the first day.
+
+# Things That Had Already Happened Once Before the Show
+
+Looking back, most of the problems on site had already arrived in a smaller form during preparation.
+
+Early on, the logic that dispatched the robot automatically from detection results sent sixty-eight missions to the real robot in seventeen minutes. Since then dispatch only goes out on a human's approval, and a test blocks any automatic dispatch path from appearing. At the show a visitor asked why a person had to press the dispatch approval button. I told them about that incident.
+
+In early October, in the robot platform's lab, we hammered the token endpoint every two seconds with a rejected key and locked ourselves out of their server. We created a state where even the correct key could not get in. A 401 does not mean "not right now". It means "never with this key". Now it stops after two rejections.
+
+I learned one more thing that day. The key had already been revoked, but a 900-second token was still alive, so everything looked healthy. Restarting the integration server exposed it. Do not restart while it is working.
+
+Six days before the show, in a remote test, the robot mission screen was playing a recording from a month earlier instead of live video. That was what "it all works fine over here" had meant.
+
+I set a principle then. A connected robot is never padded with mock data. If you write "communication normal" next to a robot that is switched off, you have nothing to say when a visitor asks.
+
+That principle was tested once more on site. The return animation on the minimap was time-based, so it ended with "return complete" even when docking failed. The robot was wandering in front of the dock while the screen said it was done. It was one of the few moments the screen lied.
+
+# Next Time
+
+The checklist for the next show is not long.
+
+Network: the desktop, the Mac, the robot platform's local server and the robot's access point all go into one switch over cable. The only wireless hop is between the robot and its access point, and that channel is chosen on setup day after measuring congestion. Bring spare cables and a spare switch.
+
+Robot side: collect the connection name, the key, the robot name and its assigned task before setup. Send the booth floor plan ahead of time, and on setup day book half a day to build the map and the waypoints together and actually walk the robot through them. This time we tried to fit that into a four-hour rehearsal.
+
+Tape the dock to the floor. On the Mac used as a kiosk, turn off sleep, screen lock, automatic updates, window tiling and hot corners, and plug it into mains power. This time I typed seven commands by hand and missed one when packing up. It becomes one script.
+
+On running the booth, the professor who came as an advisor was right. The promotional video runs on its own TV all day, not on the control screen. The robot is never left idle. There are dispatch demos at set times, and visitors get to walk into the camera zone and create the event themselves. Dispatch approval is still pressed by a person. There is a QR code with contact details ready for the moment a crowd forms.
+
+The development homework is three items. Draw the minimap return from the actual docking and charging state. Show on the dashboard how many seconds have passed since the robot last talked to us. Convert event coordinates into the robot's map coordinates and dispatch by coordinate. The third one waits until we confirm the robot platform supports moving to an arbitrary coordinate.
+
+A professor visiting from abroad asked whether we had to pre-map every time, and whether we could dispatch straight from GIS. I answered that outdoors it works with RTK-GPS waypoints and that indoors still needs a map.
+
+The direction of the question is right, though. Not building a new map, but overlaying the maps that already exist so the robot can use them. The current structure, going from the globe into the site screen, is the shell of that.
+
+For five days the screen almost never stopped. What stopped was the robot, and the screen could not say why the robot had stopped.
+
+Next time, the screen will be the first to say that line.
