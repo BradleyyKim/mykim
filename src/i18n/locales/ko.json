@@ -16,12 +16,12 @@
     "title": "MYKim",
     "description": "프로그래밍, 웹 개발, 그리고 더 많은 주제에 대한 블로그",
     "posts": "posts",
-    "eyebrow": "PRODUCT ENGINEER",
-    "display": [
-      "BUILD.",
-      "DEVELOP.",
-      "WRITE."
-    ],
+    "eyebrow": "MINYOUNG KIM · SEOUL",
+    "headline": {
+      "before": "",
+      "accent": "관제",
+      "after": " 화면을\n만듭니다."
+    },
     "statPosts": "글",
     "statTags": "태그",
     "statYears": "년째",
@@ -35,12 +35,12 @@
     "archiveHint": "연도별",
     "items": "items",
     "readMore": "읽기",
-    "globeHint": "드래그해서 돌리고, 마커를 눌러 보세요",
-    "globeOpen": "자세히",
+    "sceneHint": "눌러서 다음 단계로, 끌어서 돌려 보세요",
+    "sceneOpen": "자세히",
     "typed": [
-      "현장에서 돌아가는 관제 화면을 만듭니다.",
-      "화면부터 서버와 배포까지 직접 개발합니다.",
-      "왜 그렇게 두었는지를 글로 남깁니다."
+      "해외 도시의 교통 관제를",
+      "불법주정차 단속 현장을",
+      "전시장에서 움직이는 로봇을"
     ]
   },
   "post": {

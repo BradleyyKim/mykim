@@ -16,12 +16,12 @@
     "title": "MYKim",
     "description": "A blog about programming, web development, and more",
     "posts": "posts",
-    "eyebrow": "PRODUCT ENGINEER",
-    "display": [
-      "BUILD.",
-      "DEVELOP.",
-      "WRITE."
-    ],
+    "eyebrow": "MINYOUNG KIM · SEOUL",
+    "headline": {
+      "before": "I build\n",
+      "accent": "control",
+      "after": " screens."
+    },
     "statPosts": "posts",
     "statTags": "tags",
     "statYears": "years",
@@ -35,12 +35,12 @@
     "archiveHint": "by year",
     "items": "items",
     "readMore": "Read",
-    "globeHint": "Drag to rotate, tap a marker",
-    "globeOpen": "Open",
+    "sceneHint": "Tap for the next step, drag to look around",
+    "sceneOpen": "Open",
     "typed": [
-      "Building control screens that run in the field.",
-      "Developing from the screen to the server and deploys.",
-      "Writing down why things were placed the way they are."
+      "for traffic control in cities abroad.",
+      "for parking enforcement on the street.",
+      "for robots moving across an expo floor."
     ]
   },
   "post": {

@@ -71,15 +71,23 @@ Custom-built i18n, not next-intl or similar:
   re-render and broke TOC links.
 - Post data carries `readingMinutes` and `headings` (computed in `src/lib/mdx/index.ts`); `getAdjacentPosts`
   feeds prev/next.
-- 3D: `src/lib/three/globe.ts` is a framework-free three.js *hologram* globe: the NASA day/night JPEGs in
-  `public/globe` (public domain) are used only as land/city-light masks, all colours come from the `PALETTE`
-  uniforms (dark navy ocean, cyan land, graticule, scanline, fresnel rim; light pillars + soft rings as markers).
-  `components/home/Globe.tsx` wraps it and is only ever loaded through `next/dynamic({ ssr: false })` so `three`
-  never enters the shared bundle. Globe labels are always the English site name in uppercase mono. Respects
-  `prefers-reduced-motion`, pauses when offscreen or hidden. Anything overlaid on the canvas must be
-  `pointer-events-none` or sit below it — a positioned placeholder once swallowed every drag.
-- Hero copy: `home.display` words + `home.typed` phrases (typewriter, `components/home/Typewriter.tsx`) in the
-  locale JSON. Primary nav is Posts / Series / About; Portfolio (`/career`) is linked from About and the footer.
+- 3D: two framework-free three.js scenes, each wrapped by a client component that is only ever loaded through
+  `next/dynamic({ ssr: false })` so `three` never enters the shared bundle. Both respect `prefers-reduced-motion`
+  and pause when offscreen or hidden. Anything overlaid on a canvas must be `pointer-events-none` or sit below
+  it — a positioned placeholder once swallowed every drag.
+  - `src/lib/three/controlScene.ts` + `components/home/ControlScene.tsx`: the home hero. A wireframe city block
+    (floor grid, crossing roads, traffic camera with its view cone, console, dock, one robot) that replays the
+    control loop detect → approve → dispatch → return. Tap advances, drag turns the block, idle drifts home.
+    Step copy and post links live in `src/lib/scene.ts` (`SCENE_STEPS`); chips on the canvas are English
+    uppercase mono, the card under the canvas is the only link out.
+  - `src/lib/three/globe.ts` + `components/home/Globe.tsx`: the *hologram* globe used on `/career`. The NASA
+    day/night JPEGs in `public/globe` (public domain) are used only as land/city-light masks, all colours come
+    from the `PALETTE` uniforms. Globe labels are always the English site name in uppercase mono.
+- Hero copy: `home.eyebrow` (name · city), `home.headline` (`before`/`accent`/`after`, `\n` = line break;
+  the accent word is 관제 / control) and `home.typed` phrases (typewriter, `components/home/Typewriter.tsx`)
+  in the locale JSON. The typed lines are objects that complete the headline ("해외 도시의 교통 관제를"), not
+  full sentences, and never a line about writing. Primary nav is Posts / Series / About; Portfolio (`/career`)
+  is linked from About and the footer.
 - `/career` opens with a project map: `components/showcase/ProjectGlobe.tsx` draws `PROJECT_SITES` from
   `src/lib/sites.ts`, each site carrying a `projectId` that matches `Project.id` in `CareerPage.tsx`. Picking a marker
   expands and scrolls to `#project-<id>`. Keep ids stable; a project may have several sites.
